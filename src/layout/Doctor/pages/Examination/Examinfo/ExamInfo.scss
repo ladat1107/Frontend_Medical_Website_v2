@@ -1,0 +1,101 @@
+.exam-container{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding-top: 20px;
+
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 14px;
+
+    .padding5{
+        padding: 5px;
+    }
+
+    p{
+        margin: 0;
+    }
+
+    .col-3{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .save-button {
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 5px 15px;
+        box-shadow: 2px 2px 4px #e6eaeb;
+        min-width: 80px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+        }
+    }
+    
+    .save-button.disabled {
+        background-color: #ccc; /* Màu xám khi disabled */
+        cursor: not-allowed; /* Đổi con trỏ thành không thể click */
+        color: gray;
+    }
+
+    .restore-button{
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 5px 10px;
+        box-shadow: 2px 2px 4px #e6eaeb;
+        margin-right: 10px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+        }
+    }
+
+    .restore-button.disabled {
+        background-color: #ccc; /* Màu xám khi disabled */
+        cursor: not-allowed; /* Đổi con trỏ thành không thể click */
+        color: gray;
+    }
+}
+
+.row{
+    display: flex;
+    align-items: center;
+}
+
+.input {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 4px #e6eaeb;
+    outline: none;
+    margin-right: 20px;
+    height: 2.7em;
+}
+
+.date-picker{
+    width: 100%;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 4px #e6eaeb;
+    outline: none;
+    margin-right: 20px;
+    height: 2.7em;
+
+    .react-datepicker-wrapper{
+        width: 100%;
+    }
+}
+
+.select-box{
+    font-size: 14px;
+    width: 100%;
+}

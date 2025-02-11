@@ -1,0 +1,25 @@
+.iconDetail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c3c3c3;
+    padding: 4px;
+    height: 30px;
+    width: 30px;
+
+    // đè csss thư viện
+}
+
+.dropdownAction {
+    span {
+        font-weight: 500;
+    }
+
+    .update {
+        color: rgb(0, 142, 61);
+    }
+
+    .del {
+        color: red;
+    }
+}

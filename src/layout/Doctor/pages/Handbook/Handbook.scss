@@ -1,0 +1,119 @@
+@import "../../../../style/variables.scss";
+
+.handbook-container {
+
+    .header-handbook {
+        border-radius: 10px;
+        box-shadow: $box-shadow-content-admin;
+        background: white;
+        padding: 20px 30px;
+
+        .text {
+            font-size: 2em;
+            font-weight: 600;
+            color: $primary-color-admin;
+        }
+
+        .button {
+            border-radius: 5px;
+            padding: 5px 15px;
+            border: none;
+            background-color: $primary-color-admin;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+
+            i {
+                margin-right: 10px;
+            }
+        }
+    }
+
+    .filter {
+        border-radius: 10px;
+        box-shadow: $box-shadow-content-admin;
+        background: white;
+        padding: 5px;
+        height: fit-content;
+        color: $primary-color-admin;
+        font-weight: 600;
+
+        .list-tag {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            .tag-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: 1.5px solid #F4F4F5;
+                background: #F4F4F5;
+                color: rgb(85, 85, 85);
+                border-radius: 5px;
+                width: fit-content;
+                white-space: nowrap;
+                padding: 3px 12px;
+                cursor: pointer;
+                font-weight: 400;
+            }
+
+            .tag-selected {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: 1.5px solid #7bbbff;
+                background: #F6F8FD;
+                color: #2a91ff;
+                border-radius: 20px;
+                width: fit-content;
+                white-space: nowrap;
+                padding: 3px 12px;
+                cursor: pointer;
+            }
+
+            p {
+                margin: 0;
+                display: inline-block;
+                font-weight: 400;
+            }
+
+            .active {
+                border: 2px solid #e7e7e7;
+                background: white;
+                color: black;
+            }
+        }
+    }
+
+    .search-container {
+        padding: 5px;
+        border-bottom: 1px solid #83BDF4;
+        gap: 10px;
+
+        i {
+            color: #83BDF4;
+        }
+
+        input {
+            border: none;
+            margin-left: 10px;
+            width: 90%;
+
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+
+    .input-upload {
+        color: #519BE2;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .progress {
+        color: black;
+    }
+}

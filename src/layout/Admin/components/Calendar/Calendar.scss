@@ -1,0 +1,56 @@
+@import "../../../../style/variables.scss";
+
+.admin-calender {
+    .custom-schedule-table {
+        background-color: white; // Nền bảng
+        border-radius: 5px; // Góc bo
+        overflow: hidden;
+
+        .ant-table {
+            border: none;
+
+            .ant-table-container {
+                border-radius: 8px;
+            }
+
+            // Header
+            .ant-table-thead>tr>th {
+                background-color: $background-table-head-admin; // Nền tiêu đề
+                color: $text-head-color-admin; // Màu chữ
+                text-align: center; // Canh giữa
+                font-weight: bold;
+                font-size: 1em;
+                padding: 10px;
+
+                &:first-child {
+                    border-left: none; // Loại bỏ viền đầu
+                }
+            }
+
+            .ant-table-tbody {
+                tr {
+                    border-bottom: 1px solid #d9d9d9; // Đường viền giữa các ô
+                    font-size: 0.8em;
+
+                    td {
+                        text-align: center; // Canh giữa nội dung
+                        position: relative;
+                        border: 1px solid #f4efef; // Viền ô
+
+                        .icon-plus-center {
+                            cursor: pointer;
+                        }
+
+                        &:hover {
+                            background-color: $hover-color-admin; // Màu khi hover
+                        }
+                    }
+                }
+
+
+
+
+            }
+        }
+    }
+}

@@ -1,0 +1,133 @@
+@import "../../../../../style/variables.scss";
+
+.staff-manage {
+    .container {
+        padding: 0 3%;
+        background: $background-color;
+
+        .first {
+            .text {
+                font-size: 1.2rem;
+                color: $secondary-color-admin;
+            }
+
+            .btn-add-user {
+                background: $background-color;
+                border: 1px solid $primary-color-admin;
+                border-radius: 8px;
+                color: $primary-color-admin;
+                font-weight: 500;
+                cursor: pointer;
+
+                &:hover {
+                    border: #04a9f3 1px solid;
+                    color: #04a9f3;
+
+                    .icon {
+                        color: #04a9f3 !important;
+                    }
+                }
+            }
+        }
+
+
+        .table-responsive {
+            border-radius: $boder-content-admin;
+            width: 100%;
+            box-shadow: $box-shadow-content-admin;
+
+            .header {
+                width: 100%;
+                height: 50px;
+                background: $background-table-head-admin;
+                color: $text-head-color-admin;
+
+                .rounded-top-left {
+                    border-top-left-radius: 5px;
+                }
+
+                .rounded-top-right {
+                    border-top-right-radius: 5px;
+                }
+
+                .name {
+                    width: 230px;
+                }
+            }
+
+            .table-body {
+                overflow-y: auto;
+                scrollbar-width: none;
+
+                tr {
+                    border-bottom: 1px solid #e3dede !important;
+                }
+
+                .min-content-width {
+                    width: 230px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: left;
+
+                    .image {
+                        margin: 0;
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                    }
+
+                    .email {
+                        display: flex;
+                        flex-direction: column;
+
+
+                        .fw-semibold {
+                            color: $secondary-color-admin;
+                        }
+
+                        .fw-normal {
+                            margin-top: 3px;
+                            font-size: 0.9em;
+                            font-style: italic;
+                        }
+                    }
+                }
+
+                .line {
+                    letter-spacing: 0.05em;
+                }
+            }
+
+            .footer-table {
+                background: white;
+                display: flex;
+                justify-content: end;
+                align-items: center;
+
+                .select-page {
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;
+
+
+                }
+
+                .paginationContainer {
+                    font-size: 1em;
+                    margin: 0 1rem;
+                    display: flex;
+                    justify-content: end;
+                    align-items: center;
+                    width: max-content;
+                }
+            }
+        }
+    }
+}
+
+.dropdownPosition {
+    .ant-dropdown-menu {
+        border-radius: 5px;
+    }
+
+}

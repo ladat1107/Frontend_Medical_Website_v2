@@ -1,0 +1,35 @@
+.admin-header-content {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: white;
+    height: 68px;
+    border-bottom: 1px solid #f0f0f0;
+
+    .header {
+        .btn {
+            width: 64px !important;
+            border: none;
+
+            .ant-btn {
+                &:hover {
+                    background: none;
+                }
+            }
+        }
+
+        .logo-search {
+            .logo {
+                background-image: url("https://res.cloudinary.com/utejobhub/image/upload/v1733740053/KHOA_500_x_200_px_dp7on2.png");
+                background-size: contain;
+                background-repeat: no-repeat;
+                width: 35%;
+                height: 40px;
+            }
+        }
+
+        .icon {
+            gap: 15%;
+        }
+    }
+}

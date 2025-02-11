@@ -1,0 +1,17 @@
+.video-wrapper {
+    width: 80%;  // Điều chỉnh chiều rộng theo % hoặc px
+    height: 400px;  // Điều chỉnh chiều cao theo px
+    margin: 0 auto;  // Căn giữa video trong container
+    position: relative;
+    display: flex;
+  justify-content: center;  // Căn giữa theo chiều ngang
+  align-items: center;  // Căn giữa theo chiều dọc
+  width: 100%;
+  
+    .react-player {
+      width: 100%;  // Video chiếm toàn bộ chiều rộng của container
+      height: 100%; // Video chiếm toàn bộ chiều cao của container
+     
+    }
+  }
+  

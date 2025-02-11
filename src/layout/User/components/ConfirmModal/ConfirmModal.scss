@@ -1,0 +1,60 @@
+@import "/src/style/variables.scss";
+
+.ant-modal-content {
+    padding: 0 !important;
+    border-radius: 10px !important;
+
+    /* ConfirmModal.scss */
+    .ant-modal-header {
+        border-radius: 10px 10px 0 0;
+        padding: 12px 24px;
+        background: linear-gradient(36deg, #00b5f1, #00e0ff);
+
+        .ant-modal-title {
+            color: white; // Màu chữ
+            font-weight: bold; // Chữ đậm
+            font-size: 1.2em; // Cỡ chữ
+        }
+
+
+        .ant-modal-close {
+            color: white;
+            // top: 7px;
+        }
+    }
+
+    .ant-modal-body {
+        padding: 8px 24px;
+        font-size: 15px;
+        color: $main-text-color; // Màu chữ
+    }
+
+    .ant-modal-footer {
+        padding: 8px 12px;
+
+        .ant-btn-primary {
+            background: linear-gradient(36deg, #00b5f1, #00e0ff);
+            color: white; // Màu chữ
+        }
+
+        .ant-btn-primary:hover {
+            background: $primary-color; // Màu nền khi hover
+            color: white; // Màu chữ
+        }
+
+        .ant-btn-default {
+            color: $secondary-text-color;
+            /* Màu chữ của nút Cancel */
+            border-color: $secondary-text-color;
+            /* Màu viền của nút Cancel */
+        }
+
+        .ant-btn-default:hover {
+            color: #ffffff;
+            /* Màu chữ khi hover */
+            background-color: $secondary-text-color;
+            border-color: $secondary-text-color;
+        }
+    }
+
+}

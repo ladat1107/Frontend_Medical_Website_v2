@@ -1,0 +1,61 @@
+// Dropdown component styles
+.dropdown {
+    // Button styles
+    .MuiButton-root {
+      color: #003553; // Customize text color
+      text-transform: none; // Prevent uppercase text
+      font-size: 16px; // Set font size
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+  
+      &:hover {
+        background-color: rgba(0, 123, 255, 0.1); // Light blue hover
+      }
+  
+      svg {
+        margin-left: 5px; // Add spacing to the arrow icon
+        transition: transform 0.3s ease;
+  
+        // Rotate the arrow when the menu is open
+        &.Mui-expanded {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  
+    // Menu styles
+    .MuiMenu-paper {
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow
+      border-radius: 8px; // Rounded corners
+      background-color: #ffffffb6;
+  
+      .MuiMenuItem-root {
+        font-size: 14px; // Font size for items
+        padding: 10px 20px; // Padding for items
+        display: flex;
+        align-items: center;
+        gap: 10px; // Space between icon and text
+        color: #333;
+  
+        &:hover {
+          background-color: #f0f8ff; // Highlight hover
+          color: #003553; // Change text color on hover
+        }
+  
+        // Icon styles
+        .MuiListItemIcon-root {
+          min-width: 30px; // Adjust spacing for icons
+          svg {
+            font-size: 20px; // Adjust icon size
+            color: #007bff; // Icon color
+          }
+        }
+  
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+  

@@ -1,0 +1,16 @@
+
+
+
+
+.container {
+    max-width: 1200px;         // Chiều rộng tối đa của container
+    margin: 0 auto;             // Căn giữa container
+    padding: 0 16px;            // Padding để tránh đụng lề màn hình
+    width: 100%;
+    
+    // Responsive cho màn hình nhỏ hơn
+    @media (max-width: 768px) {
+      max-width: 100%;
+      padding: 0 12px;
+    }
+  }

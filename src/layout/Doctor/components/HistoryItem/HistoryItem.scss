@@ -1,0 +1,13 @@
+
+.history-item-content{
+    // border-bottom: 2px dashed #ccc;
+    display: flex;
+    align-items: start;
+    background: white;
+    padding-left: 10px;
+
+    .border-right{
+        border-left: 2px dashed #ccc;
+        padding-left: 30px;
+    }
+}

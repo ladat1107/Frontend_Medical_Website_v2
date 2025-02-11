@@ -1,0 +1,137 @@
+@import "../../../../../style/variables.scss";
+
+.patient-manage {
+    display: flex;
+    justify-content: center; // Căn giữa theo chiều ngang
+    align-items: center; // Căn giữa theo chiều dọc
+    height: 100%;
+
+    background: $background-color;
+
+    .container {
+        padding: 0 3%;
+        margin: 0;
+        background: $background-color;
+
+        .first {
+            .text {
+                font-size: 1.2rem;
+                color: $secondary-color-admin;
+            }
+
+            .btn-add-user {
+                background: $background-color;
+                border: 1px solid #0A8FDC;
+                border-radius: 8px;
+                color: #0A8FDC;
+                font-weight: 500;
+                cursor: pointer;
+
+                &:hover {
+                    border: #04a9f3 1px solid;
+                    color: #04a9f3;
+
+                    .icon {
+                        color: #04a9f3 !important;
+                    }
+                }
+            }
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            box-shadow: $box-shadow-content-admin;
+
+            .header {
+                width: 100%;
+                height: 50px;
+                background: $background-table-head-admin;
+                color: $text-head-color-admin;
+
+                .rounded-top-left {
+                    border-top-left-radius: 5px;
+                }
+
+                .rounded-top-right {
+                    border-top-right-radius: 5px;
+                }
+
+                .name {
+                    width: 250px;
+                }
+            }
+
+            .table-body {
+                max-height: 60vh;
+                overflow-y: auto;
+                scrollbar-width: none;
+
+                tr {
+                    border-bottom: 1px solid #e3dede;
+                }
+
+                .min-content-width {
+                    width: 250px;
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;
+                    cursor: pointer;
+
+                    .image {
+                        margin: 0;
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                    }
+
+                    .email {
+                        display: flex;
+                        flex-direction: column;
+
+                        .fw-semibold {
+                            color: $secondary-color-admin;
+                        }
+
+                        .fw-normal {
+                            margin-top: 3px;
+                            font-size: 0.9em;
+                            font-style: italic;
+                        }
+                    }
+                }
+
+
+            }
+
+            .footer-table {
+                display: flex;
+                justify-content: end;
+                align-items: center;
+
+                .select-page {
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;
+
+                    .text {
+                        width: 4rem;
+                        font-size: 0.9rem;
+                    }
+
+                    span {
+                        font-size: 0.9rem;
+                    }
+                }
+
+                .paginationContainer {
+                    font-size: 1em;
+                    margin: 0 1rem;
+                    display: flex;
+                    justify-content: end;
+                    align-items: center;
+                    width: max-content;
+                }
+            }
+        }
+    }
+}

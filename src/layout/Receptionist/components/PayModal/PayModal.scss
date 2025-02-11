@@ -1,0 +1,198 @@
+.payment-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-family: "Be Vietnam Pro", sans-serif !important;
+
+
+    .payment-content {
+        background: white;
+        padding: 30px 30px;
+        border-radius: 8px;
+        position: relative;
+        width: 50%;
+        max-width: 80%;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-height: 95vh;
+        height: wrap-content;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari */
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #007BFF;
+        }
+
+        input {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgb(211, 211, 211);
+            height: 32px;
+            width: 250px;
+            outline: none;
+
+            &:focus {
+                border: 1px solid #007BFF;
+            }
+
+            &:hover {
+                border: 1px solid #007BFF;
+            }
+        }
+
+        .radio {
+            height: fit-content;
+            width: fit-content;
+            margin: 0 10px 0 0;
+        }
+
+        textarea {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgb(211, 211, 211);
+            height: 32px;
+            width: 250px;
+            outline: none;
+
+            &:focus {
+                border: 1px solid #007BFF;
+            }
+
+            &:hover {
+                border: 1px solid #007BFF;
+            }
+        }
+
+        .image-upload {
+            border: 2px dashed #83BDF4;
+            border-radius: 10px;
+            padding: 5px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                font-family: 'Be Vietnam Pro', sans-serif;
+
+                .image-cloud {
+                    font-size: 20px;
+                    color: #83BDF4;
+                }
+            }
+
+            .input-upload {
+                color: #438EF3;
+                font-weight: bold;
+                cursor: pointer;
+            }
+        }
+
+        .bold-text {
+            font-weight: 600;
+        }
+
+        .sub-text {
+            color: gray;
+        }
+
+        .special-old {
+            background: #ffe3dc;
+            color: #FF7752;
+            text-align: center;
+            border: 1.5px solid #FF7752;
+            border-radius: 8px;
+            width: 80%;
+            font-size: 13px;
+        }
+
+        .special-children {
+            background: #DDFCED;
+            color: #3AA472;
+            text-align: center;
+            border: 1.5px solid #3AA472;
+            border-radius: 8px;
+            width: 80%;
+            font-size: 13px;
+        }
+
+        .special-disabled {
+            background: #DFEFFF;
+            color: #007BFF;
+            text-align: center;
+            border: 1.5px solid #007BFF;
+            border-radius: 8px;
+            width: 80%;
+            font-size: 13px;
+        }
+
+        .special-pregnant {
+            background: #FFD5D8;
+            color: #ff4851;
+            text-align: center;
+            border: 1.5px solid #ff4851;
+            border-radius: 8px;
+            width: 80%;
+            font-size: 13px;
+        }
+
+        .pres-item {
+            border-bottom: 2px dashed #ccc;
+            padding-bottom: 5px;
+
+        }
+
+        .payment-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+
+            .close-user-btn {
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                padding: 5px 10px;
+                box-shadow: 2px 2px 4px #e6eaeb;
+                margin-right: 10px;
+                cursor: pointer;
+
+                &:hover {
+                    box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+                }
+            }
+
+            .payment-btn {
+                background: #007BFF;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 5px 15px;
+                box-shadow: 2px 2px 4px #e6eaeb;
+                cursor: pointer;
+
+                &:hover {
+                    box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+.radio-add-exam {
+    .radio-inputs {
+        display: flex;
+        flex-wrap: wrap;
+        border-radius: 0.8rem;
+        background-color: #EEE;
+        box-sizing: border-box;
+        padding: -5px;
+        width: 100%;
+        font-weight: 300;
+  
+        .radio {
+            flex: 1 1 auto;
+            text-align: center;
+    
+            input {
+                display: none;
+            }
+  
+            .name {
+                display: flex;
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                border-radius: 0.7rem;
+                border: none;
+                color: gray;
+        
+                &:hover {
+                    background-color: #ddd;
+                }
+            }
+  
+            input:checked + .name {
+                background-color: #fff;
+                color: black;
+                font-weight: 400;
+                border: 1px solid #ddd;
+                box-shadow: 0px 2px 4px #d7dbdc;
+        
+                &::after {
+                    content: "";
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+}
+  

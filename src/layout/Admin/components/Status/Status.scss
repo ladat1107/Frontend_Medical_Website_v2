@@ -1,0 +1,23 @@
+@import "../../../../style/variables.scss";
+
+.status-content {
+    .status-on {
+        color: #08ca6c;
+        background: #e9f4e5;
+        padding: 5px 10px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.8em;
+        text-align: center;
+    }
+
+    .status-off {
+        color: #ec3609;
+        background: #f9d9d1;
+        padding: 5px 10px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 10px;
+        text-align: center;
+    }
+}

@@ -1,0 +1,26 @@
+.patient-item{
+    padding: 5px;
+    background: white;
+    border-radius: 8px;
+    border: 1.5px solid #e6eaeb;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    i{
+        color: #F44343;
+        padding: 10px;
+
+        &:hover{
+            cursor: pointer;
+            background: #ffe3dc;
+            border-radius: 100%;
+        }
+    }
+
+    &:hover{
+        cursor: pointer;
+        box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+}

@@ -1,0 +1,23 @@
+.doctor-header-content {
+    background: white;
+
+    .header {
+        .btn {
+            width: 64px !important;
+        }
+
+        .logo-search {
+            .logo {
+                background-image: url("https://res.cloudinary.com/utejobhub/image/upload/v1733740053/KHOA_500_x_200_px_dp7on2.png");
+                background-size: contain;
+                background-repeat: no-repeat;
+                width: 35%;
+                height: 40px;
+            }
+        }
+
+        .icon {
+            gap: 15%;
+        }
+    }
+}

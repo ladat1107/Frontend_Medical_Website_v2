@@ -1,0 +1,14 @@
+/* AnimateOnScroll.css */
+
+.default-hidden {
+  opacity: 0;
+  transition: all 0.8s ease-out; /* Đồng bộ thời gian */
+  transform: translateY(300px);
+}
+
+.animate {
+  opacity: 1;
+  transform: translateY(400px); /* Di chuyển từ trên xuống */
+  transition: all 0.8s ease-out; /* Thời gian chuyển đổi mượt */
+  pointer-events: none;
+}

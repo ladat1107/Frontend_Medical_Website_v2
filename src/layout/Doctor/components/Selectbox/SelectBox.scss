@@ -1,0 +1,81 @@
+.exam-content{
+  .ant-select-show-search{
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+
+    .ant-select {
+      width: 100%;
+      background-color: white !important;
+
+      &-selector {
+        border: 1px solid #ccc !important; // Remove border
+        padding: 3px 30px 3px 10px; // Add padding
+        box-shadow: 2px 2px 4px #e6eaeb !important;
+        background-color: white !important; // Make background transparent
+        border-radius: 10px !important; // Add border-radius
+
+        &:hover {
+          border-color: #40a9ff;
+        }
+      }
+
+      &-selection-search {
+        &-input {
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+          font-family: 'Be Vietnam Pro', sans-serif;
+          font-size: 14px;
+        }
+      }
+
+      &-focused .ant-select-selector,
+      &-open .ant-select-selector {
+        border-color: #40a9ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+
+      &-selection-item {
+        // background-color: white !important;
+        border-color: #adc6ff !important;
+        border-radius: 4px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+      }
+
+      &-selection-item-remove {
+        color: #1890ff;
+
+        &:hover {
+          color: #40a9ff !important;
+        }
+      }
+
+      &-selection-placeholder{
+        font-family: 'Be Vietnam Pro', sans-serif;
+        color: #6B7280;
+      }
+    }
+
+    .ant-select-dropdown {
+      border-radius: 6px;
+      box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+        0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+      .ant-select-item {
+        padding: 8px 12px;
+
+        &-option-selected {
+          background-color: white !important;
+          font-weight: 600;
+        }
+
+        &-option-active {
+          background-color: white !important;
+        }
+      }
+    }
+  }
+}

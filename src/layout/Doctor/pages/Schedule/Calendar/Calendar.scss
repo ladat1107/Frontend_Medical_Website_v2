@@ -1,0 +1,53 @@
+.custom-calendar{
+
+    .rbc-event {
+        background: white;
+        color: black;
+        margin: 5px;
+        height: 100%;
+        width: 93%;
+        
+        .rbc-event-content {
+            width: 100%;
+            white-space: normal;
+        }
+    }
+    
+    .rbc-today{
+        background: #EDF6FF !important;
+    }
+
+    .rbc-month-view{
+        border-radius: 10px;
+    }
+
+    .rbc-header{
+        padding: 10px;
+        background-color: #EDF6FF;
+    }
+
+    .rbc-date-bg{
+        border: 10px solid #E5E5E5;
+        border-radius: 10px;
+    }
+
+    .rbc-button-link{
+        color: #007BFF;
+    }
+
+    .rbc-month-header {
+        border-radius: 10px;
+
+        .rbc-header:last-child {
+            border-radius: 0 10px 0 0;
+        }
+        .rbc-header:first-child {
+            border-radius: 10px 0 0 0;
+        }
+    }
+
+    .rbc-off-range {
+        opacity: 0 !important;
+        pointer-events: none;
+    }
+}

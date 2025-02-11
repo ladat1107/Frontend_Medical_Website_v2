@@ -1,0 +1,103 @@
+.create-handbook-container {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 4px 4px 8px #cdd3d6, -4px -4px 8px #e5ebef;
+    margin: 0 0 20px 0;
+
+    .search-container {
+        padding: 5px;
+        border-bottom: 1px solid #83BDF4;
+        gap: 10px;
+
+        i {
+            color: #83BDF4;
+        }
+
+        input {
+            border: none;
+            margin-left: 10px;
+            width: 90%;
+
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        .button {
+            padding: 6px 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #3AA472 !important;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+
+            i {
+                margin-right: 10px;
+            }
+        }
+
+        .button-cancel {
+            padding: 6px 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #f44343;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+
+            i {
+                margin-right: 10px;
+            }
+        }
+    }
+
+    .image-upload {
+        border: 2px dashed #83BDF4;
+        border-radius: 10px;
+        padding: 5px;
+        justify-content: center;
+        align-items: center;
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Be Vietnam Pro', sans-serif;
+
+            .image-cloud {
+                font-size: 20px;
+                color: #83BDF4;
+            }
+        }
+    }
+
+    .text-bold {
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .input-tag {
+        display: flex;
+        align-items: center; // Căn giữa theo chiều dọc
+
+        .input-container {
+            display: flex;
+            align-items: center; // Căn giữa theo chiều dọc
+            gap: 8px; // Khoảng cách giữa Input và Button
+            width: 100%;
+
+            .ant-input {
+                flex: 1; // Cho phép input chiếm phần không gian còn lại
+            }
+        }
+    }
+}

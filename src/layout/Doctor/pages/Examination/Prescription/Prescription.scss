@@ -1,0 +1,74 @@
+.pres-container {
+
+    .row{
+        display: flex;
+        align-items: center;
+        padding: 0;
+    }
+
+    .empty-list-message{
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-style: italic;
+        color: gray;
+        margin: 0;
+    }
+
+    
+
+    .gap{
+        gap: 10px;
+    }
+
+    .padding{
+        padding: 10px;
+    }
+
+    .title{
+        margin: 0;
+    }
+
+    .payment{
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        margin: 0;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .button{
+        display: flex;
+        align-items: center;
+        padding: 0;
+        gap: 5px;
+    }    
+
+    .add-button{
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 5px 10px;
+        box-shadow: 2px 2px 4px #e6eaeb;
+        margin-right: 10px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+        }
+    }
+
+    .save-button {
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 5px 15px;
+        box-shadow: 2px 2px 4px #e6eaeb;
+        min-width: 80px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+        }
+    }
+}

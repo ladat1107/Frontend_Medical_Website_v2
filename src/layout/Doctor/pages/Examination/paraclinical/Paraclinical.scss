@@ -1,0 +1,183 @@
+.parac-container{
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 14px;
+    min-height: 60vh;
+
+    .paraclinicals-action{
+        padding: 10px;
+        background: #EEEEEE;
+        border-radius: 10px;
+        position: relative;
+
+        .paraclinicals-list{
+
+            .paraclinicals-item{    
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                p{
+                    background: white;
+                    padding: 5px 10px;
+                    border-radius: 10px;
+                    border: 1px solid #ccc;
+                    box-shadow: 2px 0px 4px #c5cacb;
+                    margin-bottom: 10px;
+                    width: 93%;
+                }
+
+                i{
+                    cursor: pointer;
+                    color: gray;
+
+                    &:hover{
+                        color: black;
+                    }
+                }
+
+            }
+        }
+        .search-results {
+            position: absolute;
+            left: 10px; // Match the padding of the parent container
+            right: 10px; // Match the padding of the parent container
+            top: calc(100% + 5px); // Position right above the input
+            max-height: 280px;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1100;
+            border: 1px solid #ccc;
+    
+            &:focus-visible {
+                display: none;
+            }
+        }
+        
+        .search-item {
+            padding: 10px;
+            cursor: pointer;
+            &:hover {
+                background-color: #f1f1f1;
+            }
+        }
+    }
+
+    .input-add-prac{
+        width: 100%;
+        padding: 5px 10px;
+        
+        &:focus{
+            outline: none;
+        }
+    }
+
+    .row{
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .row-button{
+        gap: 10px;
+        display: flex;
+    }
+
+    p{
+        margin: 0;
+    }
+
+    .empty-list-message{
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-style: italic;
+        font-size: 16px;
+        color: gray;
+        margin: 0;
+    }
+
+    .col-4{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .add-button{
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        background-color: #438EF3;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 15px;
+        cursor: pointer;
+
+        &:hover{
+            background-color: #1060ca;
+        }
+    }
+
+    .save-button {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        background-color: #3AA472;
+        font-size: 14px;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background-color: #297853;
+        }
+    }
+
+    .save-button.disabled {
+        background-color: #ccc; /* Màu xám khi disabled */
+        cursor: not-allowed; /* Đổi con trỏ thành không thể click */
+    }
+
+    .delete-button {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        background-color: #f44343;
+        font-size: 14px;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    
+        &:hover {
+            background-color: #c71212;
+        }
+    }
+
+    .restore-button{
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 14px;
+        background-color: #438EF3;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 15px;
+        width: 100%;
+        cursor: pointer;
+
+        &:hover{
+            background-color: #1060ca;
+        }
+    }
+
+    .restore-button.disabled {
+        background-color: #ccc; /* Màu xám khi disabled */
+        cursor: not-allowed; /* Đổi con trỏ thành không thể click */
+    }
+}

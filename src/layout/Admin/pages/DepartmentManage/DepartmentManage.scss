@@ -1,0 +1,256 @@
+@import "../../../../style/variables.scss";
+
+.department-content {
+    display: flex;
+    justify-content: center; // Căn giữa theo chiều ngang
+    align-items: center; // Căn giữa theo chiều dọc
+    height: 100%;
+
+    background: $background-color;
+
+    .container {
+        padding: 0 3%;
+        margin: 0;
+        background: $background-color;
+
+        .first {
+            .text {
+                font-size: 1.2rem;
+                color: $secondary-color-admin;
+            }
+
+            .btn-add-department {
+                background: $background-color;
+                border: 1px solid #0A8FDC;
+                border-radius: 8px;
+                color: #0A8FDC;
+                font-weight: 500;
+                cursor: pointer;
+
+                &:hover {
+                    border: #04a9f3 1px solid;
+                    color: #04a9f3;
+
+                    .icon {
+                        color: #04a9f3 !important;
+                    }
+                }
+            }
+
+            .btn-refresh-department {
+                background: $background-color;
+                border: 1px solid #04a9f3;
+                border-radius: 8px;
+                color: #04a9f3;
+                font-weight: 500;
+                cursor: pointer;
+
+                &:hover {
+                    border: #007579 1px solid;
+                    color: #007579;
+
+                    .icon {
+                        color: #007579 !important;
+                    }
+                }
+            }
+        }
+
+        .animated-div {
+            opacity: 0;
+            transform: translateY(-20px);
+            /* Đẩy div lên 20px */
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            /* Thêm transition cho opacity và transform */
+            height: 0;
+            /* Đặt chiều cao ban đầu là 0 */
+            overflow: hidden;
+            /* Ẩn nội dung bên trong khi chiều cao là 0 */
+        }
+
+        .animated-div.show {
+            opacity: 1;
+            transform: translateY(0);
+            /* Đưa div về vị trí ban đầu */
+            height: auto;
+            /* Đặt chiều cao là tự động để hiển thị nội dung */
+        }
+
+        .insert-department {
+            border-radius: 10px;
+            box-shadow: $box-shadow-content-admin;
+            background: white;
+            margin-bottom: 1rem;
+
+            .content {
+                .icon {
+                    cursor: pointer;
+                }
+
+                textarea {
+                    z-index: 0;
+
+                    &:focus {
+                        box-shadow: none !important;
+                    }
+
+                    &:hover {
+                        box-shadow: none !important;
+                    }
+                }
+
+                .image-upload {
+                    background: white;
+                    padding: 10px;
+                    border-radius: 10px;
+                    border: 2px dashed #0A8FDC;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    height: 230px;
+
+                    .img-department {
+                        width: 90%;
+                        height: 90%;
+                        background-repeat: no-repeat;
+                        background-size: contain;
+                        background-position: center;
+                        border-radius: 10px;
+                    }
+
+                    .container {
+                        background: $background-color;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 10px;
+                        height: 100%;
+
+                        span {
+                            font-size: 1rem;
+                            font-weight: 600;
+                            color: #0A8FDC;
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                .editor-container {
+
+                    .section-container,
+                    .input {
+                        position: relative;
+                        z-index: 0;
+                    }
+                }
+            }
+
+        }
+
+        .department {
+            border-radius: 10px;
+            width: 100%;
+            box-shadow: $box-shadow-content-admin;
+
+            .header {
+                width: 100%;
+                height: 50px;
+                background: $background-table-head-admin;
+                color: $text-head-color-admin;
+
+                .rounded-top-left {
+                    border-top-left-radius: 5px;
+                }
+
+                .rounded-top-right {
+                    border-top-right-radius: 5px;
+                }
+
+                .name {
+                    max-width: 200px;
+                }
+            }
+
+            .table-body {
+                tr {
+                    background: white;
+                    border-bottom: 1px solid #c8c8c8 !important;
+
+                    td {
+                        border-bottom: none !important;
+                        vertical-align: middle !important;
+
+                        .name {
+                            max-width: 200px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+
+                        }
+
+                        .text {
+                            font-weight: 500;
+                            text-transform: uppercase;
+                            color: $secondary-color-admin;
+                            letter-spacing: 0.02em;
+                        }
+
+                        .depar {
+                            .text-up {
+                                font-weight: 400;
+                            }
+
+                            .text-down {
+                                margin-top: 3px;
+                                font-size: 0.9em;
+                                font-style: italic;
+                            }
+                        }
+                    }
+
+                    &:hover {
+                        td {
+                            background: $hover-color-admin;
+                        }
+
+                        background:$hover-color-admin;
+                    }
+                }
+            }
+
+            .footer-table {
+                background: white;
+                display: flex;
+                justify-content: end;
+                align-items: center;
+
+                .select-page {
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;
+
+                    .text {
+                        width: 4rem;
+                        font-size: 0.9rem;
+                    }
+
+                    span {
+                        font-size: 0.9rem;
+                    }
+                }
+
+                .paginationContainer {
+                    font-size: 1em;
+                    margin: 0 1rem;
+                    display: flex;
+                    justify-content: end;
+                    align-items: center;
+                    width: max-content;
+                }
+            }
+
+        }
+    }
+}

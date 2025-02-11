@@ -1,0 +1,23 @@
+@import "../../style/variables.scss";
+
+.admin-content {
+    width: 99%;
+    position: relative;
+
+
+    .content-data {
+        min-height: 80vh;
+        background: $background-color;
+
+        @media (max-width: 700px) {
+            margin-left: 0 !important;
+        }
+    }
+
+
+
+
+    .ant-space-item {
+        cursor: pointer;
+    }
+}

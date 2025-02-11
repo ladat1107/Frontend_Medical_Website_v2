@@ -1,0 +1,103 @@
+@import "../../../../style/variables.scss";
+
+.schedule-manage-content {
+    display: flex;
+    justify-content: center; // Căn giữa theo chiều ngang
+    align-items: center; // Căn giữa theo chiều dọc
+    background: $background-color;
+
+    .container {
+        padding: 0 3%;
+        margin: 0;
+        background: $background-color;
+
+        .schedule-content-header {
+            .text {
+                font-size: 1.2rem;
+                color: $secondary-color-admin;
+            }
+
+            .btn-add-schedule {
+                background: $background-color;
+                border: 1px solid $primary-color-admin;
+                border-radius: 8px;
+                color: $primary-color-admin;
+                font-weight: 500;
+                cursor: pointer;
+
+                &:hover {
+                    border: $secondary-color-admin 1px solid;
+                    color: $secondary-color-admin;
+
+                    .icon {
+                        color: $secondary-color-admin !important;
+                    }
+                }
+            }
+        }
+
+        .schedule1-content {
+            background: white;
+            border-radius: 10px;
+            box-shadow: $box-shadow-content-admin;
+        }
+
+        .animated-div {
+            opacity: 0;
+            transform: translateY(-20px);
+            /* Đẩy div lên 20px */
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            /* Thêm transition cho opacity và transform */
+            height: 0;
+            /* Đặt chiều cao ban đầu là 0 */
+            overflow: hidden;
+            /* Ẩn nội dung bên trong khi chiều cao là 0 */
+        }
+
+        .animated-div.show {
+            opacity: 1;
+            transform: translateY(0);
+            /* Đưa div về vị trí ban đầu */
+            height: auto;
+            /* Đặt chiều cao là tự động để hiển thị nội dung */
+        }
+
+        .insert-schedule-content {
+            border-radius: 10px;
+            width: 70%;
+            box-shadow: $box-shadow-content-admin;
+            background: white;
+            margin-bottom: 1rem;
+
+            .content {
+                .ant-form-item {
+                    margin-bottom: 10px;
+                }
+
+                .ant-form-item-label {
+                    padding: 0;
+                }
+
+                .first {
+                    border-bottom: 1px solid #cfcfcf;
+
+                    .text {
+
+                        font-size: 1.2em;
+                        font-weight: 600;
+                    }
+                }
+
+                .icon {
+                    cursor: pointer;
+                }
+
+
+            }
+
+
+
+
+        }
+    }
+}

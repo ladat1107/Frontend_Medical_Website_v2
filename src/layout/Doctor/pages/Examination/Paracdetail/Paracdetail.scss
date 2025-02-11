@@ -1,0 +1,48 @@
+.paracdetail-container {
+    
+    .gap{
+        gap: 10px;
+    }
+
+    .padding5{
+        padding: 5px;
+    }
+
+    .input {
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1.5px solid rgb(211, 211, 211);  
+        width: 100%;
+        outline: none;
+        background: white;
+        box-shadow: none;
+    }
+
+    .image-upload{
+        border: 2px dashed #83BDF4;
+        border-radius: 10px;
+        padding: 5px;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+
+        .container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Be Vietnam Pro', sans-serif;
+
+            .image-cloud{
+                font-size: 20px;
+                color: #83BDF4;
+            }
+        }
+
+        .input-upload{
+            color: #438EF3;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    }
+}

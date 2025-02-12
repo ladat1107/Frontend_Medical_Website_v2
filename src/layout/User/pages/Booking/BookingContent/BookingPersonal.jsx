@@ -11,7 +11,7 @@ import userService from "@/services/userService"
 
 const BookingPersonal = (props) => {
     let [form] = Form.useForm();
-    let profileData = props?.profile ? props.profile : useQuery(() => userService.getUserById({ id: "null" }))?.DT;
+    let profileData = props?.profile || useQuery(() => userService.getUserById({ id: "null" }))?.data?.DT;
     let messageError = 'Vui lòng nhập thông tin!';
     let listSpecialExamination = Object.values(SPECIAL_EXAMINATION).map((item) => { return { value: item.value, label: item.label + (item?.description ? " (" + item.description + ")" : "") } });
     let currentResidentData = profileData?.currentResident?.split("%") || [];

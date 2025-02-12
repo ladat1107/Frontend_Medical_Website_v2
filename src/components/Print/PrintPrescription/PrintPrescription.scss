@@ -1,0 +1,143 @@
+.print-prescription {
+    background: gray;
+
+    .prescription {
+        width: 148mm;
+        min-height: 210mm;
+        margin: 0 auto;
+        padding: 10mm;
+        background: white;
+        font-size: 9pt;
+        line-height: 1.2;
+        font-family: "Times New Roman", Times, serif;
+
+        &__id {
+            border: 1px solid #000;
+            padding: 1px 6px;
+            display: inline-block;
+            margin-bottom: 6px;
+            font-size: 9pt;
+        }
+
+        &__header {
+            text-align: center;
+            margin-bottom: 12px;
+
+            h1 {
+                font-size: 12pt;
+                font-weight: bold;
+                margin: 0 0 3px;
+            }
+
+            p {
+                margin: 0;
+                font-size: 9pt;
+            }
+        }
+
+        &__title {
+            text-align: center;
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        &__info {
+            margin-bottom: 12px;
+        }
+
+        &__row {
+            margin: 3px 0;
+            display: flex;
+            gap: 4px;
+
+            &--multi {
+                display: flex;
+                gap: 15px;
+
+                >div {
+                    display: flex;
+                    gap: 4px;
+                }
+            }
+        }
+
+        &__label {
+            font-weight: bold;
+            font-size: 9pt;
+        }
+
+        &__medications {
+            margin: 12px 0;
+
+            ol {
+                margin: 8px 0;
+                padding-left: 16px;
+
+                li {
+                    margin-bottom: 8px;
+                }
+            }
+        }
+
+        &__med-name {
+            font-weight: 600;
+            font-size: 9pt;
+        }
+
+        &__med-dosage {
+            margin-left: 16px;
+            font-size: 9pt;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &__med-quantity {
+            text-align: right;
+            font-size: 9pt;
+        }
+
+        &__notes {
+            font-style: italic;
+            margin: 12px 0;
+        }
+
+        &__footer {
+            margin-top: 16px;
+            text-align: right;
+            font-size: 9pt;
+        }
+
+        &__date {
+            margin-bottom: 8px;
+        }
+
+        &__signature {
+            p {
+                margin: 3px 0;
+            }
+        }
+
+        &__signature-note {
+            font-style: italic;
+            font-size: 9pt;
+        }
+
+        &__doctor {
+            margin-top: 50px;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+
+        &__footnote {
+            margin-top: 16px;
+            font-style: italic;
+            font-size: 8pt;
+
+            p {
+                margin: 2px 0;
+            }
+        }
+    }
+
+}

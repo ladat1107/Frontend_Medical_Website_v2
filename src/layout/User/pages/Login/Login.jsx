@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Col, Form, Input, message, Row, Tooltip } from 'antd';
 import "./Login.scss";
+import { BASE_URL } from "@/constant/environment";
 import { handleConfirmUser, handleLogin } from '@/services/adminService';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, addRememberLogin, removeRememberAccount } from '@/redux/authenSlice';
@@ -12,6 +13,7 @@ import { faArrowLeft, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 const Login = () => {
     const open = {
         login: "login",
@@ -41,6 +43,12 @@ const Login = () => {
             };
             fetchConfirmAsync();
         }
+        let loginGoogle = queryParams.get('google');
+        if (loginGoogle !== null) {
+            let dataLogin = JSON.parse(loginGoogle);
+            dispatch(login(dataLogin));
+            redirect(dataLogin.user.role);
+        }
         setLoading(false);
     }, []);
 
@@ -63,33 +71,33 @@ const Login = () => {
                 }
                 dispatch(addRememberLogin(remember));
             }
-
-            if (respone.DT.user.role) {
-                if (respone.DT.user.role === ROLE.ADMIN) {
-                    navigate(PATHS.ADMIN.DASHBOARD);
-                } else if (respone.DT.user.role === ROLE.PATIENT) {
-                    navigate(PATHS.HOME.HOMEPAGE);
-                } else if (respone.DT.user.role === ROLE.DOCTOR) {
-                    navigate(PATHS.STAFF.APPOINTMENT);
-                } else if (respone.DT.user.role === ROLE.RECEPTIONIST) {
-                    navigate(PATHS.RECEPTIONIST.DASHBOARD);
-                } else if (respone.DT.user.role === ROLE.PHARMACIST) {
-                    navigate(PATHS.RECEPTIONIST.PRESCRIBE);
-                } else if (respone.DT.user.role === ROLE.ACCOUNTANT) {
-                    navigate(PATHS.RECEPTIONIST.CASHIER);
-                } else {
-                    navigate(PATHS.HOME.HOMEPAGE);
-                }
-            }
+            redirect(respone.DT.user.role);
         } else {
             message.error(respone?.EM || 'Đăng nhập thất bại')
         }
     };
-
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
-
+    const redirect = (roleUser) => {
+        if (roleUser) {
+            if (roleUser === ROLE.ADMIN) {
+                navigate(PATHS.ADMIN.DASHBOARD);
+            } else if (roleUser === ROLE.PATIENT) {
+                navigate(PATHS.HOME.HOMEPAGE);
+            } else if (roleUser === ROLE.DOCTOR) {
+                navigate(PATHS.STAFF.APPOINTMENT);
+            } else if (roleUser === ROLE.RECEPTIONIST) {
+                navigate(PATHS.RECEPTIONIST.DASHBOARD);
+            } else if (roleUser === ROLE.PHARMACIST) {
+                navigate(PATHS.RECEPTIONIST.PRESCRIBE);
+            } else if (roleUser === ROLE.ACCOUNTANT) {
+                navigate(PATHS.RECEPTIONIST.CASHIER);
+            } else {
+                navigate(PATHS.HOME.HOMEPAGE);
+            }
+        }
+    }
     return (
         <div className='login-container'>
             <div className='login-content'>
@@ -179,21 +187,22 @@ const Login = () => {
                                     Đăng nhập
                                 </Button>
                             </Form>
-                            {/* <div className='line'></div> */}
-                            {/* <div className="social-login">
-                            <Button icon={<FacebookOutlined />} className="facebook-button">
+                            <div className='line'></div>
+                            <div className="social-login">
+                                {/* <Button icon={<FacebookOutlined />} className="facebook-button">
                                 Đăng nhập với Facebook
-                            </Button>
-                            <Button icon={<FontAwesomeIcon icon={faGoogle} />} className="google-button">
-                                Đăng nhập với Google
-                            </Button>
-                        </div> */}
+                            </Button> */}
+                                <Button icon={<FontAwesomeIcon icon={faGoogle} />} className="google-button"
+                                    onClick={() => window.location.href = `http://localhost:8843/auth/google`}>
+                                    Đăng nhập với Google
+                                </Button>
+                            </div>
                             <div className='register-text mt-3' onClick={() => setIsShow(open.register)}><span> <FontAwesomeIcon size='lg' className='me-2' icon={faAddressCard} /> Đăng ký tài khoản</span></div>
                         </div>
                     }
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 export default Login;

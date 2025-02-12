@@ -46,5 +46,6 @@ export const PATHS = {
     },
     SYSTEM:{
         GET_NUMBER: "/getNumber",
+        PRECRIPTION_PDF: "/prescription-pdf",
     }
 }

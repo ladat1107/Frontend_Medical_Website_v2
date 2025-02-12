@@ -1,4 +1,5 @@
 export function convertDateTime(isoString) {
+  if (!isoString) return "";
   const date = new Date(isoString);
   const day = date.getDate();
   const month = date.getMonth() + 1;

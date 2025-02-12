@@ -66,7 +66,7 @@ function App() {
         </Route>
         <Route path={PATHS.HOME.LOGIN} element={<Login />} />
         <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
-        <Route path={PATHS.SYSTEM.PRECRIPTION_PDF} element={<PrintPrescription />} />
+        <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />
         <Route element={<PrivateRoute />}>
           <Route element={<AdminLayout />}>
             <Route path={PATHS.ADMIN.DASHBOARD} element={<AdminDashboard />} />

@@ -44,7 +44,7 @@ export const PATHS = {
         INSTRUCTION: "/instruction",
         LOGIN: "/login",
     },
-    SYSTEM:{
+    SYSTEM: {
         GET_NUMBER: "/getNumber",
         PRECRIPTION_PDF: "/prescription-pdf",
     }

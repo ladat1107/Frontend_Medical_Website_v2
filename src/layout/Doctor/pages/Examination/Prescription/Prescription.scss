@@ -1,33 +1,33 @@
 .pres-container {
 
-    .row{
+    .row {
         display: flex;
         align-items: center;
         padding: 0;
     }
 
-    .empty-list-message{
+    .empty-list-message {
         font-family: 'Be Vietnam Pro', sans-serif;
         font-style: italic;
         color: gray;
         margin: 0;
     }
 
-    
 
-    .gap{
+
+    .gap {
         gap: 10px;
     }
 
-    .padding{
+    .padding {
         padding: 10px;
     }
 
-    .title{
+    .title {
         margin: 0;
     }
 
-    .payment{
+    .payment {
         font-family: 'Be Vietnam Pro', sans-serif;
         font-size: 16px;
         font-weight: bold;
@@ -36,39 +36,54 @@
         justify-content: flex-end;
     }
 
-    .button{
+    .button {
         display: flex;
         align-items: center;
         padding: 0;
-        gap: 5px;
-    }    
+        gap: 15px;
 
-    .add-button{
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 5px 10px;
-        box-shadow: 2px 2px 4px #e6eaeb;
-        margin-right: 10px;
-        cursor: pointer;
+        .add-button {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 5px 10px;
+            box-shadow: 2px 2px 4px #e6eaeb;
+            cursor: pointer;
 
-        &:hover {
-            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+            &:hover {
+                box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+            }
+        }
+
+        .print-button {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            color: rgb(106, 104, 104);
+            padding: 5px 15px;
+            box-shadow: 2px 2px 4px #e6eaeb;
+            cursor: pointer;
+
+            &:hover {
+                box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+            }
+        }
+
+        .save-button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 5px 15px;
+            box-shadow: 2px 2px 4px #e6eaeb;
+            min-width: 80px;
+            cursor: pointer;
+
+            &:hover {
+                box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+            }
         }
     }
 
-    .save-button {
-        background: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 5px 15px;
-        box-shadow: 2px 2px 4px #e6eaeb;
-        min-width: 80px;
-        cursor: pointer;
 
-        &:hover {
-            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
-        }
-    }
 }

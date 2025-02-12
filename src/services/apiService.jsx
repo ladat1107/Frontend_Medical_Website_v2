@@ -36,4 +36,7 @@ export const apiService = {
     getWardByDistrictId(id) {
         return axiosInstance.get(`https://esgoo.net/api-tinhthanh/3/${id}.htm`)
     },
+    getFullAddress(id) {
+        return axiosInstance.get(`https://esgoo.net/api-tinhthanh/5/${id}.htm`)
+    }
 }

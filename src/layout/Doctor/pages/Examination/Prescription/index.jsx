@@ -5,6 +5,10 @@ import { useMutation } from '@/hooks/useMutation';
 import { getAllMedicinesForExam, getPrescriptionByExaminationId, upsertPrescription } from '@/services/doctorService';
 import PropTypes from 'prop-types';
 import { message, notification, Spin } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPrint } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import { PATHS } from '@/constant/path';
 
 const Prescription = ({ examinationId, paraclinicalPrice, refresh }) => {
     const [presDetails, setPresDetails] = useState([]);
@@ -14,8 +18,8 @@ const Prescription = ({ examinationId, paraclinicalPrice, refresh }) => {
     const [nextId, setNextId] = useState(1);
     const [totalMoney, setTotalMoney] = useState(0);
     const [insuranceCoverage, setInsuranceCoverage] = useState(0);
-
     const [api, contextHolder] = notification.useNotification();
+    let navigation = useNavigate();
 
     const openNotification = (message, type = 'info') => {
         api[type]({
@@ -153,9 +157,12 @@ const Prescription = ({ examinationId, paraclinicalPrice, refresh }) => {
             {contextHolder}
             <div className="pres-container">
                 <div className="row padding">
-                    <div className='col-8 col-lg-3 button'>
+                    <div className='col-8 col-lg-5 button'>
                         <button className='add-button' onClick={handleAddPresdetail}>Thêm thuốc</button>
                         <button className='save-button' onClick={handleSaveButton}>Lưu</button>
+                        <button className='print-button' onClick={() => navigation(PATHS.SYSTEM.PRECRIPTION_PDF + "/" + examinationId)}>
+                            <FontAwesomeIcon icon={faPrint} className='me-2' />
+                            Xuất </button>
                     </div>
                 </div>
                 {prescriptionLoading ? (

@@ -13,6 +13,7 @@ const Appointment = () => {
     let { user } = useSelector((state) => state.authen);
 
     const [currentDate, setCurrentDate] = useState(dayjs());
+    const [toDate, setToDate] = useState(dayjs());
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(50);
     const [total, setTotal] = useState(0);
@@ -50,7 +51,7 @@ const Appointment = () => {
         loading: loadingExaminations,
         error: errorExaminations,
         execute: fetchExaminations,
-    } = useMutation(() => getExaminations(currentDate, status, user.staff, isAppointment, currentPage, pageSize, search, time))
+    } = useMutation(() => getExaminations(currentDate, toDate, status, user.staff, isAppointment, currentPage, pageSize, search, time))
 
     useEffect(() => {
         fetchExaminations();
@@ -65,7 +66,6 @@ const Appointment = () => {
 
     // #endregion
 
-
     return (
         <>
             <div className="appointment-content">
@@ -79,12 +79,20 @@ const Appointment = () => {
                         </Select>
                     </div>
                     {status == 7 && (
-                        <div className="col-2">
-                            <p className="search-title">Ngày</p>
-                            <DatePicker className="date-picker" 
-                                value={currentDate} allowClear={false}  
-                                onChange={(date) => setCurrentDate(date)}/>
-                        </div>
+                        <>
+                            <div className="col-2">
+                                <p className="search-title">Từ ngày</p>
+                                <DatePicker className="date-picker" 
+                                    value={currentDate} allowClear={false}  
+                                    onChange={(date) => setCurrentDate(date)}/>
+                            </div>
+                            <div className="col-2" >
+                                <p className="search-title">Đến ngày</p>
+                                <DatePicker className="date-picker" 
+                                    value={toDate} allowClear={false}  
+                                    onChange={(toDate) => setToDate(toDate)}/>
+                            </div>
+                        </>
                     )}
                     <div className="col-6">
                         <p className="search-title">Tìm kiếm đơn khám</p>

@@ -8,8 +8,8 @@ export const getUserById = (id) => {
     return axios.get(`/api/getUserById?id=${id}`)
 }
 // Examination
-export const getExaminations = async (date, status, staffId, is_appointment, page, limit, search, time) => {
-    return axios.get(`/api/getExaminations?date=${date}&status=${status}&staffId=${staffId || ''}&is_appointment=${is_appointment}&page=${+page}&limit=${+limit}&search=${search}&time=${time || ''}`);
+export const getExaminations = async (date, toDate, status, staffId, is_appointment, page, limit, search, time) => {
+    return axios.get(`/api/getExaminations?date=${date}&toDate=${toDate}&status=${status}&staffId=${staffId || ''}&is_appointment=${is_appointment}&page=${+page}&limit=${+limit}&search=${search}&time=${time || ''}`);
 }
 
 export const getListToPay = async (date, statusPay, page, limit, search) => {

@@ -124,6 +124,6 @@ PatientItem.propTypes = {
   visit_status: PropTypes.number,
   downItem: PropTypes.func,
   onClickItem: PropTypes.func,
-  sort: PropTypes.bool,
+  sort: PropTypes.bool
 };
 export default PatientItem;

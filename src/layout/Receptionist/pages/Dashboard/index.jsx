@@ -11,12 +11,13 @@ import DropdownSpecialty from "../../components/Dropdown/DropdownSpecialty";
 import userService from "@/services/userService";
 import { set } from "lodash";
 import Loading from "@/components/Loading/Loading";
+import dayjs from "dayjs";
 
 const ReceptionistDashboard = () => {
     let [type, setType] = useState(TYPE_NUMBER.NORMAL);
     let [currentNumber, setCurrentNumber] = useState({});
     let [loading, setLoading] = useState(false);
-    const today = new Date().toISOString();
+    const today = dayjs();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -111,7 +112,7 @@ const ReceptionistDashboard = () => {
         loading: loadingExaminations,
         error: errorExaminations,
         execute: fetchExaminations,
-    } = useMutation(() => getExaminations(today, status, '', isAppointment, currentPage, pageSize, search, time))
+    } = useMutation(() => getExaminations(today, today, status, '', isAppointment, currentPage, pageSize, search, time))
 
     useEffect(() => {
         fetchExaminations();
@@ -396,7 +397,7 @@ const ReceptionistDashboard = () => {
                                     symptom={item.symptom}
                                     special={item.special}
                                     room={item.roomName}
-                                    doctor={`${item.examinationStaffData.staffUserData.lastName} ${item.examinationStaffData.staffUserData.firstName}`}
+                                    doctor={'Đang ở đâu'}
                                     downItem={downItem}
                                     visit_status={item.visit_status}
                                     onClickItem={() => handleClickItem(item.id)}

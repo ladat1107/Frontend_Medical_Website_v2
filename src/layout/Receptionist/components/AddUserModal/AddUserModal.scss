@@ -36,6 +36,32 @@
             color: #007BFF;
         }
 
+        .relative {
+            position: relative;
+        }
+          
+        .absolute {
+            position: absolute;
+        }
+
+        .pointer-events-none {
+            pointer-events: none;
+        }
+
+        .loading{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60vh;
+        }
+        
+        .inset-0 {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
         .input-add-user{
             width: 100%;
             padding: 7px 10px;
@@ -44,6 +70,21 @@
             outline: none;
             height: 2.7em;
             font-family: "Be Vietnam Pro", sans-serif !important;
+        }
+
+        .select-add-user{
+            width: 100%;
+            padding: 7px 0px;
+            border: 1px solid #ccc !important;
+            border-radius: 10px;
+            outline: none;
+            margin-right: 20px;
+            height: 2.7em;
+
+            .ant-select-selector{
+                border: none !important;
+                box-shadow: none !important;
+            }
         }
 
         .ant-form-item-label{

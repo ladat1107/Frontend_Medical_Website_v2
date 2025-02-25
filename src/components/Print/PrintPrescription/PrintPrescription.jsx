@@ -5,21 +5,25 @@ import { message } from "antd";
 import { convertDateTime, convertDateTimeToString, formatDate } from "@/utils/formatDate";
 import { apiService } from "@/services/apiService";
 import { useLocation, useParams } from "react-router-dom";
+import Loading from "@/components/Loading/Loading";
 
 const PrintPrescription = () => {
   let { id } = useParams();
   let location = useLocation();
   let [prescription, setPrescription] = useState(null);
-
   useEffect(() => {
     if (id) {
       fetchPrescription(id);
     }
   }, [location]);
+  useEffect(() => {
+    if (prescription?.id) {
+      window.print();
+    }
+  }, [prescription])
   const fetchPrescription = async (id) => {
     const response = await getExaminationById(id);
     if (response && response.EC === 0) {
-      console.log(response);
       let dataAddress = response.DT.userExaminationData?.currentResident?.split("%") || [];
       let address = dataAddress.length > 0 ? dataAddress[0] : "";
       if (dataAddress.length > 1) {
@@ -34,9 +38,10 @@ const PrintPrescription = () => {
       message.error("Lỗi khi lấy dữ liệu đơn thuốc");
     }
   };
+
   return (
     <div className="print-prescription">
-      {prescription &&
+      {prescription ?
         <div className="prescription">
 
           <div className="prescription__header">
@@ -122,7 +127,9 @@ const PrintPrescription = () => {
             <p>- Khám lại xin mang theo đơn này.</p>
             <p>- Số điện thoại liên hệ:</p>
           </div>
-        </div>}
+        </div>
+        :
+        <Loading />}
     </div>
   )
 }

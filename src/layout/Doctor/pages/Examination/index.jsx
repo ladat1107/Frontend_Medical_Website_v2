@@ -106,9 +106,6 @@ const Examination = () => {
                 staffName: dataExamination.DT.examinationStaffData?.staffUserData?.lastName + " " +
                     dataExamination.DT.examinationStaffData?.staffUserData?.firstName || ""
             };
-
-            console.log(formattedData);
-
             const totalParaclinicalPrice = (dataExamination.DT.examinationResultParaclincalData || []).reduce(
                 (sum, item) => sum + (item.price || 0),
                 0

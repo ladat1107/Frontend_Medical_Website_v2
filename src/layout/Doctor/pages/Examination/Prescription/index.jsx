@@ -12,6 +12,7 @@ import { PATHS } from '@/constant/path';
 
 const Prescription = ({ examinationId, paraclinicalPrice, refresh }) => {
     const [presDetails, setPresDetails] = useState([]);
+    console.log("check thuốc: ", presDetails)
     const [medicineOptions, setMedicineOptions] = useState([]);
     const [note, setNote] = useState('');
     const [prescriptionPrice, setPrescriptionPrice] = useState(0);
@@ -59,8 +60,7 @@ const Prescription = ({ examinationId, paraclinicalPrice, refresh }) => {
         execute: fetchPrescription,
     } = useMutation(() => getPrescriptionByExaminationId(examinationId));
 
-
-
+    console.log("check dataPrescription: ", dataPrescription)
     useEffect(() => {
         if (dataPrescription && dataPrescription.DT) {
             const details = dataPrescription.DT.prescriptionDetails.map((detail, index) => ({
@@ -144,7 +144,7 @@ const Prescription = ({ examinationId, paraclinicalPrice, refresh }) => {
             }
         } catch (error) {
             console.error("Lỗi khi tạo đơn thuốc:", error.response || error.message);
-            openNotification('Lưu đơn thuốc thất bại.', 'error');
+            message.error('Lưu đơn thuốc thất bại!');
         }
     };
 
@@ -160,9 +160,12 @@ const Prescription = ({ examinationId, paraclinicalPrice, refresh }) => {
                     <div className='col-8 col-lg-5 button'>
                         <button className='add-button' onClick={handleAddPresdetail}>Thêm thuốc</button>
                         <button className='save-button' onClick={handleSaveButton}>Lưu</button>
-                        <button className='print-button' onClick={() => navigation(PATHS.SYSTEM.PRECRIPTION_PDF + "/" + examinationId)}>
-                            <FontAwesomeIcon icon={faPrint} className='me-2' />
-                            Xuất </button>
+                        {dataPrescription?.DT?.prescriptionDetails?.length > 0 && presDetails?.length > 0 &&
+                            <button className='print-button'
+                                onClick={() => window.open(PATHS.SYSTEM.PRECRIPTION_PDF + "/" + examinationId, "_blank")}>
+                                <FontAwesomeIcon icon={faPrint} className='me-2' />
+                                Xuất
+                            </button>}
                     </div>
                 </div>
                 {prescriptionLoading ? (

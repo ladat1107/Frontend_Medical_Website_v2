@@ -3,7 +3,7 @@ import { Select } from 'antd';
 import PropTypes from 'prop-types';
 import './SelectBox.scss';
 
-const SelectBox2 = ({ placeholder, options, value, onChange }) => (
+const SelectBox2 = ({ placeholder, options, value, onChange, disabled }) => (
   <Select
     showSearch
     style={{
@@ -17,6 +17,7 @@ const SelectBox2 = ({ placeholder, options, value, onChange }) => (
     options={options}
     value={value}
     onChange={onChange} 
+    disabled={disabled}
   />
 );
 
@@ -30,6 +31,7 @@ SelectBox2.propTypes = {
   })).isRequired, 
   value: PropTypes.any,
   onChange: PropTypes.func,  
+  disabled: PropTypes.bool,
 };
 
 export default SelectBox2;

@@ -24,10 +24,13 @@ export const createExamination = async (data) => {
     return axios.post(`/api/createExamination`, data);
 };
 
+export const getPatienSteps = async (examinationId) => {
+    return axios.get(`/api/getPatienSteps?examId=${examinationId}`);
+}
+
 export const updateExamination = async (data) => {
     return axios.put(`/api/updateExamination`, data);
 };
-
 
 export const checkOutParaclinical = (data) => {
     return axios.post(`/api/paymentParaclinicalMomo`, data);

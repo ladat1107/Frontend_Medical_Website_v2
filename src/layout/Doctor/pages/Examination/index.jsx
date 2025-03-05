@@ -16,7 +16,7 @@ const Examination = () => {
     const { examId } = useParams();
     const [isLoading, setIsLoading] = useState(true);
 
-    const [selectedRadio, setSelectedRadio] = useState('info');
+    const [selectedRadio, setSelectedRadio] = useState('vitalsign');
     const [patientData, setPatientData] = useState({});
     const [examinationData, setExaminationData] = useState({});
     const [vitalSignData, setVitalSignData] = useState({});
@@ -25,6 +25,7 @@ const Examination = () => {
     const [totalParaclinical, setTotalParaclinical] = useState(0);
     const [comorbiditiesOptions, setComorbiditiesOptions] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(true);
 
 
     useEffect(() => {
@@ -117,6 +118,8 @@ const Examination = () => {
             setVitalSignData(dataExamination.DT.examinationVitalSignData || {});
             setParaclinicalData(dataExamination.DT.examinationResultParaclincalData || []);
             setPrescriptionData(dataExamination.DT.prescriptionExamData || []);
+
+            if(dataExamination.DT.status === 7) setIsEditMode(false);
 
             setIsLoading(false);
         }
@@ -217,20 +220,20 @@ const Examination = () => {
                                     <div className="col-6 col-lg-2 d-flex justify-content-center">
                                         <label className="radio">
                                             <input type="radio" name="radio"
-                                                value="info"
-                                                defaultChecked={selectedRadio === 'info'}
+                                                value="vitalsign"
+                                                defaultChecked={selectedRadio === 'vitalsign'}
                                                 onChange={handleRadioChange} />
-                                            <span className="name">
-                                                Thông tin khám
-                                            </span>
+                                            <span className="name">Sinh hiệu</span>
                                         </label>
                                     </div>
                                     <div className="col-6 col-lg-2 d-flex justify-content-center">
                                         <label className="radio">
                                             <input type="radio" name="radio"
-                                                value="vitalsign"
+                                                value="info"
                                                 onChange={handleRadioChange} />
-                                            <span className="name">Sinh hiệu</span>
+                                            <span className="name">
+                                                Thông tin khám
+                                            </span>
                                         </label>
                                     </div>
                                     <div className="col-6 col-lg-2 d-flex justify-content-center">
@@ -252,18 +255,20 @@ const Examination = () => {
                                 </div>
                                 <hr className="m-0" />
                                 <div className="radio-content">
-                                    {selectedRadio === 'info' && patientData && patientData.id && (
+                                    {selectedRadio === 'info' && (
                                         <ExamInfo
                                             refresh={refresh}
                                             examData={examinationData}
                                             comorbiditiesOptions={comorbiditiesOptions}
+                                            isEditMode={isEditMode}
                                         />
                                     )}
-                                    {selectedRadio === 'vitalsign' && (
+                                    {selectedRadio === 'vitalsign' && patientData && patientData.id && (
                                         <VitalSign
                                             refresh={refresh}
                                             vitalSignData={vitalSignData}
                                             examId={examinationData.id}
+                                            isEditMode={isEditMode}
                                         />
                                     )}
                                     {selectedRadio === 'paraclinical' && (
@@ -271,6 +276,7 @@ const Examination = () => {
                                             refresh={refresh}
                                             listParaclinicals={paraclinicalData}
                                             examinationId={examinationData.id}
+                                            isEditMode={isEditMode}
                                         />
                                     )}
                                     {selectedRadio === 'prescription' && (
@@ -278,6 +284,8 @@ const Examination = () => {
                                             refresh={refresh}
                                             examinationId={examinationData.id}
                                             paraclinicalPrice={totalParaclinical}
+                                            prescriptionData={prescriptionData}
+                                            isEditMode={isEditMode}
                                         />
                                     )}
                                 </div>

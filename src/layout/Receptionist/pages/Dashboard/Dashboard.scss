@@ -140,6 +140,31 @@
         }
     }
 
+    .relative-steps{
+        position: relative;
+    }
+
+    .absolute-steps {
+        position: absolute;
+    }
+
+    .pointer-events-none {
+        pointer-events: none;
+    }
+
+    .loading-steps{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .inset-steps-0 {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+
     .dashboard-content{
         .loading{
             display: flex;

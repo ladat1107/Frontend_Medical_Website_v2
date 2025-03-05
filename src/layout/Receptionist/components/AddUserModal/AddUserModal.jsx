@@ -82,146 +82,146 @@ const AddUserModal = ({ isOpen, onClose, handleAddUserSuscess }) => {
                             <Spin size="large" />
                         </div>
                     )}
-                <div className={`${loading ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <Form
-                        layout={'horizontal'}
-                        form={form}
-                        labelCol={{
-                            span: 24,
-                        }}
-                        wrapperCol={{
-                            span: 24,
-                        }}
-                        initialValues={{
+                    <div className={`${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <Form
+                            layout={'horizontal'}
+                            form={form}
+                            labelCol={{
+                                span: 24,
+                            }}
+                            wrapperCol={{
+                                span: 24,
+                            }}
+                            initialValues={{
 
-                        }}
-                        style={{
-                            maxWidth: "100%",
-                        }}
-                        validateTrigger="onBlur"
-                    >
-                        <Row gutter={[16, 8]}>
-                            <Col sm={24} lg={12}>
-                                <Form.Item
-                                    name={"lastName"}
-                                    label="Họ và tên lót"
-                                    rules={[{
-                                        required: true,
-                                        message: 'Họ và tên lót không được để trống!',
-                                    }]}>
-                                    <Input placeholder="Nhập họ và tên lót" className='input-add-user' />
-                                </Form.Item>
-                            </Col>
-                            <Col sm={24} lg={12}>
-                                <Form.Item
-                                    name={"firstName"}
-                                    label="Tên"
-                                    rules={[{
-                                        required: true,
-                                        message: 'Tên không được để trống!',
-                                    }]}>
-                                    <Input placeholder="Nhập tên" className='input-add-user' />
-                                </Form.Item>
-                            </Col>
-                            <Col sm={24} lg={24}>
-                                <Form.Item
-                                    name={"address"}
-                                    label="Địa chỉ"
-                                    rules={[{
-                                        required: true,
-                                        message: 'Tên không được để trống!',
-                                    }]}>
-                                    <Input placeholder="Nhập địa chỉ" className='input-add-user' />
-                                </Form.Item>
-                            </Col>
-                            <Col sm={24} lg={12}>
-                                <Form.Item
-                                    name={"cid"}
-                                    label="Căn cước công dân"
-                                    rules={[{
-                                        required: true,
-                                        message: 'CCCD không được để trống!',
-                                    }, {
-                                        pattern: /^[0-9]*$/g,
-                                        message: 'Vui lòng nhập số!',
-                                    }, {
-                                        validator: (_, value) => {
-                                            if (value && value.length !== 12) {
-                                                return Promise.reject(new Error('Căn cước công dân phải đủ 12 ký tự!'));
-                                            }
-                                            return Promise.resolve();
-                                        },
-                                    },]}>
-                                    <Input placeholder="Nhập căn cước công dân" maxLength={12} className='input-add-user' />
-                                </Form.Item>
-                            </Col>
-                            <Col sm={24} lg={12}>
-                                <Form.Item
-                                    name={"phone"}
-                                    label="Số điện thoại"
-                                    rules={[{
-                                        pattern: /^[0-9]*$/g,
-                                        message: 'Vui lòng nhập số!',
-                                    }, {
-                                        validator: (_, value) => {
-                                            if (value && value.length !== 10) {
-                                                return Promise.reject(new Error('Số điện thoại phải đủ 10 ký tự!'));
-                                            }
-                                            return Promise.resolve();
-                                        },
-                                    },]}
-                                >
-                                    <Input placeholder="Nhập số điện thoại" maxLength={10} className='input-add-user' />
-                                </Form.Item>
-                            </Col>
-                            <Col sm={24} lg={6}>
-                                <Form.Item
-                                    name={"dob"}
-                                    label="Ngày sinh">
-                                    <DatePicker
-                                        inputReadOnly
-                                        showToday={false}
-                                        placeholder="Chọn ngày sinh"
-                                        className='input-add-user' />
-                                </Form.Item>
-                            </Col>
-                            <Col sm={24} lg={6}>
-                                <Form.Item
-                                    name={"gender"}
-                                    label="Giới tính">
-                                    <Select
-                                        placeholder="Chọn giới tính"
-                                        className='select-add-user'
-                                        options={[
-                                            { value: null, label: "Chọn giới tính", disabled: true },
-                                            { value: '1', label: 'Nam' },
-                                            { value: '2', label: 'Nữ' },
-                                            { value: '3', label: 'Bê đê' }
-                                        ]}
-                                    />
-                                </Form.Item>
-                            </Col>
-                            <Col sm={24} lg={12}>
-                                <Form.Item
-                                    name={"insuranceCode"}
-                                    label="Bảo hiểm y tế"
-                                    rules={[{
-                                        pattern: /^[0-9]*$/g,
-                                        message: 'Vui lòng nhập số!',
-                                    }]}
-                                >
-                                    <Input placeholder="Nhập số BHYT" maxLength={10} className='input-add-user' />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Form>
-                
-                    <div className='add-user-footer mt-4'>
-                        <button className="close-user-btn" onClick={onClose}>Đóng</button>
-                        <button className='add-user-btn' onClick={addUser}>Thêm</button>
+                            }}
+                            style={{
+                                maxWidth: "100%",
+                            }}
+                            validateTrigger="onBlur"
+                        >
+                            <Row gutter={[16, 8]}>
+                                <Col sm={24} lg={12}>
+                                    <Form.Item
+                                        name={"lastName"}
+                                        label="Họ và tên lót"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Họ và tên lót không được để trống!',
+                                        }]}>
+                                        <Input placeholder="Nhập họ và tên lót" className='input-add-user' />
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={24} lg={12}>
+                                    <Form.Item
+                                        name={"firstName"}
+                                        label="Tên"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Tên không được để trống!',
+                                        }]}>
+                                        <Input placeholder="Nhập tên" className='input-add-user' />
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={24} lg={24}>
+                                    <Form.Item
+                                        name={"address"}
+                                        label="Địa chỉ"
+                                        rules={[{
+                                            required: true,
+                                            message: 'Tên không được để trống!',
+                                        }]}>
+                                        <Input placeholder="Nhập địa chỉ" className='input-add-user' />
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={24} lg={12}>
+                                    <Form.Item
+                                        name={"cid"}
+                                        label="Căn cước công dân"
+                                        rules={[{
+                                            required: true,
+                                            message: 'CCCD không được để trống!',
+                                        }, {
+                                            pattern: /^[0-9]*$/g,
+                                            message: 'Vui lòng nhập số!',
+                                        }, {
+                                            validator: (_, value) => {
+                                                if (value && value.length !== 12) {
+                                                    return Promise.reject(new Error('Căn cước công dân phải đủ 12 ký tự!'));
+                                                }
+                                                return Promise.resolve();
+                                            },
+                                        },]}>
+                                        <Input placeholder="Nhập căn cước công dân" maxLength={12} className='input-add-user' />
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={24} lg={12}>
+                                    <Form.Item
+                                        name={"phone"}
+                                        label="Số điện thoại"
+                                        rules={[{
+                                            pattern: /^[0-9]*$/g,
+                                            message: 'Vui lòng nhập số!',
+                                        }, {
+                                            validator: (_, value) => {
+                                                if (value && value.length !== 10) {
+                                                    return Promise.reject(new Error('Số điện thoại phải đủ 10 ký tự!'));
+                                                }
+                                                return Promise.resolve();
+                                            },
+                                        },]}
+                                    >
+                                        <Input placeholder="Nhập số điện thoại" maxLength={10} className='input-add-user' />
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={24} lg={6}>
+                                    <Form.Item
+                                        name={"dob"}
+                                        label="Ngày sinh">
+                                        <DatePicker
+                                            inputReadOnly
+                                            showToday={false}
+                                            placeholder="Chọn ngày sinh"
+                                            className='input-add-user' />
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={24} lg={6}>
+                                    <Form.Item
+                                        name={"gender"}
+                                        label="Giới tính">
+                                        <Select
+                                            placeholder="Chọn giới tính"
+                                            className='select-add-user'
+                                            options={[
+                                                { value: null, label: "Chọn giới tính", disabled: true },
+                                                { value: '1', label: 'Nam' },
+                                                { value: '2', label: 'Nữ' },
+                                                { value: '3', label: 'Bê đê' }
+                                            ]}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={24} lg={12}>
+                                    <Form.Item
+                                        name={"insuranceCode"}
+                                        label="Bảo hiểm y tế"
+                                        rules={[{
+                                            pattern: /^[0-9]*$/g,
+                                            message: 'Vui lòng nhập số!',
+                                        }]}
+                                    >
+                                        <Input placeholder="Nhập số BHYT" maxLength={10} className='input-add-user' />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Form>
+                    
+                        <div className='add-user-footer mt-4'>
+                            <button className="close-user-btn" onClick={onClose}>Đóng</button>
+                            <button className='add-user-btn' onClick={addUser}>Thêm</button>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     )

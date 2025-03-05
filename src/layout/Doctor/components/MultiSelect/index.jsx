@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Select, Space } from 'antd';
 import './MultiSelect.scss';
 
-const MultiSelect = ({ options, placeholder, onChange, value }) => {
+const MultiSelect = ({ options, placeholder, onChange, value, disabled }) => {
   const handleChange = (selectedValues) => {
     console.log(`selected ${selectedValues}`);
     onChange(selectedValues); 
@@ -27,6 +27,7 @@ const MultiSelect = ({ options, placeholder, onChange, value }) => {
         value={value} 
         onChange={handleChange}
         options={options}
+        disabled={disabled}
       />
     </Space>
   );
@@ -37,6 +38,7 @@ MultiSelect.propTypes = {
   placeholder: PropTypes.string,
   onChange: PropTypes.func,
   value: PropTypes.array,
+  disabled: PropTypes.bool,
 };
 
 export default MultiSelect;

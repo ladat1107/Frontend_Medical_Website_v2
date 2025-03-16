@@ -1,4 +1,4 @@
-import { getListToPay } from "@/services/doctorService";
+import { getListToPay, sendNotification } from "@/services/doctorService";
 import React, { useEffect, useState } from 'react'
 import { useMutation } from "@/hooks/useMutation";
 import { message, Pagination, Select, Spin } from "antd";
@@ -77,6 +77,15 @@ const Cashier = () => {
         setStatus(value);
     }
 
+    const handleNotification = async () => {
+        try {
+            await sendNotification();
+        } catch (error) {
+            // Handle notification send error
+            console.error('Failed to send notification:', error);
+        }
+    }
+
     // #endregion
 
     return (
@@ -84,6 +93,7 @@ const Cashier = () => {
             <div className="appointment-content">
                 <div className="search-container row">
                     <div className="col-2">
+                        <button onClick={handleNotification}>Gửi thông báo</button>
                         <p className="search-title">Trạng thái</p>
                         <Select className="select-box" defaultValue="4" onChange={handelSelectChange}>
                             <Select.Option value="4">Chưa thanh toán</Select.Option>

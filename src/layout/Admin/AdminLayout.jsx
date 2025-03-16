@@ -59,7 +59,7 @@ const AdminLayout = () => {
                     {/* <AdminFooter /> */}
                 </Layout>
             </Layout>
-        </div >
+        </div>
     );
 };
 export default AdminLayout;

@@ -13,6 +13,7 @@ import { faArrowLeft, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
+import socket from "@/Socket/socket";
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 const Login = () => {
     const open = {
@@ -207,7 +208,7 @@ const Login = () => {
                     }
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
 export default Login;

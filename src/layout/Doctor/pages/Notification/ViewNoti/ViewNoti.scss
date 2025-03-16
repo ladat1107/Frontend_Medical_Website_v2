@@ -1,0 +1,43 @@
+@import "../../../../../style/variables.scss";
+
+.view-noti-container{
+    border-top: 1px solid #dddddd;
+    padding: 1.5% 0;
+
+    .date{
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        color: gray;
+        margin-bottom: 10px;
+    }
+
+    .noti-item{
+        border: 1px solid #dddddd;
+        border-radius: 10px;
+        padding: 10px 20px;
+        margin-top: 10px;
+        cursor: pointer;
+
+        .noti-item-title{
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+        } 
+
+        .noti-item-time{
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #6f6f6f;
+        }
+        
+        .noti-item-user{
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: $text-head-color-admin;
+        }
+    }
+}

@@ -1,4 +1,5 @@
 import axios from "@/utils/axiosInstance";
+import process from 'node:process';
 
 export const getUserByCid = (cid) => {
     return axios.get(`/api/getUserByCid?cid=${cid}`)
@@ -156,3 +157,27 @@ export const getSpecialties = async () => {
 export const getUserInsuarance = async (userId) => {
     return axios.get(`/api/getUserInsuarance?userId=${userId}`);
 }
+
+export const sendNotification = async (message = 'Thông báo mới từ hệ thống', type = 'success') => {
+    try {
+      const response = await axios.post('/api/send-notification', {
+        message,
+        type
+      }, {
+        baseURL: 'http://localhost:8843', 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('Phản hồi thông báo:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Chi tiết lỗi gửi thông báo:', {
+        response: error.response ? error.response.data : 'Không có phản hồi',
+        message: error.message,
+        config: error.config
+      });
+      throw error;
+    }
+};

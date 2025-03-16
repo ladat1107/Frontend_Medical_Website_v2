@@ -41,7 +41,23 @@ import DepartmentList from "./layout/User/pages/DepartmentList";
 import Instruction from "./layout/User/pages/Instruction/Instruction";
 import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
+import { useEffect } from "react";
+import socket from "./Socket/socket";
+import Notification2 from "./layout/Notification/Notification";
+import Notification from "./layout/Doctor/pages/Notification/notification";
 function App() {
+
+  useEffect(() => {
+    socket.on("receiveNotification", (data) => {
+      console.log("🔔 Nhận thông báo:", data);
+      alert(`Thông báo mới: ${data.message}`);
+    });
+
+    return () => {
+      socket.off("receiveNotification");
+    };
+  }, []);
+
   return (
     <ConfigProvider
       theme={{
@@ -100,9 +116,11 @@ function App() {
             <Route path={PATHS.RECEPTIONIST.CASHIER} element={<Cashier />} />
             <Route path={PATHS.STAFF.PARACLINICAL} element={<ParaclinicalList />} />
             <Route path={PATHS.RECEPTIONIST.PRESCRIBE} element={<Prescribe />} />
+            <Route path={PATHS.STAFF.NOTIFICATION} element={<Notification />} />
           </Route>
         </Route>
       </Routes>
+      <Notification2 />
     </ConfigProvider>
   );
 }

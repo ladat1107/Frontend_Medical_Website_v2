@@ -91,6 +91,11 @@ const MenuSidebar = () => {
                 icon: <i className="fa-regular fa-calendar"></i>,
             },
             {
+                key: 'sub7',
+                label: (<NavLink to={PATHS.STAFF.NOTIFICATION}>Thông báo</NavLink>),
+                icon: <i className="fa-solid fa-bell"></i>,
+            },
+            {
                 type: 'divider',
             },
             {

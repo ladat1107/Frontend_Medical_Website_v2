@@ -22,6 +22,7 @@ export const PATHS = {
         HANDBOOK: "/doctorHandbook",
         SCHEDULE: "/doctorSchedule",
         PROFILE: "/doctorProfile",
+        NOTIFICATION: "/notification", 
     },
     RECEPTIONIST: {
         DASHBOARD: "/receptionist",

@@ -1,0 +1,115 @@
+.chat-container {
+    height: 100vh;
+    display: flex;
+    background: #f5f5f5;
+
+    .chat-sidebar {
+        background: white;
+        border-right: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+
+        .chat-header {
+            background: #00B5F1;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .chat-search {
+            width: 90%;
+            margin: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .chat-list-item {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s;
+
+            &:hover {
+                background: #e6f7ff;
+            }
+
+            .chat-more-icon {
+                font-size: 18px;
+                color: #888;
+                cursor: pointer;
+
+                &:hover {
+                    color: #333;
+                }
+            }
+        }
+    }
+
+    .chat-content {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        background: white;
+
+        .chat-message {
+            max-width: 60%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            word-wrap: break-word;
+
+            &.user {
+                background: #d9f7be;
+                align-self: flex-end;
+            }
+
+            &.reception {
+                background: #e6f7ff;
+                align-self: flex-start;
+            }
+
+            .chat-image {
+                max-width: 100%;
+                border-radius: 5px;
+                margin-top: 5px;
+            }
+        }
+    }
+
+    .chat-input-container {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background: white;
+
+        input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .send-icon {
+            font-size: 20px;
+            color: #00B5F1;
+            cursor: pointer;
+            margin-left: 10px;
+
+            &:hover {
+                color: #0085b8;
+            }
+        }
+
+        .upload-button {
+            margin-left: 10px;
+        }
+    }
+}

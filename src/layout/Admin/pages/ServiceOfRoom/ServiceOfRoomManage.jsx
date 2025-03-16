@@ -17,7 +17,7 @@ const { TextArea } = Input;
 const ServiceOfRoom = () => {
     let [form] = Form.useForm();
     let [currentPage, setCurrentPage] = useState(1);
-    let [rowsPerPage, setRowPaper] = useState({ value: 10, id: 1 });
+    let [rowsPerPage, setRowPaper] = useState(10);
     let [totalPages, setTotalPage] = useState(0);
     let [listServiceType, setListServiceType] = useState([]);
     let [checkAll, setCheckAll] = useState(false);
@@ -26,11 +26,9 @@ const ServiceOfRoom = () => {
     let searchDebounce = "";
     let {
         data: dataServiceType,
-        loading: listServiceTypeLoading,
-        error: listServiceTypeError,
         execute: fetchServiceTypes,
     } = useMutation((query) =>
-        getServiceOfRoom(currentPage, rowsPerPage.id, searchDebounce)
+        getServiceOfRoom(currentPage, rowsPerPage, searchDebounce)
     )
     useEffect(() => {
         if (dataServiceType && dataServiceType.DT && dataServiceType.DT.rows && dataServiceType.DT) {
@@ -39,7 +37,7 @@ const ServiceOfRoom = () => {
                 _listServiceType[i].checked = false;
             }
             setListServiceType(_listServiceType);
-            setTotalPage(dataServiceType.DT.count / rowsPerPage.value);
+            setTotalPage(dataServiceType.DT.count / rowsPerPage);
         }
     }, [dataServiceType])
 

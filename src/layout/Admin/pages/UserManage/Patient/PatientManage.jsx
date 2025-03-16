@@ -8,7 +8,6 @@ import Checkbox from '@mui/material/Checkbox';
 import PaginateCustom from "@/layout/Admin/components/Paginate/PaginateCustom";
 import DropdownAction from "@/layout/Admin/components/Dropdown/DropdownAction";
 import CreateUserModal from "@/layout/Admin/components/Modal/CreateUserModal";
-import Loading from "@/components/Loading/Loading";
 import "./PatientManage.scss";
 import { useMutation } from "@/hooks/useMutation";
 import useDebounce from "@/hooks/useDebounce";
@@ -20,7 +19,7 @@ import HistoryModal from "@/layout/Doctor/components/HistoryModal/HistoryModal";
 
 const PatientManage = () => {
     let [currentPage, setCurrentPage] = useState(1);
-    let [rowsPerPage, setRowPaper] = useState({ value: 10, id: 1 });
+    let [rowsPerPage, setRowPaper] = useState(10);
     let [listUser, setListUser] = useState([]);
     let [totalPages, setTotalPage] = useState(0);
     let [checkAll, setCheckAll] = useState(false);
@@ -33,13 +32,7 @@ const PatientManage = () => {
 
     let arr = [2]
     let searchDebounce = "";
-    let {
-        data: dataUser,
-        loading: listUserLoading,
-        error: listUserError,
-        execute: fetchUsers,
-    } = useMutation((query) =>
-        getUser(currentPage, rowsPerPage.id, searchDebounce, arr))
+    let { data: dataUser, execute: fetchUsers, } = useMutation(() => getUser(currentPage, rowsPerPage, searchDebounce, arr))
 
     useEffect(() => {
         if (dataUser && dataUser.DT && dataUser.DT.rows && dataUser.DT.count) {
@@ -48,7 +41,7 @@ const PatientManage = () => {
                 _listUser[i].checked = false;
             }
             setListUser(_listUser);
-            setTotalPage(dataUser.DT.count / rowsPerPage.value);
+            setTotalPage(dataUser.DT.count / rowsPerPage);
         }
     }, [dataUser])
     useEffect(() => {

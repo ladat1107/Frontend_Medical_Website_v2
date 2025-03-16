@@ -12,7 +12,7 @@ const statusArray = Object.values(STATUS_HOSPITAL);
 statusArray.unshift({ value: "", label: "Tất cả" });
 const HandbookAdmin = () => {
     let [currentPage, setCurrentPage] = useState(1);
-    let [rowsPerPage, setRowPaper] = useState({ value: 10, id: 1 });
+    let [rowsPerPage, setRowPaper] = useState(10);
     let [totalPages, setTotalPage] = useState(0);
     let [listHandbook, setListHandbook] = useState([]);
     let [search, setSearch] = useState("");
@@ -30,7 +30,7 @@ const HandbookAdmin = () => {
         data: dataHandbook,
         loading: listHandbookLoading,
         execute: fetchHandbooks,
-    } = useMutation((query) => getHandbookAdmin(currentPage, rowsPerPage.id, searchDebounce, status.value, filter.join(',')))
+    } = useMutation((query) => getHandbookAdmin(currentPage, rowsPerPage, searchDebounce, status.value, filter.join(',')))
     useEffect(() => {
         if (dataHandbook && dataHandbook.DT && dataHandbook.DT.rows && dataHandbook.DT) {
             let handbook = dataHandbook.DT.rows;

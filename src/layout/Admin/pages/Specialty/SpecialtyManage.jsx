@@ -19,7 +19,7 @@ const Specialty = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploading, setUploading] = useState(false);
     let [currentPage, setCurrentPage] = useState(1);
-    let [rowsPerPage, setRowPaper] = useState({ value: 10, id: 1 });
+    let [rowsPerPage, setRowPaper] = useState(10);
     let [totalPages, setTotalPage] = useState(0);
     let [listSpecialty, setListSpecialty] = useState([]);
     let [checkAll, setCheckAll] = useState(false);
@@ -33,7 +33,7 @@ const Specialty = () => {
         error: listSpecialtyError,
         execute: fetchSpecialtys,
     } = useMutation((query) =>
-        getAllSpecialtyAdmin(currentPage, rowsPerPage.id, searchDebounce)
+        getAllSpecialtyAdmin(currentPage, rowsPerPage, searchDebounce)
     )
     useEffect(() => {
         if (dataSpecialty && dataSpecialty.DT && dataSpecialty.DT.rows && dataSpecialty.DT) {
@@ -42,7 +42,7 @@ const Specialty = () => {
                 _listSpecialty[i].checked = false;
             }
             setListSpecialty(_listSpecialty);
-            setTotalPage(dataSpecialty.DT.count / rowsPerPage.value);
+            setTotalPage(dataSpecialty.DT.count / rowsPerPage);
         }
     }, [dataSpecialty])
 

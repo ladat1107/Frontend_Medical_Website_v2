@@ -19,7 +19,7 @@ import DropdownAction from "../../components/Dropdown/DropdownAction";
 const Room = () => {
     let [showInsert, setShowInsert] = useState(false);
     let [currentPage, setCurrentPage] = useState(1);
-    let [rowsPerPage, setRowPaper] = useState({ value: 10, id: 1 });
+    let [rowsPerPage, setRowPaper] = useState(10);
     let [totalPages, setTotalPage] = useState(0);
     let [listRoom, setListRoom] = useState([]);
     let [checkAll, setCheckAll] = useState(false);
@@ -40,10 +40,8 @@ const Room = () => {
     }, [departmentData])
     let {
         data: dataRoom,
-        loading: listRoomLoading,
-        error: listRoomError,
         execute: fetchRooms,
-    } = useMutation((query) => getAllRoom(currentPage, rowsPerPage.id, searchDebounce, searchDepartment))
+    } = useMutation((query) => getAllRoom(currentPage, rowsPerPage, searchDebounce, searchDepartment))
     useEffect(() => {
         if (dataRoom && dataRoom.DT && dataRoom.DT.rows && dataRoom.DT) {
             let _listRoom = [...dataRoom.DT.rows];
@@ -63,7 +61,7 @@ const Room = () => {
                 _listRoom[i].bedBusy = bedBusy;
             }
             setListRoom(_listRoom);
-            setTotalPage(dataRoom.DT.count / rowsPerPage.value);
+            setTotalPage(dataRoom.DT.count / rowsPerPage);
         }
     }, [dataRoom])
     useEffect(() => {

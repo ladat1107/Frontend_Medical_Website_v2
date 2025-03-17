@@ -18,7 +18,7 @@ import Status from '@/layout/Admin/components/Status';
 
 const StaffManage = () => {
     let [currentPage, setCurrentPage] = useState(1);
-    let [rowsPerPage, setRowPaper] = useState({ value: 10, id: 1 });
+    let [rowsPerPage, setRowPaper] = useState(10);
     let [listUser, setListUser] = useState([]);
     let [totalPages, setTotalPage] = useState(0);
     let [checkAll, setCheckAll] = useState(false);
@@ -29,11 +29,9 @@ const StaffManage = () => {
     let searchDebounce = "";
     let {
         data: dataUser,
-        loading: listUserLoading,
-        error: listUserError,
         execute: fetchUsers,
     } = useMutation((query) =>
-        getUser(currentPage, rowsPerPage.id, searchDebounce, positionArr)
+        getUser(currentPage, rowsPerPage, searchDebounce, positionArr)
     )
     let refresh = () => {
         setCheckAll(false);
@@ -50,7 +48,7 @@ const StaffManage = () => {
                 _listUser[i].checked = false;
             }
             setListUser(_listUser);
-            setTotalPage(dataUser.DT.count / rowsPerPage.value);
+            setTotalPage(dataUser.DT.count / rowsPerPage);
         }
     }, [dataUser])
 

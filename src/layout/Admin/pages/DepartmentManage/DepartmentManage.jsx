@@ -17,21 +17,18 @@ import DropdownAction from "../../components/Dropdown/DropdownAction";
 const DepartmentManage = () => {
     let [showInsert, setShowInsert] = useState(false);
     let [currentPage, setCurrentPage] = useState(1);
-    let [rowsPerPage, setRowPaper] = useState({ value: 10, id: 1 });
+    let [rowsPerPage, setRowPaper] = useState(10);
     let [totalPages, setTotalPage] = useState(0);
     let [listDepartment, setListDepartment] = useState([]);
     let [checkAll, setCheckAll] = useState(false);
     let [search, setSearch] = useState("");
     let [obUpdate, setObUpdate] = useState({});
     let searchDebounce = "";
-    let [obDelete, setObDelete] = useState({});
     let {
         data: dataDepartment,
-        loading: listDepartmentLoading,
-        error: listDepartmentError,
         execute: fetchDepartments,
     } = useMutation((query) =>
-        getDepartment(currentPage, rowsPerPage.id, searchDebounce)
+        getDepartment(currentPage, rowsPerPage, searchDebounce)
     )
     useEffect(() => {
         if (dataDepartment && dataDepartment.DT && dataDepartment.DT.rows && dataDepartment.DT) {
@@ -42,7 +39,7 @@ const DepartmentManage = () => {
                 _listDepartment[i].staffQuantity = _listDepartment[i]?.staffDepartmentData?.length || 0;
             }
             setListDepartment(_listDepartment);
-            setTotalPage(dataDepartment.DT.count / rowsPerPage.value);
+            setTotalPage(dataDepartment.DT.count / rowsPerPage);
         }
     }, [dataDepartment])
 

@@ -40,6 +40,7 @@ import DepartmentDetail from "./layout/User/pages/DepartmentDetail/DepartmentDet
 import DepartmentList from "./layout/User/pages/DepartmentList";
 import Instruction from "./layout/User/pages/Instruction/Instruction";
 import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
+import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
 function App() {
   return (
     <ConfigProvider
@@ -65,7 +66,7 @@ function App() {
         </Route>
         <Route path={PATHS.HOME.LOGIN} element={<Login />} />
         <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
-
+        <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />
         <Route element={<PrivateRoute />}>
           <Route element={<AdminLayout />}>
             <Route path={PATHS.ADMIN.DASHBOARD} element={<AdminDashboard />} />

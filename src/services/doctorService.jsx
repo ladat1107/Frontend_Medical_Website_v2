@@ -117,14 +117,7 @@ export const updateListPayParaclinicals = async (data) => {
 }
 
 export const upsertPrescription = async (data) => {
-    try {
-        const response = await axios.post(`/api/upsertPrescription`, data);
-        //console.log("Response:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("Error upserting prescription:", error.response || error.message);
-        throw error;
-    }
+    return axios.post(`/api/upsertPrescription`, data);
 }
 
 //Hand book

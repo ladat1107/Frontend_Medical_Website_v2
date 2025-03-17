@@ -5,8 +5,11 @@ import { useEffect, useState } from "react";
 import { message } from "antd";
 import Loading from "@/components/Loading/Loading";
 import { TYPE_NUMBER } from "@/constant/value";
+import useSocket from "@/hooks/useSocket";
+import { SOCKET } from "@/constant/socket";
 
 const GetNumber = () => {
+    let socket = useSocket();
     let [currentNumber, setCurrentNumber] = useState({});
     let [loading, setLoading] = useState(false);
     let {
@@ -16,13 +19,24 @@ const GetNumber = () => {
     useEffect(() => {
         fetchTicketData();
     }, []);
+
     useEffect(() => {
         if (ticketData?.EC === 0) {
             setLoading(false);
             setCurrentNumber(ticketData.DT[0])
         }
     }, [ticketData]);
+    useEffect(() => {
+        if (!socket) return;
+        // Lắng nghe cập nhật số thứ tự từ server
+        socket.on(SOCKET.EMIT_UPDATE_TICKET_NEW_DAY, () => {
+            fetchTicketData();
+        });
 
+        return () => {
+            socket.off(SOCKET.EMIT_UPDATE_TICKET_NEW_DAY); // Cleanup
+        };
+    }, [socket]);
     const handleGeneralNumber = async (type) => {
         setLoading(true);
         let response = await userService.generateNumber({ type });

@@ -89,6 +89,7 @@
 
                 textarea {
                     z-index: 0;
+                    min-height: 230px;
 
                     &:focus {
                         box-shadow: none !important;

@@ -238,6 +238,7 @@ export const CLOUDINARY_FOLDER = {
     HANDBOOK: "Handbook",
     PARACLINICAL: "Paraclinical",
     SPECIALTY: "Specialty",
+    TEST: "Test"
 }
 export const EMIT = {
     EVENT_PROFILE: {

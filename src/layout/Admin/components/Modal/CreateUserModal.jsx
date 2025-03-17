@@ -6,18 +6,14 @@ import "./Modal.scss";
 import { ALL_ROLE, STAFF_ROLE } from '@/constant/role';
 import { Form, Input, Select, message, Button, Modal, Col, Row, InputNumber } from 'antd';
 import useQuery from '@/hooks/useQuery';
+import TextEditor from '@/components/TextEditor/TextEditor';
 
-import MarkdownIt from 'markdown-it';
-import MdEditor from 'react-markdown-editor-lite';
-import 'react-markdown-editor-lite/lib/index.css';
-let mdParser = new MarkdownIt(/* Markdown-it options */);
 const { TextArea } = Input;
 const CreateUser = (props) => {
     let optionPosition = POSITION;
     let [optionRole, setOptionRole] = useState(ALL_ROLE);
     let listStaffRole = STAFF_ROLE.map((item) => item.value); // Lấy ra danh sách id của các role của nhân viên
     let [form] = Form.useForm();
-    let htmlContent = props?.obUpdate?.staffUserData?.staffDescriptionData?.htmlContent || "";
     let [isShowStaff, setIsShowStaff] = useState(false);
     let [departments, setDepartments] = useState([]);
     let { data: departmentData } = useQuery(() => getNameDepartment())
@@ -42,12 +38,11 @@ const CreateUser = (props) => {
                 let response = null;
                 if (userUpdate?.id) {
                     response = await updateUser({
-                        ...values, id: userUpdate.id, htmlContent,
+                        ...values, id: userUpdate.id,
                         staffId: userUpdate?.staffUserData?.id || "",
-                        descriptionId: userUpdate?.staffUserData?.staffDescriptionData?.id || "",
                     });
                 } else {
-                    response = await createUser({ ...values, htmlContent });
+                    response = await createUser(values);
                 }
                 if (response?.EC === 0) {
                     message.success(response?.EM || "Thành công!");
@@ -87,9 +82,8 @@ const CreateUser = (props) => {
                     specialtyId: userUpdate?.staffUserData?.specialtyId || null,
                     position: userUpdate?.staffUserData?.position?.split(",") || [],
                     price: userUpdate?.staffUserData?.price || "",
-                    markDownContent: userUpdate?.staffUserData?.staffDescriptionData?.markDownContent || "",
+                    htmlDescription: userUpdate?.staffUserData?.htmlDescription || "",
                 })
-                htmlContent = userUpdate?.staffUserData?.staffDescriptionData?.htmlContent || "";
                 setIsShowStaff(true);
             } else {
                 setIsShowStaff(false);
@@ -108,11 +102,7 @@ const CreateUser = (props) => {
         }
         //console.log(value);
     }
-    // Finish!
-    let handleEditorChange = ({ html, text }) => {
-        htmlContent = html;
-        form.setFieldsValue({ markDownContent: text }); // Cập nhật giá trị cho Form.Item
-    };
+
     return (
         <>
             <div className='create-modal'>
@@ -361,7 +351,7 @@ const CreateUser = (props) => {
                             </Col>
                             <Col span={24} >
                                 <Form.Item
-                                    name={"markDownContent"}
+                                    name={"htmlDescription"}
                                     label="Mô tả"
                                     rules={[
                                         {
@@ -370,11 +360,11 @@ const CreateUser = (props) => {
                                         },
                                     ]}
                                 >
-                                    <MdEditor style={{
-                                        minHeight: '230px',
-                                    }}
-                                        renderHTML={text => mdParser.render(text)}
-                                        onChange={handleEditorChange} />
+                                    <TextEditor
+                                        value={form.getFieldValue("htmlDescription")}
+                                        onChange={(value) => { form.setFieldsValue({ htmlDescription: value }) }}
+                                        placeholder="Nhập nội dung..."
+                                    />
                                 </Form.Item>
                             </Col>
                         </Row>}

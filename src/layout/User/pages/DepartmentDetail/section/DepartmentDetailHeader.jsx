@@ -1,13 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../DepartmentDetail.scss";
-import { faCalendarMinus, faLocationDot, faMagnifyingGlassLocation, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarMinus, faLocationDot, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { Breadcrumb, Rate } from "antd";
-import { primaryColorHome, seccondaryColorHome } from "@/style/variables";
 import { Link } from "react-router-dom";
 import { PATHS } from "@/constant/path";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
 import SliderComponent from "../../Home/HomeComponent/Slider";
 import GoogleMap from "./MapComponent";
+import ParseHtml from "@/components/ParseHtml";
 const listAdvertisement1 = [
     "https://medpro.vn/_next/image?url=https%3A%2F%2Fcdn-pkh.longvan.net%2Fprod-partner%2F42a394bd-0354-4c1c-b83b-f6cc331d3263-m3.png&w=1920&q=75",
     "https://medpro.vn/_next/image?url=https%3A%2F%2Fcdn-pkh.longvan.net%2Fprod-partner%2F42a394bd-0354-4c1c-b83b-f6cc331d3263-m3.png&w=1920&q=75",
@@ -92,7 +91,8 @@ const DepartmentDetailHeader = (props) => {
                         </div>
                     </div>
                     <div className="article-content mt-4">
-                        <div className="markdown" dangerouslySetInnerHTML={{ __html: departmentDetail?.departmentDescriptionData?.htmlContent || "" }}></div>
+                        {/* <div className="markdown" dangerouslySetInnerHTML={{ __html: departmentDetail?.departmentDescriptionData?.htmlContent || "" }}></div> */}
+                        <ParseHtml htmlString={departmentDetail?.htmlDescription || ""} />
                     </div>
 
                 </div>

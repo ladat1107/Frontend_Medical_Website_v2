@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../BlogDetail.scss";
 import { faCalendarMinus } from "@fortawesome/free-solid-svg-icons";
 import { formatDate } from "@/utils/formatDate";
+import ParseHtml from "@/components/ParseHtml";
 
 const BlogDetailHeader = (props) => {
     let { blogDetail } = props;
@@ -24,7 +25,8 @@ const BlogDetailHeader = (props) => {
                         {blogDetail?.shortDescription}
                     </div>
                     <div className="article-content mt-4">
-                        <div lassName="article-content" dangerouslySetInnerHTML={{ __html: blogDetail?.handbookDescriptionData?.htmlContent || "" }}></div>
+                        {/* <div lassName="article-content" dangerouslySetInnerHTML={{ __html: blogDetail?.handbookDescriptionData?.htmlContent || "" }}></div> */}
+                        <ParseHtml htmlString={blogDetail?.htmlDescription || ""} />
                     </div>
                 </div>
                 <div className="col-3 image-ri">

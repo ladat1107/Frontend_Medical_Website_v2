@@ -26,87 +26,50 @@ const DeleteModal = (props) => {
     let handleDelete = async () => {
         if (props.table === TABLE.USER) {
             let response = await deleteUser(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         }
         else if (props.table === TABLE.DEPARTMENT) {
             let response = await deleteDepartment(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         }
         else if (props.table === TABLE.SERVICE) {
             let response = await deleteServiceOfRoom(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         } else if (props.table === TABLE.ROOM) {
             let response = await deleteRoom(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         } else if (props.table === TABLE.SPECIALTY) {
             let response = await deleteSpecialty(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         }
     }
     let handleLock = async () => {
         if (props.table === TABLE.USER) {
             let response = await blockUser(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         }
         else if (props.table === TABLE.DEPARTMENT) {
             let response = await blockDepartment(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
-
+            notify(response);
         } else if (props.table === TABLE.SERVICE) {
             let response = await blockServiceOfRoom(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         } else if (props.table === TABLE.ROOM) {
             let response = await blockRoom(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         } else if (props.table === TABLE.SPECIALTY) {
             let response = await blockSpecialty(data);
-            if (response && response.data && response.EC === 0) {
-                susscess(response?.EM || "Thành công")
-            } else {
-                message.error(response.EM);
-            }
+            notify(response);
         }
     }
-    let susscess = (text) => {
-        message.success(text);
-        props.isShow(false)
-        props.refresh()
+    const notify = (response) => {
+        if (response?.EC === 0) {
+            message.success(response?.EM || "Thành công");
+            props.isShow(false)
+            props.refresh()
+        } else {
+            message.error(response?.EM || "Thất bại");
+        }
     }
     return (
         <>
@@ -128,7 +91,6 @@ const DeleteModal = (props) => {
                 ]}
             >
                 <p> {messageContent}</p>
-
             </Modal>
         </>
     );

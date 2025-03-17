@@ -6,6 +6,7 @@ import classNames from "classnames/bind";
 import styles from "./doctorDetail.module.scss";
 import { LINK } from '@/constant/value';
 import { formatDate } from '@/utils/formatDate';
+import ParseHtml from '@/components/ParseHtml';
 // Tạo instance của classnames với bind styles
 const cx = classNames.bind(styles);
 
@@ -21,7 +22,8 @@ const DoctorDetailBody = (props) => {
                         <p>{data?.staffUserData?.shortDescription}</p>
                     </div>
                     <div className={cx('introduce-bottom')} >
-                        <div dangerouslySetInnerHTML={{ __html: data?.staffUserData?.staffDescriptionData?.htmlContent || "" }}></div>
+                        {/* <div dangerouslySetInnerHTML={{ __html: data?.staffUserData?.staffDescriptionData?.htmlContent || "" }}></div> */}
+                        <ParseHtml htmlString={data?.staffUserData?.htmlDescription || ""} />
                     </div>
                 </div>
 

@@ -1,6 +1,4 @@
 import './CreateHandbook.scss';
-import MarkdownIt from 'markdown-it';
-import MdEditor from 'react-markdown-editor-lite';
 import { Form, message, Progress } from 'antd';
 import { useEffect, useState } from 'react';
 import { CloudUploadOutlined, } from '@ant-design/icons';
@@ -9,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { CLOUDINARY_FOLDER } from '@/constant/value';
 import { uploadAndDeleteToCloudinary, } from '@/utils/uploadToCloudinary';
 import { useSelector } from 'react-redux';
+import TextEditor from '@/components/TextEditor/TextEditor';
 
 const CreateHandbook = (props) => {
     const navigate = useNavigate();
@@ -16,7 +15,6 @@ const CreateHandbook = (props) => {
     let handbookId = props?.handbookId || null;
     let { user } = useSelector((state) => state.authen);
     let allTags = props?.allTags || [];
-    let mdParser = new MarkdownIt();
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [image, setImage] = useState("");
@@ -34,8 +32,7 @@ const CreateHandbook = (props) => {
                 form.setFieldsValue({
                     title: data?.title || '',
                     shortDescription: data?.shortDescription || '',
-                    markDownContent: data?.handbookDescriptionData?.markDownContent || '',
-                    htmlContent: data?.handbookDescriptionData?.htmlContent || '',
+                    htmlDescription: data?.htmlDescription || '',
                 });
                 setImage(data?.image || '');
                 let fetchedTags = data?.tags?.split(',') || [];
@@ -45,15 +42,12 @@ const CreateHandbook = (props) => {
                     checked: fetchedTags.includes(tag.label),
                 }));
                 props.setAllTags(_tags);
+            }else{
+                message.error(response.EM);
             }
         } catch (error) {
-            message.error('Không thể lấy dữ liệu cẩm nang');
             console.error(error);
         }
-    };
-
-    let handleEditorChange = ({ html, text }) => {
-        form.setFieldsValue({ markDownContent: text, htmlContent: html }); // Cập nhật giá trị cho Form.Item
     };
 
     const handleImageChange = async (e) => {
@@ -193,19 +187,14 @@ const CreateHandbook = (props) => {
                         </div>
                     </div>
                     <div className='row mt-1'>
-                        <Form.Item name="markDownContent">
-                            <MdEditor style={{
-                                minHeight: '500px',
-                                borderRadius: '10px',
-                                padding: '3px',
-                            }}
-                                renderHTML={text => mdParser.render(text)}
-                                onChange={handleEditorChange} />
+                        <Form.Item name="htmlDescription">
+                            <TextEditor
+                                value={form.getFieldValue("htmlDescription")}
+                                onChange={(value) => { form.setFieldsValue({ htmlDescription: value }) }}
+                                placeholder="Nhập nội dung..."
+                            />
                         </Form.Item>
                     </div>
-                    <Form.Item name="htmlContent">
-                        <input type="hidden" />
-                    </Form.Item>
                     <div className='row mt-3'>
                         <div className='button-container'>
                             <button

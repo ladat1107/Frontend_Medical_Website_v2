@@ -1,13 +1,10 @@
 import { Button, Col, Form, Input, message, Row, Select } from "antd";
 import { useState } from "react";
-import MarkdownIt from 'markdown-it';
-import MdEditor from 'react-markdown-editor-lite';
-import 'react-markdown-editor-lite/lib/index.css';
 import { LINK, POSITION } from "@/constant/value";
 import { profileUpdateStaff } from "@/services/adminService";
 import { formatCurrency } from "@/utils/formatCurrency";
 import ParseHtml from "@/components/ParseHtml";
-let mdParser = new MarkdownIt(/* Markdown-it options */);
+import TextEditor from "@/components/TextEditor/TextEditor";
 const { TextArea } = Input;
 
 const StaffInfo = (props) => {
@@ -15,21 +12,12 @@ const StaffInfo = (props) => {
     let [isUpdate, setIsUpdate] = useState(false);
     let info = props.data;
     let price = formatCurrency(info?.staffUserData?.price) || "Miễn phí";
-    const [markdownValue, setMarkdownValue] = useState(info?.staffUserData?.staffDescriptionData?.markDownContent || "");
-    let htmlContent = info?.staffUserData?.staffDescriptionData?.htmlContent || "";
-    // Finish!
-    let handleEditorChange = ({ html, text }) => {
-        //setMarkdownValue(text);
-        htmlContent = html;
-        form.setFieldsValue({ markDownContent: text }); // Cập nhật giá trị cho Form.Item
-    };
+
     let handleSaveInfor = () => {
         form.validateFields().then(async (values) => {
             let respone = await profileUpdateStaff({
                 ...values,
                 id: info?.staffUserData?.id,
-                descriptionId: info?.staffUserData?.staffDescriptionData?.id,
-                htmlContent: htmlContent
             });
             if (respone?.EC === 0) {
                 message.success(respone?.EM || "Cập nhật thông tin thành công!")
@@ -55,7 +43,7 @@ const StaffInfo = (props) => {
                         validateTrigger="onBlur"
                         initialValues={{
                             shortDescription: info?.staffUserData?.shortDescription || "",
-                            markDownContent: info?.staffUserData?.staffDescriptionData?.markDownContent || "",
+                            htmlDescription: info?.staffUserData?.htmlDescription || "",
                             specialtyId: info?.staffUserData?.specialtyId || null,
                             position: info?.staffUserData?.position?.split(',') || [],
                         }}
@@ -112,24 +100,16 @@ const StaffInfo = (props) => {
                             </Col>
                             <Col span={24} >
                                 <Form.Item
-                                    name={"markDownContent"}
+                                    name={"htmlDescription"}
                                     label="Mô tả chi tiết quá trình làm việc"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Vui lòng nhập mô tả!',
-                                        },
+                                    rules={[{ required: true, message: 'Vui lòng nhập mô tả!', },
                                     ]}
                                 >
-                                    <MdEditor style={{
-
-                                        padding: "5px",
-                                        minHeight: '400px',
-                                        borderRadius: "5px"
-                                    }}
-                                        value={markdownValue}
-                                        renderHTML={text => mdParser.render(text)}
-                                        onChange={handleEditorChange} />
+                                    <TextEditor
+                                        value={form.getFieldValue("htmlDescription")}
+                                        onChange={(value) => { form.setFieldsValue({ htmlDescription: value }) }}
+                                        placeholder="Nhập nội dung..."
+                                    />
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -167,8 +147,7 @@ const StaffInfo = (props) => {
                         <div className="content mt-3">{info?.staffUserData?.shortDescription}</div>
                     </div>
                     <div className="p-4 bg-content-profile html mb-0">
-                        <ParseHtml htmlString={info?.staffUserData?.staffDescriptionData?.htmlContent} />
-
+                        <ParseHtml htmlString={info?.staffUserData?.htmlDescription || ""} />
                     </div>
                 </div>
             }

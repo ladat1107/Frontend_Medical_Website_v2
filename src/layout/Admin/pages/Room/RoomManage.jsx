@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SearchOutlined } from "@ant-design/icons";
 import "./Room.scss";
-import { primaryColorAdmin } from "@/style/variables";
+import { primaryColorAdmin } from "@/styles//variables";
 import { faBed, faPlus, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import InsertRoom from "./InsertRoom";
 import { useEffect, useState } from "react";

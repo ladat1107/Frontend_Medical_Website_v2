@@ -1,4 +1,4 @@
-@import "../../style/variables.scss";
+@import "../../styles/variables.scss";
 
 .editor-quill {
 
@@ -39,6 +39,10 @@
                     display: block;
                     color: gray;
                 }
+            }
+
+            .file-link {
+                text-align: left !important;
             }
 
             h2 {

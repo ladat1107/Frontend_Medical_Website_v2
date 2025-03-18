@@ -1,4 +1,4 @@
-@import "/src/style/variables.scss";
+@import "/src/styles/variables.scss";
 
 .profile-user {
     background: $background-color ;
@@ -22,8 +22,5 @@
         }
     }
 
-    .modal-history-content{
-
-    
-    }
+    .modal-history-content {}
 }

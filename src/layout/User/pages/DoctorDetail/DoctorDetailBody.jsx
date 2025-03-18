@@ -22,7 +22,6 @@ const DoctorDetailBody = (props) => {
                         <p>{data?.staffUserData?.shortDescription}</p>
                     </div>
                     <div className={cx('introduce-bottom')} >
-                        {/* <div dangerouslySetInnerHTML={{ __html: data?.staffUserData?.staffDescriptionData?.htmlContent || "" }}></div> */}
                         <ParseHtml htmlString={data?.staffUserData?.htmlDescription || ""} />
                     </div>
                 </div>

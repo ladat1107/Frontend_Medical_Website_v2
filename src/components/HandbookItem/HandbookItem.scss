@@ -1,4 +1,4 @@
-@import "../../style/variables.scss";
+@import "../../styles/variables.scss";
 
 .handbook-item-cart {
     padding: 0;
@@ -127,40 +127,6 @@
     .title {
         color: $primary-color-admin;
         font-size: 2em;
-    }
-
-    .description {}
-
-    .markdown-content {
-        line-height: 2;
-        text-align: justify;
-
-        img {
-            border-radius: 10px;
-            margin: 20px auto;
-        }
-
-        h2,
-        h3,
-        h4 {
-            margin: 20px 0 10px 0;
-        }
-
-        ul {
-            padding-left: 30px;
-        }
-
-        p {
-            em {
-                display: block;
-                width: 100%;
-                text-align: center;
-                margin: auto;
-                font-size: 12px;
-                color: gray;
-            }
-
-        }
     }
 
     .content-gap {

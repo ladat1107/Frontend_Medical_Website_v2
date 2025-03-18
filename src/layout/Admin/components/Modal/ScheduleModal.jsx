@@ -2,7 +2,7 @@
 import { Modal, Form, Select, message, Button } from 'antd';
 
 import { formatDate } from "@/utils/formatDate";
-import { primaryColorAdmin } from '@/style/variables';
+import { primaryColorAdmin } from '@/styles//variables';
 import { ROLE } from '@/constant/role';
 import { useEffect, useState } from 'react';
 import { createSchedule } from '@/services/adminService';

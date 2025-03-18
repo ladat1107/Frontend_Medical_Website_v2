@@ -1,4 +1,4 @@
-@import "../../../../style/variables.scss";
+@import "../../../../styles/variables.scss";
 
 .bg {
     background-color: #e8f2f7;
@@ -411,16 +411,16 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                 color: #1fc006;
+                color: #1fc006;
                 margin-top: 30px;
 
                 .icon {
                     font-size: 60px;
-                  //  color: #3ae937;
+                    //  color: #3ae937;
                 }
 
                 span {
-                  //  color: $main-text-color;
+                    //  color: $main-text-color;
                     font-size: 17px;
                     font-weight: 600;
                     margin: 15px auto;

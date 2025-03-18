@@ -1,4 +1,4 @@
-@import "/src/style/variables.scss";
+@import "/src/styles/variables.scss";
 
 .department-detail-user {
     .custom-breadcrumb {
@@ -176,63 +176,9 @@
                 padding: 20px 5px;
                 border-radius: 15px;
                 margin-bottom: 20px;
-
-                .markdown {
-                    padding: 20px;
-                    font-size: 1rem;
-                    line-height: 2px;
-                    text-align: justify;
-                    line-height: 1.6;
-                    max-height: 700px;
-                    overflow: auto;
-
-                    h2,
-                    h3,
-                    h4 {
-                        color: #003d80;
-                        font-weight: bold;
-                        margin: 15px 0;
-                    }
-
-                    ul {
-                        padding-left: 40px;
-                    }
-
-                    a {
-                        color: $primary-color-admin;
-                        font-weight: 400;
-                    }
-
-                    img {
-                        width: 80%;
-                        height: auto;
-                        border-radius: 8px;
-                        margin: 15px auto;
-                    }
-
-                    p {
-                        width: 100%;
-                        padding-left: 10px;
-
-
-                        em {
-                            color: gray;
-                            font-size: 14px;
-                            font-weight: 400;
-                            padding: 0 auto;
-                        }
-                    }
-
-                    strong {
-                        color: #003d80;
-                        font-weight: bold;
-                    }
-                }
             }
 
 
         }
     }
-
-    .department-detail-user-relative {}
 }

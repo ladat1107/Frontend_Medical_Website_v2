@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import App from "./App.jsx";
-import './style/main.scss';
+import './styles//main.scss';
 import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';

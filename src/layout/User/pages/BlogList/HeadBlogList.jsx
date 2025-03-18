@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./blogList.module.scss";
 import SubBlog from "@/components/Sub-blog";
 import { LINK, TAGS } from "@/constant/value";
-import { primaryColorHome } from "@/style/variables";
+import { primaryColorHome } from "@/styles//variables";
 import { formatDate } from "@/utils/formatDate";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from 'antd';
 import dayjs from "dayjs";
 import { formatDate, formatDate1 } from "@/utils/formatDate";
-import { secondaryColorAdmin } from "@/style/variables";
+import { secondaryColorAdmin } from "@/styles//variables";
 import "./Calendar.scss";
 import { ROLE } from "@/constant/role";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

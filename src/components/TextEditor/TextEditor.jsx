@@ -57,7 +57,11 @@ export default function TextEditor({ value, onChange, placeholder }) {
                     const range = quill.getSelection();
 
                     // Chèn link file vào nội dung editor
-                    quill.insertText(range?.index || 0, `[📄 ${file.name}](${fileUrl})`);
+                    //quill.insertText(range?.index || 0, `[📄 ${file.name}](${fileUrl})`);
+                    quill.clipboard.dangerouslyPasteHTML(
+                        range?.index || 0,
+                        `<p class="file-link">📄 <a href="${fileUrl}" target="_blank">${file.name}</a></p>`
+                    );
                 }
             } catch (error) {
                 console.error("Lỗi khi upload file:", error);

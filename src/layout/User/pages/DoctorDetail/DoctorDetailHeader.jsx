@@ -6,7 +6,7 @@ import styles from "./doctorDetail.module.scss";
 import { LINK } from "@/constant/value";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { PATHS } from "@/constant/path";
-import { primaryColorHome, seccondaryColorHome } from "@/style/variables";
+import { primaryColorHome, seccondaryColorHome } from "@/styles//variables";
 // Tạo instance của classnames với bind styles
 const cx = classNames.bind(styles);
 const DoctorDetailHeader = (props) => {

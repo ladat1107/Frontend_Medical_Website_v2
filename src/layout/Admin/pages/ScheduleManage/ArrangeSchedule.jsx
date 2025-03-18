@@ -3,7 +3,7 @@ import "./ScheduleManage.scss";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, DatePicker, Form, Input, message, Row } from "antd";
 import dayjs from "dayjs";
-import { primaryColorAdmin } from "@/style/variables";
+import { primaryColorAdmin } from "@/styles//variables";
 import { arrangeSchedule } from "@/services/adminService";
 const ArrangeSchedule = (props) => {
     let [form] = Form.useForm();

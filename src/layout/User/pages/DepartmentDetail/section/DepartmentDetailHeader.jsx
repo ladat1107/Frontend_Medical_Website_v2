@@ -91,10 +91,9 @@ const DepartmentDetailHeader = (props) => {
                         </div>
                     </div>
                     <div className="article-content mt-4">
-                        {/* <div className="markdown" dangerouslySetInnerHTML={{ __html: departmentDetail?.departmentDescriptionData?.htmlContent || "" }}></div> */}
+                        {/* <div className="article-content" dangerouslySetInnerHTML={{ __html: departmentDetail?.departmentDescriptionData?.htmlContent || "" }}></div> */}
                         <ParseHtml htmlString={departmentDetail?.htmlDescription || ""} />
                     </div>
-
                 </div>
             </div>
         </>

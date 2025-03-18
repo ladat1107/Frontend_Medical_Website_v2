@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { deleteUser, blockUser, deleteDepartment, blockDepartment, deleteServiceOfRoom, blockServiceOfRoom, deleteRoom, blockRoom, deleteSpecialty, blockSpecialty } from "@/services/adminService";
 import { Button, message, Modal } from "antd";
-import { primaryColorAdmin } from '@/style/variables';
+import { primaryColorAdmin } from '@/styles//variables';
 const DeleteModal = (props) => {
     let [messageContent, setMessageContent] = useState("")
     let data = props.data;

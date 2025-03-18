@@ -9,7 +9,7 @@ import { formatDate1 } from "@/utils/formatDate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import ArrangeSchedule from "./ArrangeSchedule";
-import { primaryColorAdmin } from "@/style/variables";
+import { primaryColorAdmin } from "@/styles//variables";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 

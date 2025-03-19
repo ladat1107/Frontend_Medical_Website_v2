@@ -1,16 +1,14 @@
 import './CreateHandbook.scss';
-import { Form, message, Progress } from 'antd';
+import { Form, message, Progress, Skeleton } from 'antd';
 import { useEffect, useState } from 'react';
 import { CloudUploadOutlined, } from '@ant-design/icons';
 import { getHandbookById, updateHandbook, createHandbook } from '@/services/doctorService';
-import { useNavigate } from 'react-router-dom';
 import { CLOUDINARY_FOLDER } from '@/constant/value';
 import { uploadAndDeleteToCloudinary, } from '@/utils/uploadToCloudinary';
 import { useSelector } from 'react-redux';
 import TextEditor from '@/components/TextEditor/TextEditor';
 
 const CreateHandbook = (props) => {
-    const navigate = useNavigate();
     const [form] = Form.useForm();
     let handbookId = props?.handbookId || null;
     let { user } = useSelector((state) => state.authen);
@@ -18,6 +16,8 @@ const CreateHandbook = (props) => {
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [image, setImage] = useState("");
+    let [isLoadingFetch, setIsLoadingFetch] = useState(false);
+    let [isLoadingAction, setIsLoadingAction] = useState(false);
     useEffect(() => {
         if (handbookId) {
             fetchHandbookData(handbookId);
@@ -26,6 +26,7 @@ const CreateHandbook = (props) => {
 
     const fetchHandbookData = async (id) => {
         try {
+            setIsLoadingFetch(true);
             const response = await getHandbookById(id);
             if (response && response.DT) {
                 let data = response.DT;
@@ -42,12 +43,11 @@ const CreateHandbook = (props) => {
                     checked: fetchedTags.includes(tag.label),
                 }));
                 props.setAllTags(_tags);
-            }else{
+            } else {
                 message.error(response.EM);
             }
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) { console.error(error); }
+        finally { setIsLoadingFetch(false); }
     };
 
     const handleImageChange = async (e) => {
@@ -79,6 +79,7 @@ const CreateHandbook = (props) => {
             .validateFields()
             .then(async (values) => {
                 try {
+                    setIsLoadingAction(true);
                     let activeTags = allTags.filter(tag => tag.checked).map(tag => tag.label);
                     let response;
                     if (props?.handbookId) {
@@ -102,7 +103,7 @@ const CreateHandbook = (props) => {
             .catch((info) => {
                 message.error('Vui lòng điền đầy đủ thông tin');
                 console.log('Validate Failed:', info);
-            });
+            }).finally(() => { setIsLoadingAction(false) });
     }
 
     return (
@@ -121,17 +122,18 @@ const CreateHandbook = (props) => {
                             <p className='text-bold'>Tiêu đề:</p>
                         </div>
                         <div className='col-6'>
-                            <Form.Item name="title">
-                                <div className="search-container">
-                                    <i className="fa-solid fa-heading"></i>
-                                    <input
-                                        type="text"
-                                        defaultValue={form.getFieldValue('title')}
-                                        placeholder="Nhập tiêu đề..."
-                                        maxLength={80}
-                                    />
-                                </div>
-                            </Form.Item>
+                            {isLoadingFetch ? <Skeleton.Input style={{ width: '100%' }} active={true} /> :
+                                <Form.Item name="title">
+                                    <div className="search-container">
+                                        <i className="fa-solid fa-heading"></i>
+                                        <input
+                                            type="text"
+                                            defaultValue={form.getFieldValue('title')}
+                                            placeholder="Nhập tiêu đề..."
+                                            maxLength={80}
+                                        />
+                                    </div>
+                                </Form.Item>}
                         </div>
                     </div>
                     <div className='row mt-3 align-items-start'>
@@ -139,16 +141,17 @@ const CreateHandbook = (props) => {
                             <p className='text-bold'>Mô tả:</p>
                         </div>
                         <div className='col-10'>
-                            <Form.Item name="shortDescription">
-                                <div className="search-container">
-                                    <i className="fa-solid fa-note-sticky"></i>
-                                    <input
-                                        type="text"
-                                        defaultValue={form.getFieldValue('shortDescription')}
-                                        placeholder="Nhập mô tả..."
-                                        maxLength={130} />
-                                </div>
-                            </Form.Item>
+                            {isLoadingFetch ? <Skeleton.Input style={{ width: '100%' }} active={true} /> :
+                                <Form.Item name="shortDescription">
+                                    <div className="search-container">
+                                        <i className="fa-solid fa-note-sticky"></i>
+                                        <input
+                                            type="text"
+                                            defaultValue={form.getFieldValue('shortDescription')}
+                                            placeholder="Nhập mô tả..."
+                                            maxLength={130} />
+                                    </div>
+                                </Form.Item>}
                         </div>
                     </div>
                     <div className='row mt-3 align-items-start'>
@@ -156,29 +159,30 @@ const CreateHandbook = (props) => {
                             <p className='text-bold text-start'>Ảnh bìa:</p>
                         </div>
                         <div className='col-6'>
-                            <Form.Item>
-                                <div className='image-upload'>
-                                    <div className='container'>
-                                        <span className='image-cloud'><CloudUploadOutlined /></span>
-                                        <div onClick={() => document.getElementById('input-upload').click()}>
-                                            <span htmlFor={"input-upload"} className='input-upload'>
-                                                Chọn ảnh
-                                            </span> đăng tải.
+                            {isLoadingFetch ? <Skeleton.Input style={{ width: '100%', height: "250px" }} active={true} /> :
+                                <Form.Item>
+                                    <div className='image-upload'>
+                                        <div className='container'>
+                                            <span className='image-cloud'><CloudUploadOutlined /></span>
+                                            <div onClick={() => document.getElementById('input-upload').click()}>
+                                                <span htmlFor={"input-upload"} className='input-upload'>
+                                                    Chọn ảnh
+                                                </span> đăng tải.
+                                            </div>
+                                            {uploading && (
+                                                <div style={{ marginTop: '20px', width: '100%' }}>
+                                                    <Progress percent={uploadProgress} status="active" />
+                                                </div>
+                                            )}
+                                            {image && (
+                                                <div>
+                                                    <img src={image} alt="Uploaded" style={{ width: "100%" }} />
+                                                </div>
+                                            )}
                                         </div>
-                                        {uploading && (
-                                            <div style={{ marginTop: '20px', width: '100%' }}>
-                                                <Progress percent={uploadProgress} status="active" />
-                                            </div>
-                                        )}
-                                        {image && (
-                                            <div>
-                                                <img src={image} alt="Uploaded" style={{ width: "100%" }} />
-                                            </div>
-                                        )}
                                     </div>
-                                </div>
-                                <input type="file" id='input-upload' hidden={true} onChange={handleImageChange} />
-                            </Form.Item>
+                                    <input type="file" id='input-upload' hidden={true} onChange={handleImageChange} />
+                                </Form.Item>}
                         </div>
                     </div>
                     <div className='row'>
@@ -187,20 +191,21 @@ const CreateHandbook = (props) => {
                         </div>
                     </div>
                     <div className='row mt-1'>
-                        <Form.Item name="htmlDescription">
-                            <TextEditor
-                                value={form.getFieldValue("htmlDescription")}
-                                onChange={(value) => { form.setFieldsValue({ htmlDescription: value }) }}
-                                placeholder="Nhập nội dung..."
-                            />
-                        </Form.Item>
+                        {isLoadingFetch ? <Skeleton style={{ width: '100%', height: "200px" }} active={true} /> :
+                            <Form.Item name="htmlDescription">
+                                <TextEditor
+                                    value={form.getFieldValue("htmlDescription")}
+                                    onChange={(value) => { form.setFieldsValue({ htmlDescription: value }) }}
+                                    placeholder="Nhập nội dung..."
+                                />
+                            </Form.Item>}
                     </div>
                     <div className='row mt-3'>
                         <div className='button-container'>
                             <button
                                 className='button'
                                 onClick={() => { handleSave() }}>
-                                <i className="fa-solid fa-floppy-disk"></i>
+                                {isLoadingAction ? <i class="fa-solid fa-spinner fa-spin-pulse"></i> : <i className="fa-solid fa-floppy-disk"></i>}
                                 Lưu
                             </button>
                         </div>

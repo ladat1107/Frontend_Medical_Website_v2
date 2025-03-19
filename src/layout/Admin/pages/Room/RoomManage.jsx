@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SearchOutlined } from "@ant-design/icons";
 import "./Room.scss";
 import { primaryColorAdmin } from "@/styles//variables";
-import { faBed, faPlus, faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import InsertRoom from "./InsertRoom";
 import { useEffect, useState } from "react";
 import { useMutation } from "@/hooks/useMutation";
@@ -16,6 +16,7 @@ import DropdownDepartment from "./DropdownDepartment";
 import useQuery from "@/hooks/useQuery";
 import Status from "../../components/Status";
 import DropdownAction from "../../components/Dropdown/DropdownAction";
+import SkeletonRoom from "./SkeletonRoom";
 const Room = () => {
     let [showInsert, setShowInsert] = useState(false);
     let [currentPage, setCurrentPage] = useState(1);
@@ -40,6 +41,7 @@ const Room = () => {
     }, [departmentData])
     let {
         data: dataRoom,
+        loading: loadingRoom,
         execute: fetchRooms,
     } = useMutation((query) => getAllRoom(currentPage, rowsPerPage, searchDebounce, searchDepartment))
     useEffect(() => {
@@ -78,7 +80,7 @@ const Room = () => {
         }
     }, [serviceData])
 
-    let handleChange = (item) => {
+    const handleChange = (item) => {
         let _listRoom = [...listRoom];
         _listRoom = _listRoom.map(obj =>
             obj.id === item.id ? { ...obj, checked: !item.checked } : obj
@@ -86,7 +88,7 @@ const Room = () => {
         setCheckAll(false);
         setListRoom(_listRoom);
     };
-    let handleChangeSelectedAll = () => {
+    const handleChangeSelectedAll = () => {
         let _listRoom = [...listRoom];
         setCheckAll(!checkAll);
         _listRoom = _listRoom.map(obj =>
@@ -94,24 +96,26 @@ const Room = () => {
         );
         setListRoom(_listRoom);
     }
-    let handleChangePaginate = (item) => {
+    const handleChangePaginate = (item) => {
         setRowPaper(item);
         setCurrentPage(1);
     }
     searchDebounce = useDebounce(search, 500);
-    let handleChangeSearch = (event) => {
+    const handleChangeSearch = (event) => {
         setSearch(event.target.value);
         setCurrentPage(1)
     }
-    let refresh = () => {
+    const refresh = () => {
         setCheckAll(false)
         handleShow(false)
+        setCurrentPage(1);
+        setSearch("");
         fetchRooms();
     }
-    let handleShow = (value) => {
+    const handleShow = (value) => {
         setObUpdate(null)
     }
-    let handleUpdate = async (item) => {
+    const handleUpdate = async (item) => {
         setShowInsert(false)
         let response = await getRoomById(item.id);
         if (response?.EC == 0) {
@@ -123,11 +127,11 @@ const Room = () => {
             refresh();
         }
     }
-    let handleShowInsert = (value) => {
+    const handleShowInsert = (value) => {
         setObUpdate(null)
         setShowInsert(value)
     }
-    let handleChangeDepartment = (value) => {
+    const handleChangeDepartment = (value) => {
         setSearchDepartment(value);
         setCurrentPage(1);
         setSearch("");
@@ -188,71 +192,70 @@ const Room = () => {
                                 </tr>
                             </thead>
                             <tbody className="table-body ">
-                                {+listRoom.length > 0 && +totalPages != 0 ?
-                                    <>
-                                        {
-                                            listRoom.map((item, index) => {
-                                                return (
-                                                    <Popover
-                                                        key={index}
-                                                        placement="topLeft"
-                                                        content={
-                                                            item?.serviceData.map((service, index) => (
-                                                                <span key={index}>
-                                                                    {service.name}
-                                                                    <br />
-                                                                </span>
-                                                            ))}
-                                                        title="Dịch vụ"
-                                                    >
-                                                        <tr>
-                                                            <td className="p-2">
-                                                                <div>
-                                                                    <Checkbox
-                                                                        checked={item.checked}
-                                                                        onChange={() => { handleChange(item, index) }}
-                                                                        size="small"
-                                                                    /></div>
-                                                            </td>
-                                                            <td className="text-start px-1 py-2 text-uppercase">
-                                                                <div> {item?.name || "Khác"}</div>
-                                                            </td>
-                                                            <td className="text-start px-1 py-2">
-                                                                <div className="fw-normal">{item?.roomDepartmentData?.name || "_"}</div>
-                                                            </td>
-                                                            <td className="text-center px-1 py-2">
-                                                                {item.bedQuantity > 0 ?
-                                                                    <div className="fw-normal"><b style={{ color: primaryColorAdmin }}>{item?.bedFree || 0}</b> / {item?.bedQuantity || 0}</div>
-                                                                    :
-                                                                    <div>
-                                                                        -
-                                                                    </div>}
-                                                            </td>
-                                                            <td className="text-center ps-5 py-2">
-                                                                <Status data={item?.status} />
-                                                            </td>
-                                                            <td className="px-1 py-2 d-flex justify-content-end">
-                                                                <div className='iconDetail'>
-                                                                    <DropdownAction
-                                                                        data={item}
-                                                                        action={handleUpdate}
-                                                                        refresh={refresh}
-                                                                        table={TABLE.ROOM}
-                                                                    />
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </Popover>
-                                                )
+                                {
+                                    loadingRoom ? <SkeletonRoom /> :
+                                        +listRoom.length > 0 && +totalPages != 0 ?
+                                            <>
+                                                {
+                                                    listRoom.map((item, index) => {
+                                                        return (
+                                                            <Popover
+                                                                key={index}
+                                                                placement="topLeft"
+                                                                content={
+                                                                    item?.serviceData.map((service, index) => (
+                                                                        <span key={index}>{service.name}<br /></span>
+                                                                    ))}
+                                                                title="Dịch vụ"
+                                                            >
+                                                                <tr>
+                                                                    <td className="p-2">
+                                                                        <div>
+                                                                            <Checkbox
+                                                                                checked={item.checked}
+                                                                                onChange={() => { handleChange(item, index) }}
+                                                                                size="small"
+                                                                            /></div>
+                                                                    </td>
+                                                                    <td className="text-start px-1 py-2 text-uppercase">
+                                                                        <div> {item?.name || "Khác"}</div>
+                                                                    </td>
+                                                                    <td className="text-start px-1 py-2">
+                                                                        <div className="fw-normal">{item?.roomDepartmentData?.name || "_"}</div>
+                                                                    </td>
+                                                                    <td className="text-center px-1 py-2">
+                                                                        {item.bedQuantity > 0 ?
+                                                                            <div className="fw-normal"><b style={{ color: primaryColorAdmin }}>{item?.bedFree || 0}</b> / {item?.bedQuantity || 0}</div>
+                                                                            :
+                                                                            <div>
+                                                                                -
+                                                                            </div>}
+                                                                    </td>
+                                                                    <td className="text-center ps-5 py-2">
+                                                                        <Status data={item?.status} />
+                                                                    </td>
+                                                                    <td className="px-1 py-2 d-flex justify-content-end">
+                                                                        <div className='iconDetail'>
+                                                                            <DropdownAction
+                                                                                data={item}
+                                                                                action={handleUpdate}
+                                                                                refresh={refresh}
+                                                                                table={TABLE.ROOM}
+                                                                            />
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </Popover>
+                                                        )
 
-                                            })
-                                        }
-                                    </> :
-                                    <tr>
-                                        <td colSpan="7" className="text-center">
-                                            <span className="text-gray-500">Không có dữ liệu</span>
-                                        </td>
-                                    </tr>
+                                                    })
+                                                }
+                                            </> :
+                                            <tr>
+                                                <td colSpan="7" className="text-center">
+                                                    <span className="text-gray-500">Không có dữ liệu</span>
+                                                </td>
+                                            </tr>
                                 }
 
                             </tbody>

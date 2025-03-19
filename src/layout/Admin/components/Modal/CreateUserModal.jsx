@@ -7,6 +7,7 @@ import { ALL_ROLE, STAFF_ROLE } from '@/constant/role';
 import { Form, Input, Select, message, Button, Modal, Col, Row, InputNumber } from 'antd';
 import useQuery from '@/hooks/useQuery';
 import TextEditor from '@/components/TextEditor/TextEditor';
+import { set } from 'lodash';
 
 const { TextArea } = Input;
 const CreateUser = (props) => {
@@ -19,6 +20,7 @@ const CreateUser = (props) => {
     let { data: departmentData } = useQuery(() => getNameDepartment())
     let [specialty, setSpecailty] = useState([]);
     let { data: specialtyData } = useQuery(() => getSpecialtySelect())
+    let [isLoading, setIsLoading] = useState(false);
     let [userUpdate, setUserUpdate] = useState(props.obUpdate);
     useEffect(() => {
         if (specialtyData && specialtyData?.DT?.length > 0) {
@@ -35,6 +37,7 @@ const CreateUser = (props) => {
         form
             .validateFields()
             .then(async (values) => {
+                setIsLoading(true);
                 let response = null;
                 if (userUpdate?.id) {
                     response = await updateUser({
@@ -50,11 +53,10 @@ const CreateUser = (props) => {
                 } else {
                     message.error(response?.EM || "Thất bại!");
                 }
-
             })
             .catch((errorInfo) => {
                 onFinishFailed(errorInfo); // Gọi onFinishFailed khi form không hợp lệ
-            });
+            }).finally(() => { setIsLoading(false) });
     };
     const handleClose = () => {
         form.resetFields()
@@ -100,7 +102,6 @@ const CreateUser = (props) => {
         } else {
             setIsShowStaff(false);
         }
-        //console.log(value);
     }
 
     return (
@@ -116,7 +117,7 @@ const CreateUser = (props) => {
                         <Button key="cancel" onClick={() => handleClose()}>
                             Hủy
                         </Button>,
-                        <Button key="submit" type="primary" onClick={() => handleModalSubmit()}>
+                        <Button loading={isLoading} key="submit" type="primary" onClick={() => handleModalSubmit()}>
                             {userUpdate?.id ? "Cập nhật" : "Thêm mới"}
                         </Button>,
                     ]}

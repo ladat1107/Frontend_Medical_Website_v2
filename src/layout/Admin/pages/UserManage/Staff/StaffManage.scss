@@ -61,6 +61,10 @@
 
                 tr {
                     border-bottom: 1px solid #e3dede !important;
+
+                    td {
+                        min-height: 80px;
+                    }
                 }
 
                 .min-content-width {

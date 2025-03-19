@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { CLOUDINARY_FOLDER, STATUS } from '@/constant/value';
 import { ROLE } from '@/constant/role';
 import TextEditor from '@/components/TextEditor/TextEditor';
+import { set } from 'lodash';
 const { TextArea } = Input;
 const InsertDepartment = (props) => {
     const [form] = Form.useForm();
@@ -19,6 +20,7 @@ const InsertDepartment = (props) => {
     const [imageUrl, setImageUrl] = useState(""); // Lưu trữ URL ảnh sau khi upload
     let [listDoctors, setListDoctors] = useState([]);
     let { data: doctors } = useQuery(() => getStaffByRole(ROLE.DOCTOR));
+    let [isLoadingAction, setIsLoadingAction] = useState(false);
     let [col, setCol] = useState(8);
     useEffect(() => {
         if (doctors && doctors?.DT?.length > 0) {
@@ -47,7 +49,8 @@ const InsertDepartment = (props) => {
             setCol(6);
         }
     }, [props.obUpdate])
-    let handleCloseInsert = () => {
+
+    const handleCloseInsert = () => {
         form.resetFields()
         setImageUrl("");
         setDepartmentUpdate(null);
@@ -75,12 +78,13 @@ const InsertDepartment = (props) => {
         }
     };
 
-    let handleInsert = () => {
+    const handleInsert = () => {
         if (!imageUrl) {
             message.error('Vui lòng chọn ảnh khoa!')
             return;
         }
         form.validateFields().then(async (values) => {
+            setIsLoadingAction(true);
             let respone;
             if (departmentUpdate.id) {
                 respone = await updateDepartment({ ...values, image: imageUrl, id: departmentUpdate.id })
@@ -97,6 +101,8 @@ const InsertDepartment = (props) => {
             }
         }).catch((error) => {
             console.log(error)
+        }).finally(() => {
+            setIsLoadingAction(false);
         })
     }
     return (
@@ -113,17 +119,10 @@ const InsertDepartment = (props) => {
                     <Form
                         layout={'horizontal'}
                         form={form}
-                        labelCol={{
-                            span: 24,
-                        }}
-                        wrapperCol={{
-                            span: 24,
-                        }}
-                        initialValues={{
-                        }}
-                        style={{
-                            maxWidth: "100%",
-                        }}
+                        labelCol={{ span: 24, }}
+                        wrapperCol={{ span: 24, }}
+                        initialValues={{}}
+                        style={{ maxWidth: "100%", }}
                     >
                         <Row gutter={[16, 8]}>
                             <Col sm={24} lg={col}>
@@ -245,7 +244,7 @@ const InsertDepartment = (props) => {
                             </Col>
                             <Col xs={24} style={{ display: 'flex', justifyContent: 'flex-end' }} >
                                 <Form.Item>
-                                    <Button type="primary" htmlType="submit"
+                                    <Button loading={isLoadingAction} type="primary" htmlType="submit"
                                         onClick={() => { handleInsert() }}>{departmentUpdate.id ? "Cập nhật" : "Thêm"}</Button>
                                 </Form.Item>
                             </Col>

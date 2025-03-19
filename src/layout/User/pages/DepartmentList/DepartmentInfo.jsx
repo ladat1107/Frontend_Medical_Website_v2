@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./departmentList.module.scss";
 // Tạo instance của classnames với bind styles
@@ -6,12 +6,18 @@ const cx = classNames.bind(styles);
 import DepartmentCard from "@/components/DepartmentCard";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";
+import DeparmentCardSkeleton from "@/components/DepartmentCard/DeparmentCardSkeleton";
 
 const DepartmentInfo = (props) => {
   let [departmentList, setListDepartment] = useState(props?.departmentList);
+  useEffect(() => {
+    if (props.departmentList?.length > 0) {
+      setListDepartment(props.departmentList);
+    }
+  }, [props.departmentList, props.departmentLoading])
   let [search, setSearch] = useState("");
   let navigate = useNavigate();
-  let handleChangrSearch = (e) => {
+  const handleChangrSearch = (e) => {
     let _listDepartment = [...props?.departmentList];
     setSearch(e.target.value);
     if (e.target.value === "") {
@@ -52,18 +58,27 @@ const DepartmentInfo = (props) => {
         </div>
       </div>
       <div className={cx('list-item')} >
-        {departmentList?.length > 0 && departmentList.map((item, index) => (
-          <div
-            className="col-3 px-2 mb-2"
-            key={index}>
-            <DepartmentCard
-              id={item?.id}
-              image={item?.image}
-              name={item?.name}
-              shortDescription={item?.shortDescription}
-            />
-          </div>
-        ))}
+        {
+          props.departmentLoading ?
+            Array.from({ length: 12 }).map((_, index) => (
+              <div
+                className="col-3 px-2 mb-2"
+                key={index}>
+                <DeparmentCardSkeleton />
+              </div>))
+            :
+            departmentList?.length > 0 ? departmentList.map((item, index) => (
+              <div
+                className="col-3 px-2 mb-2"
+                key={index}>
+                <DepartmentCard
+                  id={item?.id}
+                  image={item?.image}
+                  name={item?.name}
+                  shortDescription={item?.shortDescription}
+                />
+              </div>
+            )) : <div>Không tìm thấy khoa</div>}
       </div>
     </div >
   );

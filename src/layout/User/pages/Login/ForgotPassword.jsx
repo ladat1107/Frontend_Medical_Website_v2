@@ -8,14 +8,19 @@ import { PATHS } from "@/constant/path";
 const ForgotPassword = (props) => {
     let [form] = Form.useForm();
     let [text, setText] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const onFinish = async (values) => {
-        let response = await handleForgotPassword({ email: values.email });
-        if (response?.EC === 0) {
-            setText(response?.EM);
-            form.resetFields();
-        } else {
-            message.info(response?.EM);
-        }
+        setIsLoading(true);
+        try {
+            let response = await handleForgotPassword({ email: values.email });
+            if (response?.EC === 0) {
+                setText(response?.EM);
+                form.resetFields();
+            } else {
+                message.info(response?.EM);
+            }
+        } catch (e) { message.error("Có lỗi xảy ra!", e) }
+        finally { setIsLoading(false) }
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -46,7 +51,7 @@ const ForgotPassword = (props) => {
                     <Input className='input' placeholder='Nhập email đã đăng ký' maxLength={50} />
                 </Form.Item>
                 <Form.Item style={{ marginTop: '30px', }}>
-                    <Button type="primary" htmlType="submit" className="login-button" >
+                    <Button loading={isLoading} type="primary" htmlType="submit" className="login-button" >
                         Lấy lại mật khẩu
                     </Button>
                 </Form.Item>

@@ -10,16 +10,21 @@ import { PATHS } from "@/constant/path";
 const Register = (props) => {
     let [form] = Form.useForm();
     let [text, setText] = useState(null);
+    let [isLoading, setIsLoading] = useState(false);
     let messageError = 'Vui lòng nhập thông tin!';
     const onFinish = async (values) => {
-        let response = await handleRegisterUser(values);
-        if (response?.EC === 0) {
-            setText(response?.EM);
-            form.resetFields();
-            // props.login();
-        } else {
-            message.info(response?.EM);
-        }
+        setIsLoading(true);
+        try {
+            let response = await handleRegisterUser(values);
+            if (response?.EC === 0) {
+                setText(response?.EM);
+                form.resetFields();
+            } else {
+                message.info(response?.EM);
+            }
+        } catch (error) {
+            error.message("Có lỗi xảy ra!", error);
+        } finally { setIsLoading(false) }
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -107,7 +112,7 @@ const Register = (props) => {
                             <Input.Password prefix={<FontAwesomeIcon className="icon-input" icon={faUnlockKeyhole} />} className='input-register' placeholder='Nhập lại mật khẩu' minLength={6} />
                         </Form.Item>
                     </Col>
-                    <Button type="primary" htmlType="submit" className="register-button" >
+                    <Button loading={isLoading} type="primary" htmlType="submit" className="register-button" >
                         Đăng ký
                     </Button>
                 </Row>

@@ -119,7 +119,8 @@ const Information = (props) => {
       setBirthListWard(_ward);
     }
   }, [birthWardList])
-  let handleImageChange = async (e) => {
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setUploading(true); // Bắt đầu upload
@@ -138,7 +139,7 @@ const Information = (props) => {
       setUploading(false); // Kết thúc upload
     }
   };
-  let handleSaveInfor = () => {
+  const handleSaveInfor = () => {
     if (isUpdate) {
       form.validateFields().then(async (values) => {
         let respone = await updateProfileInfo({
@@ -162,7 +163,7 @@ const Information = (props) => {
       setIsUpdate(true);
     }
   }
-  let handleCancel = () => {
+  const handleCancel = () => {
     setIsUpdate(false);
     form.resetFields();
     setImageUrl(profile?.avatar);

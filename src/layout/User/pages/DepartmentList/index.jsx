@@ -12,6 +12,7 @@ import useQuery from "@/hooks/useQuery";
 const DepartmentList = () => {
   const {
     data: departmentData,
+    loading: departmentLoading,
   } = useQuery(() => userService.getDepartment());
   const departmentList = departmentData?.DT || [];
   return (
@@ -19,7 +20,7 @@ const DepartmentList = () => {
       <Banner />
       <div className={cx('bg')} >
         <Container>
-          {departmentList?.length > 0 && <DepartmentInfo departmentList={departmentList} />}
+          <DepartmentInfo departmentLoading={departmentLoading} departmentList={departmentList} />
         </Container>
       </div>
     </div>

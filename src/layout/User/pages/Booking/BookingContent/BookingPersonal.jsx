@@ -19,11 +19,11 @@ const BookingPersonal = (props) => {
     let [listFolk, setListFolk] = useState([]);
     let [currentListDistrict, setCurrentListDistrict] = useState([]);
     let [currentListWard, setCurrentListWard] = useState([]);
-    let [currentProvinceId, setCurrentProvinceId] = useState();
-    let [currentDistrictId, setCurrentDistrictId] = useState();
+    let [currentProvinceId, setCurrentProvinceId] = useState(+currentResidentData[3] || null);
+    let [currentDistrictId, setCurrentDistrictId] = useState(+currentResidentData[2] || null);
     let { data: provinceData } = useQuery(() => apiService.getAllProvince())
     let { data: currentDistrictList } = useQuery(
-        () => currentProvinceId && apiService.getDistrictByProvinceId(currentProvinceId),
+        () => { currentProvinceId && apiService.getDistrictByProvinceId(currentProvinceId), console.log("currentProvinceId", currentProvinceId)},
         [currentProvinceId]
     );
     let { data: currentWardList } = useQuery(

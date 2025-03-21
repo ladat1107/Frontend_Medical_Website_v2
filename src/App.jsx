@@ -47,7 +47,14 @@ function App() {
       theme={{
         token: {
           fontFamily: "Be Vietnam Pro",
-        }
+        },
+        components: {
+          Skeleton: {
+            gradientFromColor: "rgba(0, 181, 241, 0.06)",
+            gradientToColor: "rgba(0, 181, 241, 0.12)",
+
+          },
+        },
       }}
     >
       <Routes>

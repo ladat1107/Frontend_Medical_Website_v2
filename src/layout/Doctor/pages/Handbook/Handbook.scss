@@ -80,9 +80,9 @@
             }
 
             .active {
-                border: 2px solid #e7e7e7;
+                border: 2px solid $primary-color-admin;
                 background: white;
-                color: black;
+                color: $primary-color-admin;
             }
         }
     }

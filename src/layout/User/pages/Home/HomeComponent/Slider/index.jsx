@@ -5,8 +5,9 @@ import "slick-carousel/slick/slick-theme.css"; // Import Slick theme CSS
 import "./slider.scss";
 import DepartmentCard from "@/components/DepartmentCard";
 import DoctorCard from "@/components/DoctorCard";
+import DeparmentCardSkeleton from "@/components/DepartmentCard/DeparmentCardSkeleton";
 
-const SliderComponent = ({ type = "service", numberShow = 6, autoplayProps, dot = true, listData }) => {
+const SliderComponent = ({ type = "service", numberShow = 6, autoplayProps, dot = true, listData, loading }) => {
   const settings = {
     dots: dot, // Hiển thị phân trang
     // infinite: true, // Quay vòng slider
@@ -33,9 +34,17 @@ const SliderComponent = ({ type = "service", numberShow = 6, autoplayProps, dot 
               </div>
             );
           } else if (type === 'doctor') {
-            return (
-              <DoctorCard key={index} doctor={item} />
-            )
+            if (loading)
+              return Array.from({ length: 12 }).map((_, index) => (
+                <div
+                  className="col-3 px-2 mb-2"
+                  key={index}>
+                  <DeparmentCardSkeleton />
+                </div>))
+            else
+              return (
+                <DoctorCard key={index} doctor={item} />
+              )
           } else if (type === 'colab') {
             return (
               <div className="item-colab" key={index}>
@@ -50,10 +59,17 @@ const SliderComponent = ({ type = "service", numberShow = 6, autoplayProps, dot 
               </div>
             )
           } else if (type = 'department') {
-
-            return (
-              <DepartmentCard {...item} key={index} />
-            )
+            if (loading)
+              return Array.from({ length: 12 }).map((_, index) => (
+                <div
+                  className="col-3 px-2 mb-2"
+                  key={index}>
+                  <DeparmentCardSkeleton />
+                </div>))
+            else
+              return (
+                <DepartmentCard {...item} key={index} />
+              )
           }
         })}
       </Slider>

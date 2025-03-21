@@ -20,24 +20,27 @@ const BookingConfirm = (props) => {
     let doctor = props?.doctor;
     let schedule = props?.schedule;
     let [isLoading, setIsLoading] = useState(false);
-    let confirm = async () => {
+    const confirm = async () => {
         setIsLoading(true);
-        let data = {
-            doctor: doctor,
-            schedule: schedule,
-            profile: profile
-        }
-        let respone = await userService.confirmBooking(data);
-        if (respone.EC === 0) {
-            setIsLoading(false);
-            setIsConfirm(true)
-        } else {
-            message.error(respone.EM)
-        }
+        try {
+            let data = {
+                doctor: doctor,
+                schedule: schedule,
+                profile: profile
+            }
+            let respone = await userService.confirmBooking(data);
+            if (respone.EC === 0) {
+                setIsConfirm(true)
+            } else {
+                message.error(respone.EM)
+            }
+        } catch (e) { console.log(e) }
+        finally { setIsLoading(false) }
     }
-    let handleViewMail = () => {
+    const handleViewMail = () => {
         window.location.href = "https://mail.google.com/mail/u/0/#inbox"
     }
+    console.log("profile", profile);
     return (
         <>
             <div className="header">
@@ -45,7 +48,6 @@ const BookingConfirm = (props) => {
                 Xác nhận thông tin
             </div>
             {isConfirm ? <div className="content">
-
                 <div className="title-success">
                     <FontAwesomeIcon icon={faCircleCheck} className="icon" />
                     <span> Đặt lịch thành công. Vui lòng kiểm tra email để xác nhận lịch khám !</span>
@@ -100,7 +102,7 @@ const BookingConfirm = (props) => {
                                     <div className="info-row">
                                         <FontAwesomeIcon icon={faPeopleGroup} className="icon" />
                                         <span>Dân tộc</span>
-                                        <strong>{profile?.obFolk.label}</strong>
+                                        <strong>{profile?.obFolk?.label || "Không"}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -108,7 +110,7 @@ const BookingConfirm = (props) => {
                                 <div className="info-row">
                                     <FontAwesomeIcon icon={faMapMarkerAlt} className="icon" />
                                     <span>Địa chỉ:</span>
-                                    <strong>{profile?.address + ", " + profile?.obWard.label + ", " + profile?.obDistrict.label + ", " + profile?.obProvince.label}</strong>
+                                    <strong>{profile?.address + ", " + profile?.obWard?.label || '' + ", " + profile?.obDistrict?.label || '' + ", " + profile?.obProvince?.label || ''}</strong>
                                 </div>
                             </div>
                             <div className="row-3 mt-5">

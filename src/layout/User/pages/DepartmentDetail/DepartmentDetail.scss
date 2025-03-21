@@ -123,6 +123,10 @@
                 border-radius: 15px;
                 padding: 0;
 
+                .ant-skeleton-element {
+                    width: 100%;
+                }
+
                 img {
                     width: 100%;
                     height: 410px;
@@ -135,7 +139,7 @@
                 box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
                 padding: 20px;
                 border-radius: 15px;
-                max-height: 320px;
+                height: fit-content;
 
                 .article-title {
                     font-size: 2rem;
@@ -173,9 +177,12 @@
             .article-content {
                 background: white;
                 box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-                padding: 20px 5px;
+                padding: 20px 20px 25px 20px;
                 border-radius: 15px;
                 margin-bottom: 20px;
+                max-height: 650px; // Giới hạn chiều cao bằng màn hình
+                overflow-y: auto;
+                margin-bottom: 50px;
             }
 
 

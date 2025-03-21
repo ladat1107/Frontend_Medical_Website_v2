@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { deleteUser, blockUser, deleteDepartment, blockDepartment, deleteServiceOfRoom, blockServiceOfRoom, deleteRoom, blockRoom, deleteSpecialty, blockSpecialty } from "@/services/adminService";
 import { Button, message, Modal } from "antd";
 import { primaryColorAdmin } from '@/styles//variables';
+import { set } from 'lodash';
 const DeleteModal = (props) => {
     let [messageContent, setMessageContent] = useState("")
+    let [isLoadingBlock, setIsLoadingBlock] = useState(false)
+    let [isLoadingDelete, setIsLoadingDelete] = useState(false)
     let data = props.data;
-    const handleClose = () => {
-        props.isShow(false)
-    }
+    const handleClose = () => { props.isShow(false) }
     useEffect(() => {
         if (props.table === TABLE.USER) {
             setMessageContent("Xác nhận xóa người dùng " + data.lastName + " " + data.firstName + "?")
@@ -23,7 +24,8 @@ const DeleteModal = (props) => {
             setMessageContent("Xác nhận xóa chuyên khoa " + data.name + "?")
         }
     }, [props.data])
-    let handleDelete = async () => {
+    const handleDelete = async () => {
+        setIsLoadingDelete(true)
         if (props.table === TABLE.USER) {
             let response = await deleteUser(data);
             notify(response);
@@ -43,7 +45,8 @@ const DeleteModal = (props) => {
             notify(response);
         }
     }
-    let handleLock = async () => {
+    const handleLock = async () => {
+        setIsLoadingBlock(true)
         if (props.table === TABLE.USER) {
             let response = await blockUser(data);
             notify(response);
@@ -63,6 +66,8 @@ const DeleteModal = (props) => {
         }
     }
     const notify = (response) => {
+        setIsLoadingDelete(false)
+        setIsLoadingBlock(false)
         if (response?.EC === 0) {
             message.success(response?.EM || "Thành công");
             props.isShow(false)
@@ -79,13 +84,13 @@ const DeleteModal = (props) => {
                 onCancel={handleClose}
                 maskClosable={false} // Ngăn đóng modal khi bấm bên ngoài
                 footer={[
-                    <Button key="cancel" onClick={() => handleClose()}>
+                    <Button disabled={isLoadingBlock || isLoadingDelete} key="cancel" onClick={() => handleClose()}>
                         Hủy
                     </Button>,
-                    <Button key="submit" style={{ background: primaryColorAdmin, color: "#ffffff", border: "none" }} onClick={() => handleLock()}>
+                    <Button disabled={isLoadingBlock || isLoadingDelete} loading={isLoadingBlock} key="submit" style={{ background: primaryColorAdmin, color: "#ffffff", border: "none" }} onClick={() => handleLock()}>
                         Khóa
                     </Button>,
-                    <Button key="submit" style={{ background: "#f5222d", color: "#ffffff", border: "none" }} onClick={() => handleDelete()}>
+                    <Button disabled={isLoadingBlock || isLoadingDelete} loading={isLoadingDelete} key="submit" style={{ background: "#f5222d", color: "#ffffff", border: "none" }} onClick={() => handleDelete()}>
                         Xóa
                     </Button>,
                 ]}

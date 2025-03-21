@@ -29,11 +29,10 @@ const DoctorDetailHeader = (props) => {
           <span style={{
             fontWeight: "bold",
             color: primaryColorHome,
-          }}> {data.lastName} {data.firstName}</span>
+          }}> {data?.lastName} {data?.firstName}</span>
 
         </Breadcrumb.Item>
       </Breadcrumb>
-
 
       <div className={cx("wrapper")}>
         <div className={cx("doctor-header-top")}>
@@ -42,7 +41,7 @@ const DoctorDetailHeader = (props) => {
           </div>
           <div className={cx('doctor-info')} >
             <h4 className={cx('doctor-info-title')} >
-              {data?.staffUserData?.position || "BS"}.  {data.lastName} {data.firstName}
+              {data?.staffUserData?.position || "BS"}.  {data?.lastName} {data?.firstName}
             </h4>
             <div className={cx('doctor-info-content')} >
               <div className={cx('style-info')} >
@@ -76,7 +75,7 @@ const DoctorDetailHeader = (props) => {
             </div>
           </div>
 
-          <div className={cx('booking-btn')} onClick={() => { navigate(PATHS.HOME.BOOKING) }} >
+          <div className={cx('booking-btn-doctor-detail')} onClick={() => { navigate(PATHS.HOME.BOOKING) }} >
             Đặt lịch
           </div>
         </div>

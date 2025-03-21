@@ -12,9 +12,8 @@ const DoctorCard = ({ id, avatar, name, specialty, price, visits, rating }) => {
       <img src={avtTest} alt={`${name}'s avatar`} className="doctor-card__avatar" />
       <h4 className="doctor-card__name">{name}</h4>
       <div className="doctor-card__info">
-
         <p className="doctor-card__specialty" style={{ display: "flex", alignItems: "center", gap: "10px" }} >
-          <FaStethoscope className="doctor-card__icon" /> Khoa: {specialty || "Đa khoa"}
+          <FaStethoscope className="doctor-card__icon" /> Khoa: <span title={specialty || "Đa khoa"} style={{ overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", }}>{specialty || "Đa khoa"}</span>
         </p>
         <div className="doctor-card__details">
           <p className="doctor-card__price" style={{ display: "flex", alignItems: "center", gap: "10px" }}>

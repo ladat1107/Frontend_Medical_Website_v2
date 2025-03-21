@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./doctorList.module.scss";
 // Tạo instance của classnames với bind styles
@@ -11,6 +11,7 @@ import PaginationUser from "@/components/Pagination/Pagination";
 import userService from "@/services/userService";
 import { useMutation } from "@/hooks/useMutation";
 import useDebounce from "@/hooks/useDebounce";
+import DoctorCardSkeleton from "./Component/DoctorCardSkeleton";
 
 const DoctorInfo = () => {
   let [pageSize, setPageSize] = useState({ currentPage: 1, pageSize: 12 });
@@ -18,34 +19,33 @@ const DoctorInfo = () => {
   let [doctorList, setDoctorList] = useState([]);
   let [search, setSearch] = useState('');
   let searchDebounce = useDebounce(search || "", 500);
+  const searchRef = useRef(null);
   const {
     data: doctorData,
     loading: doctorLoading,
     execute: getDoctor,
   } = useMutation(() => userService.getDoctor({ limit: pageSize.pageSize, page: pageSize.currentPage, search: searchDebounce }));
   useEffect(() => {
+    searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     getDoctor();
-  }, [searchDebounce, pageSize]);
+  }, [searchDebounce, pageSize.currentPage, pageSize.pageSize]);
   useEffect(() => {
     if (doctorData?.EC === 0) {
       setDoctorList(doctorData?.DT?.rows || []);
       setTotal(doctorData?.DT?.count || 0);
     }
   }, [doctorData]);
-  useEffect(() => {
-    if (doctorList.length < pageSize.pageSize) {
-      setPageSize({ ...pageSize, currentPage: 1 })
-    }
-  }, [doctorList]);
-  let navigate = useNavigate();
+
+  const navigate = useNavigate();
   return (
     <div className={cx("doctor-info")}>
       <div className={cx("head-section")}>
         <div className="container-input">
           <input
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value), setPageSize({ ...pageSize, currentPage: 1 }) }}
             // value={search}
             type="text"
+            ref={searchRef}
             placeholder="Tìm kiếm bác sĩ"
             name="text"
             className="input"
@@ -69,18 +69,24 @@ const DoctorInfo = () => {
         </div>
       </div>
       <div className={cx('list-item')} >
-        {doctorList?.length > 0 && doctorList.map((item, index) => (
-          <div key={index}>
-            <DoctorCard
-              id={item?.staffUserData?.id}
-              avatar={item?.staffUserData?.avatar}
-              name={item?.staffUserData?.lastName + " " + item?.staffUserData?.firstName}
-              specialty={item?.staffDepartmentData?.name}
-              price={formatCurrency(item?.price || 0)}
-              visits={item?.examinationStaffData?.length || 0}
-              rating="4.8" />
-          </div>
-        ))}
+        {doctorLoading ?
+          Array.from({ length: 12 }).map((_, index) => (
+            <div key={index}>
+              <DoctorCardSkeleton />
+            </div>))
+          :
+          doctorList?.length > 0 ? doctorList.map((item, index) => (
+            <div key={index}>
+              <DoctorCard
+                id={item?.staffUserData?.id}
+                avatar={item?.staffUserData?.avatar}
+                name={(item?.staffUserData?.lastName.length + item?.staffUserData?.firstName.length) < 15 ? item?.staffUserData?.lastName + " " + item?.staffUserData?.firstName : item?.staffUserData?.firstName}
+                specialty={item?.staffDepartmentData?.name}
+                price={formatCurrency(item?.price || 0)}
+                visits={item?.examinationStaffData?.length || 0}
+                rating="4.8" />
+            </div>
+          )) : <div>Không tìm thấy bác sĩ</div>}
       </div>
       <div>
         <PaginationUser

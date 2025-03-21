@@ -30,6 +30,7 @@ const Login = () => {
     let rememberLogins = useSelector((state) => state.authen.rememberLogin || []);
     const [showSavedAccounts, setShowSavedAccounts] = useState(false);
     const [rememberMe, setRememberMe] = useState(rememberLogins.length > 0 ? true : false);
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         let confirmToken = queryParams.get('confirm');
         if (confirmToken !== null) {
@@ -60,21 +61,25 @@ const Login = () => {
     };
 
     const onFinish = async (values) => {
-        let respone = await handleLogin(values);
-        if (respone?.EC === 0) {
-            dispatch(login(respone.DT));
+        setIsLoading(true);
+        try {
+            let respone = await handleLogin(values);
+            if (respone?.EC === 0) {
+                dispatch(login(respone.DT));
 
-            if (rememberMe) {
-                let remember = {
-                    email: values.email,
-                    password: values.password
+                if (rememberMe) {
+                    let remember = {
+                        email: values.email,
+                        password: values.password
+                    }
+                    dispatch(addRememberLogin(remember));
                 }
-                dispatch(addRememberLogin(remember));
+                redirect(respone.DT.user.role);
+            } else {
+                message.error(respone?.EM || 'Đăng nhập thất bại')
             }
-            redirect(respone.DT.user.role);
-        } else {
-            message.error(respone?.EM || 'Đăng nhập thất bại')
-        }
+        } catch (e) { message.error('Đăng nhập thất bại') }
+        finally { setIsLoading(false) }
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -183,7 +188,7 @@ const Login = () => {
                                         </span>
                                     </Col>
                                 </Row>
-                                <Button type="primary" htmlType="submit" className="login-button">
+                                <Button loading={isLoading} type="primary" htmlType="submit" className="login-button">
                                     Đăng nhập
                                 </Button>
                             </Form>

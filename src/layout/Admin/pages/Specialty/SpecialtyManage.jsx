@@ -13,6 +13,7 @@ import Status from "../../components/Status";
 import DropdownAction from "../../components/Dropdown/DropdownAction";
 import { createSpecialty, getAllSpecialtyAdmin, getSpecialtyById, updateSpecialty } from "@/services/adminService";
 import { uploadAndDeleteToCloudinary } from "@/utils/uploadToCloudinary";
+import SkeletonTable from "./SkeletonTable";
 const { TextArea } = Input;
 const Specialty = () => {
     let [form] = Form.useForm();
@@ -26,11 +27,11 @@ const Specialty = () => {
     let [search, setSearch] = useState("");
     let [obUpdate, setObUpdate] = useState(null);
     let [urlImage, setUrlImage] = useState("");
+    let [isLoadingAction, setIsLoadingAction] = useState(false);
     let searchDebounce = "";
     let {
         data: dataSpecialty,
         loading: listSpecialtyLoading,
-        error: listSpecialtyError,
         execute: fetchSpecialtys,
     } = useMutation((query) =>
         getAllSpecialtyAdmin(currentPage, rowsPerPage, searchDebounce)
@@ -59,7 +60,7 @@ const Specialty = () => {
         }
         setUrlImage(obUpdate?.image || "")
     }, [obUpdate]);
-    let handleChange = (item) => {
+    const handleChange = (item) => {
         let _listSpecialty = [...listSpecialty];
         _listSpecialty = _listSpecialty.map(obj =>
             obj.id === item.id ? { ...obj, checked: !item.checked } : obj
@@ -67,7 +68,7 @@ const Specialty = () => {
         setCheckAll(false);
         setListSpecialty(_listSpecialty);
     };
-    let handleChangeSelectedAll = () => {
+    const handleChangeSelectedAll = () => {
         let _listSpecialty = [...listSpecialty];
         setCheckAll(!checkAll);
         _listSpecialty = _listSpecialty.map(obj =>
@@ -75,16 +76,16 @@ const Specialty = () => {
         );
         setListSpecialty(_listSpecialty);
     }
-    let handleChangePaginate = (item) => {
+    const handleChangePaginate = (item) => {
         setRowPaper(item);
         setCurrentPage(1);
     }
     searchDebounce = useDebounce(search, 500);
-    let handleChangeSearch = (event) => {
+    const handleChangeSearch = (event) => {
         setSearch(event.target.value);
         setCurrentPage(1)
     }
-    let refresh = () => {
+    const refresh = () => {
         form.resetFields();
         setUrlImage("");
         setCheckAll(false);
@@ -92,7 +93,7 @@ const Specialty = () => {
         setSearch("");
         fetchSpecialtys();
     }
-    let handleUpdate = async (item) => {
+    const handleUpdate = async (item) => {
         let response = await getSpecialtyById(item.id);
         if (response?.EC == 0) {
             let value = response?.DT;
@@ -102,12 +103,13 @@ const Specialty = () => {
             refresh();
         }
     }
-    let handleInsertUpdate = async () => {
+    const handleInsertUpdate = async () => {
         if (!urlImage) {
             message.error("Vui lòng chọn ảnh");
             return;
         }
         form.validateFields().then(async (values) => {
+            setIsLoadingAction(true);
             let response = null;
             if (obUpdate) {
                 response = await updateSpecialty({ ...values, image: urlImage, id: obUpdate.id })
@@ -122,8 +124,9 @@ const Specialty = () => {
             }
         }).catch((error) => {
             console.log("error", error)
-        });
-
+        }).finally(() => {
+            setIsLoadingAction(false);
+        })
     }
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
@@ -163,17 +166,10 @@ const Specialty = () => {
                             <Form
                                 layout={'horizontal'}
                                 form={form}
-                                labelCol={{
-                                    span: 24,
-                                }}
-                                wrapperCol={{
-                                    span: 24,
-                                }}
-                                initialValues={{
-                                }}
-                                style={{
-                                    maxWidth: "100%",
-                                }}
+                                labelCol={{ span: 24, }}
+                                wrapperCol={{ span: 24, }}
+                                initialValues={{}}
+                                style={{ maxWidth: "100%", }}
                             >
                                 <Row >
                                     <Col span={24}>
@@ -242,11 +238,9 @@ const Specialty = () => {
                                                 </Select>
                                             </Form.Item></Col>
                                     }
-
-
                                     <Col xs={24} style={{ display: 'flex', justifyContent: 'flex-end' }} >
                                         <Form.Item>
-                                            <Button type="primary" htmlType="submit"
+                                            <Button loading={isLoadingAction} type="primary" htmlType="submit"
                                                 style={{ background: "#04a9f3" }}
                                                 onClick={() => { handleInsertUpdate() }}>{obUpdate ? "Cập nhật" : "Thêm"}</Button>
                                         </Form.Item>
@@ -283,50 +277,53 @@ const Specialty = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="table-body">
-                                        {+listSpecialty.length > 0 && +totalPages != 0 && !listSpecialtyLoading ?
-                                            <>
-                                                {
-                                                    listSpecialty.map((item, index) => {
-                                                        return (
-                                                            <tr key={item.id}>
-                                                                <td className="p-2 d-flex align-items-center">
-                                                                    <div className="">
-                                                                        <Checkbox
-                                                                            checked={item.checked}
-                                                                            onChange={() => { handleChange(item, index) }}
-                                                                            size="small"
-                                                                        /></div>
-                                                                </td>
-                                                                <td title={item.name} className="text-start px-1 py-3">
-                                                                    {item?.id || "Khác"}
-                                                                </td>
-                                                                <td className="text-start px-1 py-3">
-                                                                    {item?.name || "_"}
-                                                                </td>
-                                                                <td className="text-center px-1 py-3">
-                                                                    <Status data={item?.status} />
-                                                                </td>
-                                                                <td className="px-1 py-3 d-flex justify-content-end">
-                                                                    <div className='iconDetail'>
-                                                                        <DropdownAction
-                                                                            data={item}
-                                                                            action={handleUpdate}
-                                                                            refresh={refresh}
-                                                                            table={TABLE.SPECIALTY}
-                                                                        />
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        )
-
-                                                    })
-                                                }
-                                            </> :
-                                            <tr>
-                                                <td colSpan="7" className="text-center">
-                                                    <span className="text-gray-500">Không có dữ liệu</span>
-                                                </td>
-                                            </tr>
+                                        {
+                                            listSpecialtyLoading ?
+                                                <SkeletonTable />
+                                                :
+                                                +listSpecialty.length > 0 && +totalPages != 0 ?
+                                                    <>
+                                                        {
+                                                            listSpecialty.map((item, index) => {
+                                                                return (
+                                                                    <tr key={item.id}>
+                                                                        <td className="p-2 d-flex align-items-center">
+                                                                            <div className="">
+                                                                                <Checkbox
+                                                                                    checked={item.checked}
+                                                                                    onChange={() => { handleChange(item, index) }}
+                                                                                    size="small"
+                                                                                /></div>
+                                                                        </td>
+                                                                        <td title={item.name} className="text-start px-1 py-3">
+                                                                            {item?.id || "Khác"}
+                                                                        </td>
+                                                                        <td className="text-start px-1 py-3">
+                                                                            {item?.name || "_"}
+                                                                        </td>
+                                                                        <td className="text-center px-1 py-3">
+                                                                            <Status data={item?.status} />
+                                                                        </td>
+                                                                        <td className="px-1 py-3 d-flex justify-content-end">
+                                                                            <div className='iconDetail'>
+                                                                                <DropdownAction
+                                                                                    data={item}
+                                                                                    action={handleUpdate}
+                                                                                    refresh={refresh}
+                                                                                    table={TABLE.SPECIALTY}
+                                                                                />
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                )
+                                                            })
+                                                        }
+                                                    </> :
+                                                    <tr>
+                                                        <td colSpan="7" className="text-center">
+                                                            <span className="text-gray-500">Không có dữ liệu</span>
+                                                        </td>
+                                                    </tr>
                                         }
                                     </tbody>
                                 </table>

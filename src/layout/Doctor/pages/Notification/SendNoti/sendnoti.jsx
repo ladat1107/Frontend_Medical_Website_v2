@@ -1,15 +1,26 @@
 import { CSV, PDF } from "@/components/TypeFile/typefile";
-import { useRef, useEffect } from "react";
-import MarkdownEditor from "../Markdown/markdown";
+import { useRef, useEffect, useState } from "react";
+import './SendNoti.scss';
+import NotificationSelectionModal from "../NotiSelection/notiSelection";
+import propTypes from 'prop-types';
 
-const SendNoti = () => {
+const SendNoti = ({dataUser}) => {
+    
     const textAreaRef = useRef(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+
+    const handleSubmit = (selectedUsers) => {
+        console.log(selectedUsers); 
+        setSelectedUsers(selectedUsers);
+        setIsModalOpen(false);
+    }
 
     useEffect(() => {
         const handleInput = () => {
             if (textAreaRef.current) {
-                textAreaRef.current.style.height = "1em"; // Reset chiều cao trước
-                textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px"; // Cập nhật theo nội dung
+                textAreaRef.current.style.height = "1em"; 
+                textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px"; 
             }
         };
 
@@ -20,7 +31,7 @@ const SendNoti = () => {
 
     return (
         <div className="send-noti-container">
-            <div className="header-send-noti mt-4">
+            <div className="header-send-noti " >
                 <textarea
                     ref={textAreaRef}
                     placeholder="Tiêu đề thông báo..."
@@ -34,7 +45,7 @@ const SendNoti = () => {
                         <p className="ms-2" style={{color: '#787684'}}>Gửi tới:</p>
                     </div>
                     <div className="col-10 d-flex">
-                        <button className="add-button">
+                        <button className="add-button" onClick={() => setIsModalOpen(true)}>
                             <i className="fa-solid fa-plus"></i>
                             <p className="ms-2">Thêm</p>
                         </button>
@@ -48,7 +59,7 @@ const SendNoti = () => {
                         <p className="ms-2" style={{color: '#787684'}}>Nội dung:</p>
                     </div>
                     <div className="col-12 d-flex">
-                        <MarkdownEditor/>
+                        {/* <MarkdownEditor/> */}
                     </div>
                 </div>
                 <div className="row mt-2">
@@ -79,10 +90,19 @@ const SendNoti = () => {
                     </div>
                 </div>
             </div>
+            {dataUser && <NotificationSelectionModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleSubmit}
+                data={dataUser}
+                checkedUsers={selectedUsers}
+            />}
         </div>
     );
-
-    
 };
+
+SendNoti.propTypes = {
+    dataUser: propTypes.object.isRequired,
+}
 
 export default SendNoti;

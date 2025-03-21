@@ -29,7 +29,8 @@ const Handbook = () => {
         data: dataHandbook,
         loading: listHandbookLoading,
         execute: fetchHandbooks,
-    } = useMutation((query) => getAllHandbooks(currentPage, rowsPerPage, searchDebounce, filter.join(','), status.value))
+    } = useMutation((query) => getAllHandbooks(currentPage, rowsPerPage, searchDebounce,filter.join(','), status.value))
+    
     useEffect(() => {
         if (dataHandbook && dataHandbook.EC === 0) {
             let handbook = dataHandbook.DT.handBooks;

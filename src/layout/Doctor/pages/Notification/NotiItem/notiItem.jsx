@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { useState, useRef, useEffect } from 'react';
 
 const NotiItem = ({ noti }) => {
-    // Tạo state để theo dõi trạng thái hiển thị/ẩn của nội dung
     const [isContentVisible, setIsContentVisible] = useState(false);
     const contentRef = useRef(null);
     const previewRef = useRef(null);
@@ -10,7 +9,6 @@ const NotiItem = ({ noti }) => {
     const [previewHeight, setPreviewHeight] = useState(0);
     const [isPreviewVisible, setIsPreviewVisible] = useState(true);
 
-    // Đo chiều cao thực tế của nội dung
     useEffect(() => {
         if (contentRef.current) {
             setContentHeight(contentRef.current.scrollHeight + 15);
@@ -20,19 +18,14 @@ const NotiItem = ({ noti }) => {
         }
     }, [noti.content]);
 
-    // Hàm xử lý việc đóng/mở nội dung khi click
     const toggleContent = () => {
         if (!isContentVisible) {
-            // Khi mở nội dung, trước tiên ẩn preview
             setIsPreviewVisible(false);
-            // Sau đó đợi animation kết thúc rồi hiển thị nội dung đầy đủ
             setTimeout(() => {
                 setIsContentVisible(true);
             }, 300);
         } else {
-            // Khi đóng nội dung, trước tiên ẩn nội dung đầy đủ
             setIsContentVisible(false);
-            // Sau đó đợi animation kết thúc rồi hiển thị preview
             setTimeout(() => {
                 setIsPreviewVisible(true);
             }, 300);
@@ -72,7 +65,9 @@ const NotiItem = ({ noti }) => {
                             transitionTimingFunction: 'ease-in-out'
                         }}
                     >
-                        {noti.content}
+                        {noti.content && noti.content.length > 100 
+                            ? `${noti.content.substring(0, 110)}...` 
+                            : noti.content}
                     </div>
                 </div>
                 <div className="d-flex row col-3">
@@ -86,7 +81,7 @@ const NotiItem = ({ noti }) => {
             </div>
             
             <div 
-                className={`noti-item-content-container ${isContentVisible ? 'mt-2' : ''}`}
+                className={`noti-item-content-container ${isContentVisible ? 'mt-2 mb-2' : ''}`}
                 style={{
                     height: isContentVisible ? `${contentHeight}px` : '0px',
                     overflow: 'hidden',

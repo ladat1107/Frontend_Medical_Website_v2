@@ -158,6 +158,10 @@ export const getUserInsuarance = async (userId) => {
     return axios.get(`/api/getUserInsuarance?userId=${userId}`);
 }
 
+export const getAllUserToNotify = async () => {
+    return axios.get(`/api/getAllUserToNotify`);
+}
+
 export const sendNotification = async (message = 'Thông báo mới từ hệ thống', type = 'success') => {
     try {
       const response = await axios.post('/api/send-notification', {

@@ -39,5 +39,14 @@
             font-weight: 400;
             color: $text-head-color-admin;
         }
+        
+        .noti-item{
+            //background-color: #F4F7FE;
+        }
+        .noti-item-content-container{
+            background-color: #F4F7FE;
+            border-radius: 5px;
+        }
+        
     }
 }

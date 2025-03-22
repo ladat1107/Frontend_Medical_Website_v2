@@ -1,21 +1,29 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import PropTypes from 'prop-types';
 import ListUser from './ListUser'; // Make sure this path is correct
 
-const SelectionItem = forwardRef(({ dataUser, role, onCheckedUsersChange, checkedUsers }, ref) => {
+const SelectionItem = forwardRef(({ dataUser, onCheckedUsersChange, checkedUsers }, ref) => {
+    const listUserRef = useRef(null);
+    
     useImperativeHandle(ref, () => ({
         resetAllChecks: () => {
-            if (onCheckedUsersChange) {
-                onCheckedUsersChange([]);
+            if (listUserRef.current && listUserRef.current.resetCheckedUsers) {
+                listUserRef.current.resetCheckedUsers();
             }
+        },
+        getCheckedUsers: () => {
+            if (listUserRef.current && listUserRef.current.getCheckedUsers) {
+                return listUserRef.current.getCheckedUsers();
+            }
+            return [];
         }
     }));
 
     return (
         <div className="selection-item">
             <ListUser 
-                data={dataUser} 
-                role={role} 
+                ref={listUserRef}
+                data={dataUser}
                 onCheckedUsersChange={onCheckedUsersChange}
                 listCheckedUsers={checkedUsers || []}
             />
@@ -25,12 +33,10 @@ const SelectionItem = forwardRef(({ dataUser, role, onCheckedUsersChange, checke
 
 SelectionItem.propTypes = {
     dataUser: PropTypes.object.isRequired,
-    role: PropTypes.number.isRequired,
     onCheckedUsersChange: PropTypes.func,
     checkedUsers: PropTypes.array
 };
 
-// This is important to add!
 SelectionItem.displayName = 'SelectionItem';
 
 export default SelectionItem;

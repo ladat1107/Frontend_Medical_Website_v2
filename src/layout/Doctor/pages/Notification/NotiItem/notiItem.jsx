@@ -66,7 +66,7 @@ const NotiItem = ({ noti }) => {
                         }}
                     >
                         {noti.content && noti.content.length > 100 
-                            ? `${noti.content.substring(0, 110)}...` 
+                            ? `${noti.content.substring(0, 100)}...` 
                             : noti.content}
                     </div>
                 </div>

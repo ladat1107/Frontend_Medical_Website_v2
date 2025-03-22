@@ -1,7 +1,9 @@
-import { Checkbox, Divider } from "antd";
+import { Checkbox, Divider, Button } from "antd";
 import PropTypes from 'prop-types';
+import { useEffect, useState, useMemo, forwardRef, useImperativeHandle } from "react";
 
-import { useEffect, useState, useMemo, forwardRef, useImperativeHandle, useRef } from "react";
+// Store expanded groups in a Map outside component to persist between renders
+const expandedGroupsMap = new Map();
 
 const UserItem = ({ id, checked, onChange, name }) => {
     // Prevent the click from bubbling up to parent elements
@@ -30,9 +32,6 @@ const UserItem = ({ id, checked, onChange, name }) => {
         </div>
     );
 };
-
-// Store expanded groups in a Map outside component to persist between renders
-const expandedGroupsMap = new Map();
 
 const UserGroupList = ({ group, checkedUsers, onItemChange }) => {
     // Use the group ID as a key for tracking expansion state
@@ -155,24 +154,19 @@ const UserGroupList = ({ group, checkedUsers, onItemChange }) => {
     );
 };
 
-const ListUser = forwardRef(({ data, role, onCheckedUsersChange, listCheckedUsers }, ref) => {
+const ListUser = forwardRef(({ data, onCheckedUsersChange, listCheckedUsers }, ref) => {
     const [checkedUsers, setCheckedUsers] = useState(listCheckedUsers || []);
-    const [initialLoad, setInitialLoad] = useState(true);
     const userGroups = useMemo(() => data.userGroups || [], [data.userGroups]);
 
-    // Clear the expandedGroupsMap when role changes
-    useEffect(() => {
-        // Clear the expansion state when role changes
-        expandedGroupsMap.clear();
-    }, [role]);
-
+    // Expose methods to parent component
     useImperativeHandle(ref, () => ({
         resetCheckedUsers: () => {
             setCheckedUsers([]);
             if (onCheckedUsersChange) {
                 onCheckedUsersChange([]);
             }
-        }
+        },
+        getCheckedUsers: () => checkedUsers
     }));
 
     const handleCheckedUsersChange = (newCheckedUsers) => {
@@ -183,16 +177,19 @@ const ListUser = forwardRef(({ data, role, onCheckedUsersChange, listCheckedUser
         }
     };
 
+    // Sync with external listCheckedUsers prop
     useEffect(() => {
-        if (Array.isArray(listCheckedUsers) && listCheckedUsers.length === 0 && checkedUsers.length > 0) {
-            setCheckedUsers([]);
+        if (Array.isArray(listCheckedUsers)) {
+            setCheckedUsers(listCheckedUsers);
         }
     }, [listCheckedUsers]);
 
-    useEffect(() => {
-        let selectedUsers =  [];
+    // Function to apply bulk selection based on role type
+    const applyRoleSelection = (roleType) => {
+        let selectedUsers = [];
 
-        if (role === 0) {
+        if (roleType === 'all') {
+            // All users in the system
             selectedUsers = userGroups.flatMap(group => 
                 (group.users || []).map(user => ({
                     id: user.id,
@@ -201,14 +198,16 @@ const ListUser = forwardRef(({ data, role, onCheckedUsersChange, listCheckedUser
                         `${user.lastName} ${user.firstName}`
                 }))
             );
-        } else if (role === 1) {
+        } else if (roleType === 'regular') {
+            // Regular users
             selectedUsers = userGroups.filter(group => group.id === 'regular').flatMap(group => 
                 (group.users || []).map(user => ({
                     id: user.id,
                     name: `${user.lastName} ${user.firstName}`
                 }))
             );
-        } else if (role === 2) {
+        } else if (roleType === 'staff') {
+            // Staff (non-regular users)
             selectedUsers = userGroups.filter(group => group.id !== 'regular').flatMap(group => 
                 (group.users || []).map(user => ({
                     id: user.id,
@@ -217,43 +216,89 @@ const ListUser = forwardRef(({ data, role, onCheckedUsersChange, listCheckedUser
                         `${user.lastName} ${user.firstName}`
                 }))
             );
-        } else if (role === 3) {
+        } else if (roleType === 'deans') {
+            // Department heads only
             selectedUsers = userGroups.filter(group => group.id !== 'regular').flatMap(group => 
                 (group.users || []).filter(user => user.isDean === true).map(user => ({
                     id: user.id,
                     name: `${user.lastName} ${user.firstName} (Trưởng phòng)`
                 }))
             );
-        } else if (role === 4) {
-            selectedUsers = checkedUsers
         }
         
         setCheckedUsers(selectedUsers);
+        
         if (onCheckedUsersChange) {
             onCheckedUsersChange(selectedUsers);
         }
-    }, [role, userGroups]);
+    };
+
+    const handleUnselectAll = () => {
+        setCheckedUsers([]);
+        if (onCheckedUsersChange) {
+            onCheckedUsersChange([]);
+        }
+    };
     
     return (
-        <div className="selection-item-body">
-            {userGroups.map(group => (
-                <div key={group.id}>
-                    <UserGroupList 
-                        group={group}
-                        checkedUsers={checkedUsers}
-                        onItemChange={handleCheckedUsersChange}
-                    />
-                    <Divider />
+        <div>
+            <div className="selection-buttons mb-4">
+                <div className="d-flex flex-wrap justify-content-between align-items-center">
+                    <div className="quick-selection-buttons d-flex flex-wrap mb-2">
+                        <Button 
+                            type="primary"
+                            onClick={() => applyRoleSelection('all')}
+                            className="me-2 mb-2"
+                        >
+                            Toàn bộ hệ thống
+                        </Button>
+                        <Button 
+                            onClick={() => applyRoleSelection('regular')}
+                            className="me-2 mb-2"
+                        >
+                            Người dùng
+                        </Button>
+                        <Button 
+                            onClick={() => applyRoleSelection('staff')}
+                            className="me-2 mb-2"
+                        >
+                            Nhân viên
+                        </Button>
+                        <Button 
+                            onClick={() => applyRoleSelection('deans')}
+                            className="me-2 mb-2"
+                        >
+                            Chỉ trưởng phòng
+                        </Button>
+                        <Button 
+                            danger
+                            onClick={handleUnselectAll}
+                            disabled={checkedUsers.length === 0}
+                            className="mb-2"
+                        >
+                            Bỏ chọn ({checkedUsers.length})
+                        </Button>
+                    </div>
                 </div>
-            ))}
+            </div>
+            
+            <div className="selection-item-body">
+                {userGroups.map(group => (
+                    <div key={group.id}>
+                        <UserGroupList 
+                            group={group}
+                            checkedUsers={checkedUsers}
+                            onItemChange={handleCheckedUsersChange}
+                        />
+                        <Divider />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 });
 
-// PropTypes...
-
-ListUser.displayName = 'ListUser';
-
+// PropTypes definitions
 UserItem.propTypes = {
     id: PropTypes.number.isRequired,
     checked: PropTypes.bool.isRequired,
@@ -276,9 +321,10 @@ ListUser.propTypes = {
     data: PropTypes.shape({
         userGroups: PropTypes.array.isRequired
     }).isRequired,
-    role: PropTypes.number.isRequired,
     onCheckedUsersChange: PropTypes.func,
     listCheckedUsers: PropTypes.array,
 };
+
+ListUser.displayName = 'ListUser';
 
 export default ListUser;

@@ -3,6 +3,8 @@ import { useRef, useEffect, useState } from "react";
 import './SendNoti.scss';
 import NotificationSelectionModal from "../NotiSelection/notiSelection";
 import propTypes from 'prop-types';
+import TextEditor from "@/components/TextEditor/TextEditor";
+import { uploadFileToCloudinary } from "@/utils/uploadToCloudinary";
 
 const SendNoti = ({dataUser}) => {
     
@@ -31,42 +33,59 @@ const SendNoti = ({dataUser}) => {
         return () => textArea?.removeEventListener("input", handleInput);
     }, []);
 
-    // Handle file selection
-    const handleFileSelect = (e) => {
+    const handleFileSelect = async (e) => {
         if (e.target.files && e.target.files.length > 0) {
             const selectedFiles = Array.from(e.target.files);
-            
-            // Map files to include size in MB and determine file type
-            const newFiles = selectedFiles.map(file => {
+
+            const newFiles = selectedFiles.map((file) => {
                 const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
                 return {
                     name: file.name,
                     size: `${fileSizeInMB} MB`,
                     type: file.type,
-                    extension: file.name.split('.').pop().toLowerCase(),
-                    file: file
+                    extension: file.name.split(".").pop().toLowerCase(),
+                    file: file,
+                    progress: 0,
+                    url: "",
                 };
             });
-            
-            setFiles(prevFiles => [...prevFiles, ...newFiles]);
+
+            setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+
+            newFiles.forEach(async (fileData, index) => {
+                try {
+                    const url = await uploadFileToCloudinary(fileData.file, "documents", (progress) => {
+                        setFiles((prevFiles) => {
+                            const updatedFiles = [...prevFiles];
+                            updatedFiles[index].progress = progress;
+                            return updatedFiles;
+                        });
+                    });
+                    setFiles((prevFiles) => {
+                        const updatedFiles = [...prevFiles];
+                        updatedFiles[index].url = url;
+                        return updatedFiles;
+                    });
+                } catch (error) {
+                    console.error("Upload failed for", fileData.name);
+                }
+            });
         }
     };
 
-    // Function to remove a file
+
     const handleRemoveFile = (index) => {
         const updatedFiles = [...files];
         updatedFiles.splice(index, 1);
         setFiles(updatedFiles);
     };
     
-    // Function to trigger file input click
     const handleUploadClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
     
-    // Function to determine which icon to display based on file type
     const getFileIcon = (fileData) => {
         if (!fileData || !fileData.extension) {
             return <DOCX />;
@@ -125,15 +144,19 @@ const SendNoti = ({dataUser}) => {
                         </button>
                     </div>
                 </div>
-                <div className="row mt-2">
+                <div className="row mt-3">
                     <div className="col-12 d-flex">
                         <p>
                             <i className="fa-regular fa-file-lines" style={{ color: "#787684" }}></i>
                         </p>
                         <p className="ms-2" style={{color: '#787684'}}>Nội dung:</p>
                     </div>
-                    <div className="col-12 d-flex">
-                        {/* <MarkdownEditor/> */}
+                    <div className="col-12 mt-3 d-flex">
+                        <TextEditor
+                            value={""}
+                            placeholder="Nhập nội dung..."
+                            style={{ width: "100%" }}
+                        />
                     </div>
                 </div>
                 <div className="row mt-2">
@@ -145,40 +168,34 @@ const SendNoti = ({dataUser}) => {
                     </div>
                     
                     {/* Display uploaded files */}
-                    {files.length > 0 ? (
-                        files.map((fileData, index) => (
-                            <div className="col-3 mt-2 ms-2" key={index}>
-                                <div className="attach-file d-flex row">
-                                    <div className="attach-file-icon col-3" style={{padding: '0px'}}>
-                                        {getFileIcon(fileData)}
-                                    </div>
-                                    <div className="col-8" style={{padding: '0px'}}>
-                                        <p className="attach-file-title">
-                                            {fileData.name && fileData.name.length > 19 
-                                                ? `${fileData.name.substring(0, 19)}...` 
-                                                : fileData.name} </p>
-                                        <p className="attach-file-capacity">{fileData.size}</p>
-                                    </div>
-                                    <div className="col-1" style={{padding: '0px'}}>
-                                        <button 
-                                            className="btn btn-sm text-danger" 
-                                            onClick={() => handleRemoveFile(index)}
-                                            style={{background: 'none', border: 'none'}}
-                                        >
-                                            <i className="fa-solid fa-times"></i>
-                                        </button>
-                                    </div>
+                    {files.map((fileData, index) => (
+                        <div className="col-3 mt-2 ms-2" key={index}>
+                            <div className="attach-file d-flex row">
+                                <div className="attach-file-icon col-3" style={{ padding: "0px" }}>
+                                    {getFileIcon(fileData)}
+                                </div>
+                                <div className="col-8" style={{ padding: "0px" }}>
+                                    <p className="attach-file-title" title={fileData.name}>
+                                        {fileData.url ? (
+                                            <a href={fileData.url} target="_blank" rel="noopener noreferrer">
+                                                {fileData.name.length > 19 ? `${fileData.name.substring(0, 19)}...` : fileData.name}
+                                            </a>
+                                        ) : (
+                                            fileData.name
+                                        )}
+                                    </p>
+                                    <p className="attach-file-capacity">{fileData.size}</p>
+                                    {fileData.progress < 100 && <p>Đang tải: {fileData.progress}%</p>}
+                                </div>
+                                <div className="col-1" style={{ padding: "0px" }}>
+                                    <button className="btn btn-sm text-danger" onClick={() => handleRemoveFile(index)}>
+                                        <i className="fa-solid fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        // Example static file (can be removed once upload functionality is working)
-                        <div className="col-3 mt-2">
-                            <i>&lt; &lt; Không có file nào được chọn &gt; &gt;</i>
                         </div>
-                    )}
+                    ))}
                     
-                    {/* Upload button */}
                     <div className="col-1 mt-2 ms-2  d-flex" style={{padding: '0px'}}>
                         <button 
                             className="add-button" 
@@ -199,6 +216,15 @@ const SendNoti = ({dataUser}) => {
                         />
                     </div>
                 </div>
+                <button 
+                    className="add-button" 
+                    style={{padding: '5px 15px', color: 'white', background: '#00B5F1', border: 'none', marginTop: '20px'}}
+                >
+                    <p>
+                        <i className="fa-solid fa-bell me-2"></i>
+                    </p>
+                    Gửi thông báo
+                </button>
             </div>
             {dataUser && <NotificationSelectionModal
                 isOpen={isModalOpen}

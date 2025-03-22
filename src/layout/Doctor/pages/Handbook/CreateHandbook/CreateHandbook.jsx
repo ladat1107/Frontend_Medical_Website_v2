@@ -205,7 +205,7 @@ const CreateHandbook = (props) => {
                             <button
                                 className='button'
                                 onClick={() => { handleSave() }}>
-                                {isLoadingAction ? <i class="fa-solid fa-spinner fa-spin-pulse"></i> : <i className="fa-solid fa-floppy-disk"></i>}
+                                {isLoadingAction ? <i className="fa-solid fa-spinner fa-spin-pulse"></i> : <i className="fa-solid fa-floppy-disk"></i>}
                                 Lưu
                             </button>
                         </div>

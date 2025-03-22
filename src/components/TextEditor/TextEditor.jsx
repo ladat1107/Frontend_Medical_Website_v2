@@ -1,10 +1,11 @@
 import { useMemo, useRef } from 'react';
+import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './TextEditor.scss';
 import { uploadFileToCloudinary, uploadToCloudinary } from '@/utils/uploadToCloudinary';
 
-export default function TextEditor({ value, onChange, placeholder }) {
+export default function TextEditor({ value, onChange, placeholder, style }) {
     const quillRef = useRef(null);
     let icons = ReactQuill.Quill.import('ui/icons');
     icons['file'] = '<i class="fa-solid fa-paperclip"></i>';
@@ -30,7 +31,6 @@ export default function TextEditor({ value, onChange, placeholder }) {
                     const quill = quillRef.current.getEditor(); // Lấy instance Quill từ ref
                     const range = quill.getSelection(); // Lấy vị trí con trỏ hiện tại
                     // quill.insertText(range?.index || 0, `[🖼 Hình ảnh](${imageUrl})`);
-                    quill.insertEmbed(range?.index || 0, 'image', imageUrl);
                 }
             } catch (error) {
                 console.error('Upload failed:', error);
@@ -123,15 +123,26 @@ export default function TextEditor({ value, onChange, placeholder }) {
     ];
 
     return (
-        <ReactQuill
-            ref={quillRef} // Gán ref vào ReactQuill
-            theme="snow"
-            value={value}
-            onChange={onChange}
-            modules={modules}
-            formats={formats}
-            placeholder={placeholder}
-            className="editor-quill"
-        />
+        <div style={style}>
+            <ReactQuill
+                ref={quillRef} // Gán ref vào ReactQuill
+                theme="snow"
+                value={value}
+                onChange={onChange}
+                modules={modules}
+                formats={formats}
+                placeholder={placeholder}
+                className="editor-quill"
+            />
+        </div>
     );
 }
+
+
+             
+TextEditor.propTypes = {
+    value: PropTypes.string,
+    onChange: PropTypes.func,
+    placeholder: PropTypes.string,
+    style: PropTypes.object,
+};

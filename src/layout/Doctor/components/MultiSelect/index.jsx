@@ -5,7 +5,6 @@ import './MultiSelect.scss';
 
 const MultiSelect = ({ options, placeholder, onChange, value, disabled }) => {
   const handleChange = (selectedValues) => {
-    console.log(`selected ${selectedValues}`);
     onChange(selectedValues); 
   };
 

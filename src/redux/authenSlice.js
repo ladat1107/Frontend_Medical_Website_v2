@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { remove } from 'lodash';
 
 const initialState = {
     isLoggedIn: false,

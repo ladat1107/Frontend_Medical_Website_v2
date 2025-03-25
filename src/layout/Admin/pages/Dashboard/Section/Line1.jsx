@@ -42,7 +42,6 @@ const SectionLine1 = () => {
             setExamination({ success, processing, waiting, cancel, all: appoinment.length });
 
             let medicine = respone?.DT?.medicine;
-            console.log(medicine);
             let name = [], quantity = [];
             forEach(medicine, (item) => {
                 name.push(item.name);

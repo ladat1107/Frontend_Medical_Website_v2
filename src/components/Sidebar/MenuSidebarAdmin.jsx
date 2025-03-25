@@ -67,7 +67,6 @@ const MenuSidebar = () => {
                 {
                     key: 'userAdmin1',
                     label: (<NavLink to={PATHS.ADMIN.STAFF_MANAGE}>Nhân viên</NavLink>),
-                    onClick: (value) => { console.log(value) }
                 },
                 {
                     key: 'userAdmin2',

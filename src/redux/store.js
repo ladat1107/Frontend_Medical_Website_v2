@@ -6,7 +6,7 @@ import rootReducer from './reducers'; // Thay thế bằng reducer thực tế c
 const persistConfig = {
     key: 'root',          // key để xác định trạng thái gốc cần lưu
     storage,              // Sử dụng localStorage làm engine
-    whitelist: ['authen'], // Tên các slice mà bạn muốn persist (giữ lại). Bạn có thể liệt kê nhiều slice ở đây.
+    whitelist: ['authen', 'chat'], // Tên các slice mà bạn muốn persist (giữ lại). Bạn có thể liệt kê nhiều slice ở đây.
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -57,6 +57,10 @@ const userService = {
   checkOutAppointment(query = "") {
     return axiosInstance.get(`/api/paymentAppoinmentMomo`, { params: query });
   },
+  sendMessage(data) {
+    console.log(data)
+    return axiosInstance.post(`/api/messageSystem`, data);
+  }
 };
 
 export default userService

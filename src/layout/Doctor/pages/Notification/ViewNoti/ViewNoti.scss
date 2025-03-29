@@ -1,10 +1,34 @@
 @import "../../../../../../src/styles/variables.scss";
 
-.view-noti-container{
+.view-noti-container {
     border-top: 1px solid #dddddd;
     padding: 1.5% 0;
 
-    .date{
+    .noti-search{
+        padding: 5px 10px;
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        width: 40%;
+
+        i{
+            color: #a2a2a2;
+            margin-right: 10px;
+        }
+
+        input{
+            border: none;
+            outline: none;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .date {
         font-family: 'Be Vietnam Pro', sans-serif;
         font-size: 16px;
         font-weight: 400;
@@ -12,41 +36,87 @@
         margin-bottom: 10px;
     }
 
-    .noti-item{
+    .noti-item {
         border: 1px solid #dddddd;
         border-radius: 10px;
         padding: 10px 20px;
         margin-top: 10px;
         cursor: pointer;
 
-        .noti-item-title{
+        .noti-item-title {
             font-family: 'Be Vietnam Pro', sans-serif;
             font-size: 14px;
             font-weight: 600;
             color: #000000;
         } 
 
-        .noti-item-time{
+        .noti-item-time {
             font-family: 'Be Vietnam Pro', sans-serif;
             font-size: 14px;
             font-weight: 400;
             color: #6f6f6f;
         }
         
-        .noti-item-user{
+        .noti-item-user {
             font-family: 'Be Vietnam Pro', sans-serif;
             font-size: 14px;
             font-weight: 400;
             color: $text-head-color-admin;
         }
-        
-        .noti-item{
-            //background-color: #F4F7FE;
-        }
-        .noti-item-content-container{
-            background-color: #F4F7FE;
+
+        .noti-item-content-container {
             border-radius: 5px;
         }
         
+        .noti-item-content {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #000000;
+            margin-top: 10px;
+        }
+        
+        .noti-item-attach-file {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            
+            .attached-file-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 5px;
+                width: fit-content;
+                padding: 8px 8px;
+                border-radius: 5px;
+                cursor: pointer;
+                border: 1px solid rgb(218, 218, 218);
+                
+                .icon-container {
+                    display: flex;
+                    align-items: center;
+                    transform-origin: left center;
+                    width: 24px; 
+                    height: 24px;
+                    flex-shrink: 0; 
+                }
+                
+                .file-name {
+                    font-family: 'Be Vietnam Pro', sans-serif;
+                    font-size: 14px;
+                    font-weight: 400;
+                    color: #0066cc;
+                    text-decoration: none;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
     }
 }

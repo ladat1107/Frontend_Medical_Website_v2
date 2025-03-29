@@ -45,6 +45,7 @@ import { useEffect } from "react";
 import socket from "./Socket/socket";
 import Notification2 from "./layout/Notification/Notification";
 import Notification from "./layout/Doctor/pages/Notification/notification";
+import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
 function App() {
 
   useEffect(() => {
@@ -103,6 +104,7 @@ function App() {
             <Route path={PATHS.ADMIN.HANDBOOK_MANAGE} element={<HandbookAdmin />} />
             <Route path={`${PATHS.ADMIN.HANDBOOK_DETAIL}/:id`} element={<HandbookAdminDetail />} />
             <Route path={PATHS.ADMIN.SCHEDULE_MANAGE} element={<ScheduleManage />} />
+            <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
           </Route>
           <Route element={<DoctorLayout />}>
             <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />
@@ -120,7 +122,6 @@ function App() {
           </Route>
         </Route>
       </Routes>
-      <Notification2 />
     </ConfigProvider>
   );
 }

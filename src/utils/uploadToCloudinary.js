@@ -106,23 +106,18 @@ export const uploadAndDeleteToCloudinary = async (file, folder, oldLink, onProgr
     }
 };
 
-// Hàm upload file lên Cloudinary
 export const uploadFileToCloudinary = async (file, folder = "documents", onProgress) => {
-    const timestamp = Math.floor(Date.now() / 1000);
-    const signature = generateSignature(timestamp, folder);
     const formData = new FormData();
-
+    
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET);
-    formData.append("api_key", CLOUDINARY_API_KEY);
-    formData.append("timestamp", timestamp);
-    formData.append("signature", signature);
     formData.append("folder", folder);
-    formData.append("resource_type", "raw"); // Cho phép upload mọi loại file
+    formData.append("public_id", file.name); 
+    formData.append("resource_type", "raw");
 
     try {
         const response = await axios.post(
-            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`, // Endpoint cho file
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`,
             formData,
             {
                 headers: { "Content-Type": "multipart/form-data" },
@@ -132,7 +127,37 @@ export const uploadFileToCloudinary = async (file, folder = "documents", onProgr
                 },
             }
         );
-        return response.data.secure_url; // Trả về link file
+
+        return response.data.secure_url;
+    } catch (error) {
+        console.error("Lỗi khi upload file lên Cloudinary:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
+
+
+export const uploadFileToCloudinary2 = async (file, folder = "documents", onProgress) => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("folder", folder);
+    formData.append("resource_type", "auto"); // Cho phép upload mọi loại file
+
+    try {
+        const response = await axios.post(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onProgress?.(percentCompleted);
+                },
+            }
+        );
+        return { url: response.data.secure_url, delete_token: response.data.delete_token }; 
     } catch (error) {
         console.error("Lỗi khi upload file lên Cloudinary:", error.response || error.message);
         throw error;

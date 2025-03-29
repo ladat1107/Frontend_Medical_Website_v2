@@ -51,3 +51,27 @@ export const formatDateDD_MM = (dateString) => {
   const [year, month, day] = dateString.split("-");
   return `${day}/${month}`;
 }
+
+export const timeAgo = (isoString) => {
+  const now = new Date();
+  const past = new Date(isoString);
+  const diffInSeconds = Math.floor((now - past) / 1000);
+
+  if (diffInSeconds < 60) {
+      return `${diffInSeconds} giây trước`;
+  }
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+      return `${diffInMinutes} phút trước`;
+  }
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+      return `${diffInHours} tiếng trước`;
+  }
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays <= 2) {
+      return `${diffInDays} ngày trước`;
+  }
+  return past.toLocaleDateString('vi-VN');
+}
+

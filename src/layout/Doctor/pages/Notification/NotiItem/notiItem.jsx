@@ -1,5 +1,10 @@
+import ParseHtml from '@/components/ParseHtml';
+import { timeAgo } from '@/utils/formatDate';
 import PropTypes from 'prop-types';
 import { useState, useRef, useEffect } from 'react';
+import AttachedFile from './attachedFile';
+import { message } from 'antd';
+import { updateNotification } from '@/services/doctorService';
 
 const NotiItem = ({ noti }) => {
     const [isContentVisible, setIsContentVisible] = useState(false);
@@ -11,7 +16,7 @@ const NotiItem = ({ noti }) => {
 
     useEffect(() => {
         if (contentRef.current) {
-            setContentHeight(contentRef.current.scrollHeight + 15);
+            setContentHeight(contentRef.current.scrollHeight + 10);
         }
         if (previewRef.current) {
             setPreviewHeight(previewRef.current.scrollHeight);
@@ -24,6 +29,19 @@ const NotiItem = ({ noti }) => {
             setTimeout(() => {
                 setIsContentVisible(true);
             }, 300);
+            
+            if (noti.status === 1) {
+                let data = {
+                    id: noti.id,
+                    receiverId: noti.receiverId,
+                    title: noti.title,
+                    htmlDescription: noti.htmlDescription,
+                    status: 2
+                }
+                updateNotification(data)
+                noti.status = 2;
+            }
+
         } else {
             setIsContentVisible(false);
             setTimeout(() => {
@@ -41,11 +59,12 @@ const NotiItem = ({ noti }) => {
             >
                 <div className="row col-9">
                     <div className='d-flex'>
-                        <p className="noti-item-title me-2">
+                        <p className={`noti-item-title me-2`}
+                            style={{opacity: `${noti.status === 2 && isPreviewVisible ? '0.5' : '1'}`}}>
                             {noti.title || 'Title'}
                         </p>
-                        <p className='noti-item-time'>
-                            {noti.time || '10 phút trước'}
+                        <p className='noti-item-time' style={{ opacity: '0.8' }}>
+                            {timeAgo(noti.date) || ''}
                         </p>
                         <span style={{ marginLeft: '5px', transition: 'transform 0.3s' }}>
                             {isContentVisible ? <i className="fa-solid fa-caret-up"></i> : <i className="fa-solid fa-caret-down"></i>}
@@ -58,30 +77,32 @@ const NotiItem = ({ noti }) => {
                             height: isPreviewVisible ? `${previewHeight}px` : '0px',
                             overflow: 'hidden',
                             transition: 'height 0.2 ease-in-out',
-                            opacity: isPreviewVisible ? 1 : 0,
                             transform: isPreviewVisible ? 'translateY(0)' : 'translateY(-10px)',
                             transitionProperty: 'height, opacity, transform',
                             transitionDuration: '0.3s',
-                            transitionTimingFunction: 'ease-in-out'
+                            transitionTimingFunction: 'ease-in-out',
+                            opacity: `${noti.status === 2 ? '0.5' : '1'}`
                         }}
                     >
-                        {noti.content && noti.content.length > 100 
-                            ? `${noti.content.substring(0, 100)}...` 
-                            : noti.content}
+                        {noti.htmlDescription && noti.htmlDescription.length > 100 
+                            ? <ParseHtml htmlString={`${noti?.htmlDescription.substring(0, 100)}...`|| 'Content'} />  
+                            : <ParseHtml htmlString={noti?.htmlDescription || 'Content'} />}
                     </div>
                 </div>
                 <div className="d-flex row col-3">
-                    <p className="noti-item-title">
+                    <p className="noti-item-title" style={{opacity: `${noti.status === 2 && isPreviewVisible ? '0.5' : '1'}`}}>
                         Người gửi
                     </p>
-                    <p className='noti-item-time mt-1'>
-                        {noti.doctor || 'Bác sĩ: Nguyễn Văn A'}
+                    <p className='noti-item-time mt-1' style={{opacity: `${noti.status === 2 && isPreviewVisible ? '0.5' : '1'}`}}>
+                        {noti.NotificationSenderData.lastName + ' '
+                            + noti.NotificationSenderData.firstName
+                            || 'Bác sĩ: Nguyễn Văn A'}
                     </p>
                 </div>
             </div>
             
             <div 
-                className={`noti-item-content-container ${isContentVisible ? 'mt-2 mb-2' : ''}`}
+                className={`noti-item-content-container}`}
                 style={{
                     height: isContentVisible ? `${contentHeight}px` : '0px',
                     overflow: 'hidden',
@@ -93,10 +114,17 @@ const NotiItem = ({ noti }) => {
                     transitionTimingFunction: 'ease-in-out'
                 }}
             >
-                <div ref={contentRef} className="noti-item-content row mt-2 px-3">
-                    <div className="col-12">
-                        {noti.content || 'Content'}
+                <div ref={contentRef} className="noti-item-content row px-1">
+                    <div className="col-12" >
+                        <ParseHtml htmlString={noti?.htmlDescription || 'Content'} />
                     </div>
+                    {noti?.NotificationAttachFileData?.length > 0 && (
+                        <div className="noti-item-attach-file">
+                            {noti.NotificationAttachFileData.map((file, index) => (
+                                <AttachedFile key={index} link={file.link} type={file.type} />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

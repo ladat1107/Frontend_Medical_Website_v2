@@ -1,5 +1,4 @@
 import axios from "@/utils/axiosInstance";
-import process from 'node:process';
 
 export const getUserByCid = (cid) => {
     return axios.get(`/api/getUserByCid?cid=${cid}`)
@@ -162,17 +161,22 @@ export const getAllUserToNotify = async () => {
     return axios.get(`/api/getAllUserToNotify`);
 }
 
-export const sendNotification = async (message = 'Thông báo mới từ hệ thống', type = 'success') => {
+export const getAllNotification = async (page, limit, search) => {
+    return axios.get(`/api/getAllNotifications?page=${page}&limit=${limit}&search=${search}`);
+}
+
+export const createNotification = async (data) => {
+    return axios.post(`/api/createNotification`, data);
+}
+
+export const updateNotification = async (data) => {
+    return axios.put(`/api/updateNotification`, data);
+}
+
+export const sendNotification = (title, htmlDescription, firstName, lastName, date, receiverIds) => {
     try {
-      const response = await axios.post('/api/send-notification', {
-        message,
-        type
-      }, {
-        baseURL: 'http://localhost:8843', 
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json'
-        }
+      const response = axios.post('/api/send-notification', {
+        title, htmlDescription, firstName, lastName,  date, receiverIds
       });
       console.log('Phản hồi thông báo:', response.data);
       return response.data;

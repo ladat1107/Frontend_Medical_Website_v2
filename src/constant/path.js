@@ -12,6 +12,7 @@ export const PATHS = {
         HANDBOOK_MANAGE: "/adminHandbook",
         HANDBOOK_DETAIL: "/adminHandbookDetail",
         SCHEDULE_MANAGE: "/adminSchedule",
+        NOTIFICATION: "/adminNotification",
         //EXAMINATION_MANAGE: "/adminExamination",
     },
     STAFF: {

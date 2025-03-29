@@ -24,8 +24,8 @@ const ViewNoti = ({ initialNotifications = { count: 0, rows: [] } }) => {
                 htmlDescription: data.htmlDescription,
                 date: data.date,
                 NotificationSenderData: {
-                    firstName: data.senderName,
-                    lastName: data.senderLastName,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
                 },
                 NotificationAttachFileData: {
                     link: data.link,
@@ -54,19 +54,19 @@ const ViewNoti = ({ initialNotifications = { count: 0, rows: [] } }) => {
     useEffect(() => {
         // Phân loại thông báo theo ngày
         const today = new Date().toDateString()
-        
+
         const todayNoti = notifications.rows.filter(noti => {
             const createdDate = noti.createdAt || noti.date
             const notiDate = new Date(createdDate).toDateString()
             return notiDate === today
         })
-        
+
         const earlierNoti = notifications.rows.filter(noti => {
             const createdDate = noti.createdAt || noti.date
             const notiDate = new Date(createdDate).toDateString()
             return notiDate !== today
         })
-        
+
         setTodayNotifications(todayNoti)
         setEarlierNotifications(earlierNoti)
     }, [notifications])

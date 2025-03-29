@@ -42,20 +42,21 @@ import Instruction from "./layout/User/pages/Instruction/Instruction";
 import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
 import { useEffect } from "react";
-import socket from "./Socket/socket";
+import socket, { getSocket } from "./Socket/socket";
 import Notification2 from "./layout/Notification/Notification";
 import Notification from "./layout/Doctor/pages/Notification/notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
 function App() {
 
   useEffect(() => {
-    socket.on("receiveNotification", (data) => {
-      console.log("🔔 Nhận thông báo:", data);
-      alert(`Thông báo mới: ${data.message}`);
-    });
+    // Khởi tạo socket khi ứng dụng khởi động
+    const socket = getSocket();
 
+    // Cleanup khi component unmount
     return () => {
-      socket.off("receiveNotification");
+      if (socket) {
+        socket.disconnect();
+      }
     };
   }, []);
 

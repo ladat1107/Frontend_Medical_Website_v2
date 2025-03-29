@@ -13,7 +13,7 @@ import { faArrowLeft, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
-import socket from "@/Socket/socket";
+import socket, { authenticateSocket } from "@/Socket/socket";
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 const Login = () => {
     const open = {
@@ -64,9 +64,12 @@ const Login = () => {
     const onFinish = async (values) => {
         setIsLoading(true);
         try {
-            let respone = await handleLogin(values);
-            if (respone?.EC === 0) {
-                dispatch(login(respone.DT));
+            let response = await handleLogin(values);
+            if (response?.EC === 0) {
+                dispatch(login(response.DT));
+
+                // Xác thực socket sau khi đăng nhập thành công
+                authenticateSocket(response.DT.accessToken);
 
                 if (rememberMe) {
                     let remember = {
@@ -75,13 +78,17 @@ const Login = () => {
                     }
                     dispatch(addRememberLogin(remember));
                 }
-                redirect(respone.DT.user.role);
+                redirect(response.DT.user.role);
             } else {
-                message.error(respone?.EM || 'Đăng nhập thất bại')
+                message.error(response?.EM || 'Đăng nhập thất bại')
             }
-        } catch (e) { message.error('Đăng nhập thất bại') }
-        finally { setIsLoading(false) }
+        } catch (e) {
+            message.error('Đăng nhập thất bại')
+        } finally {
+            setIsLoading(false)
+        }
     };
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };

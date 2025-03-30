@@ -47,7 +47,16 @@
         align-items: center;
         justify-content: flex-end;
         width: 60%;
+        .item {
+          svg {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+          }
 
+          @include center-flex;
+          gap: 5px;
+        }
         .account-btn {
           width: 120px;
           height: 40px;

@@ -3,8 +3,8 @@ import { timeAgo } from '@/utils/formatDate';
 import PropTypes from 'prop-types';
 import { useState, useRef, useEffect } from 'react';
 import AttachedFile from './attachedFile';
-import { message } from 'antd';
 import { updateNotification } from '@/services/doctorService';
+import './NotiItem.scss'
 
 const NotiItem = ({ noti }) => {
     const [isContentVisible, setIsContentVisible] = useState(false);
@@ -51,7 +51,8 @@ const NotiItem = ({ noti }) => {
     };
     
     return (
-        <div className="noti-item">
+        <div className="noti-item"
+            style={{background: `${noti.status === 2 ? 'white' : '#f6fcff'}`}}>
             <div 
                 className="noti-item-header row" 
                 onClick={toggleContent}
@@ -59,8 +60,7 @@ const NotiItem = ({ noti }) => {
             >
                 <div className="row col-9">
                     <div className='d-flex'>
-                        <p className={`noti-item-title me-2`}
-                            style={{opacity: `${noti.status === 2 && isPreviewVisible ? '0.5' : '1'}`}}>
+                        <p className={`noti-item-title me-2`}>
                             {noti.title || 'Title'}
                         </p>
                         <p className='noti-item-time' style={{ opacity: '0.8' }}>
@@ -80,8 +80,7 @@ const NotiItem = ({ noti }) => {
                             transform: isPreviewVisible ? 'translateY(0)' : 'translateY(-10px)',
                             transitionProperty: 'height, opacity, transform',
                             transitionDuration: '0.3s',
-                            transitionTimingFunction: 'ease-in-out',
-                            opacity: `${noti.status === 2 ? '0.5' : '1'}`
+                            transitionTimingFunction: 'ease-in-out'
                         }}
                     >
                         {noti.htmlDescription && noti.htmlDescription.length > 100 
@@ -90,10 +89,10 @@ const NotiItem = ({ noti }) => {
                     </div>
                 </div>
                 <div className="d-flex row col-3">
-                    <p className="noti-item-title" style={{opacity: `${noti.status === 2 && isPreviewVisible ? '0.5' : '1'}`}}>
+                    <p className="noti-item-title">
                         Người gửi
                     </p>
-                    <p className='noti-item-time mt-1' style={{opacity: `${noti.status === 2 && isPreviewVisible ? '0.5' : '1'}`}}>
+                    <p className='noti-item-time mt-1'>
                         {noti.NotificationSenderData.lastName + ' '
                             + noti.NotificationSenderData.firstName
                             || 'Bác sĩ: Nguyễn Văn A'}
@@ -111,7 +110,7 @@ const NotiItem = ({ noti }) => {
                     transform: isContentVisible ? 'translateY(0)' : 'translateY(10px)',
                     transitionProperty: 'height, opacity, transform',
                     transitionDuration: '0.3s',
-                    transitionTimingFunction: 'ease-in-out'
+                    transitionTimingFunction: 'ease-in-out',
                 }}
             >
                 <div ref={contentRef} className="noti-item-content row px-1">

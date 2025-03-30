@@ -17,7 +17,7 @@ const SendNoti = ({ dataUser }) => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [files, setFiles] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
-    const [htmlDescription, setHtmlDescription] = useState('B');
+    const [htmlDescription, setHtmlDescription] = useState('');
     const [attachedFiles, setAttachedFiles] = useState([]);
     const [isSending, setIsSending] = useState(false);
     let { user } = useSelector((state) => state.authen);
@@ -188,10 +188,10 @@ const SendNoti = ({ dataUser }) => {
     };
 
     // Hàm xử lý khi gửi thông báo qua socket
-    const handleSocketNotification = (title, htmlDescription, firstName, lastName, date, receiverIds) => {
+    const handleSocketNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds) => {
         try {
             // Gửi thông báo qua socket với tiêu đề và danh sách người nhận
-            sendNotification(title, htmlDescription, firstName, lastName, date, receiverIds);
+            sendNotification(title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds);
             console.log('Đã gửi thông báo socket');
         } catch (error) {
             console.error('Lỗi gửi thông báo socket:', error);
@@ -247,7 +247,7 @@ const SendNoti = ({ dataUser }) => {
                 message.success('Thông báo đã được gửi thành công');
 
                 // Sau khi lưu thành công vào database, gửi thông báo qua socket
-                handleSocketNotification(title, htmlDescription, firstName, lastName, date, receiverIds);
+                handleSocketNotification(title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds);
 
                 // Reset form sau khi gửi thành công
                 textAreaRef.current.value = '';
@@ -269,7 +269,7 @@ const SendNoti = ({ dataUser }) => {
 
     return (
         <div className="send-noti-cont">
-            <div className="header-send-noti " >
+            <div className="header-send-noti" >
                 <textarea
                     ref={textAreaRef}
                     placeholder="Tiêu đề thông báo..."
@@ -321,7 +321,6 @@ const SendNoti = ({ dataUser }) => {
                         )}
                     </div>
 
-                    {/* File upload area */}
                     <div className="col-12 mt-2">
                         <div className="row">
                             {files.map((fileData, index) => (
@@ -357,7 +356,6 @@ const SendNoti = ({ dataUser }) => {
                                 </div>
                             ))}
 
-                            {/* Add file button */}
                             <div className="col-md-3 col-sm-6 mt-2">
                                 <button
                                     className="add-button d-flex align-items-center justify-content-center"

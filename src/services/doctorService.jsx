@@ -162,6 +162,9 @@ export const getAllUserToNotify = async () => {
 }
 
 export const getAllNotification = async (page, limit, search) => {
+    page = page || 1;
+    limit = limit || 10;
+    search = search || '';
     return axios.get(`/api/getAllNotifications?page=${page}&limit=${limit}&search=${search}`);
 }
 
@@ -173,19 +176,16 @@ export const updateNotification = async (data) => {
     return axios.put(`/api/updateNotification`, data);
 }
 
-export const sendNotification = (title, htmlDescription, firstName, lastName, date, receiverIds) => {
-    try {
-      const response = axios.post('/api/send-notification', {
-        title, htmlDescription, firstName, lastName,  date, receiverIds
-      });
-      console.log('Phản hồi thông báo:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Chi tiết lỗi gửi thông báo:', {
-        response: error.response ? error.response.data : 'Không có phản hồi',
-        message: error.message,
-        config: error.config
-      });
-      throw error;
-    }
+export const markAllRead = async (data) => {
+    return axios.put(`/api/markAllRead`, data);
+}
+
+export const sendNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds) => {
+    const response = axios.post('/api/send-notification', {
+        title, 
+        htmlDescription, 
+        firstName, 
+        lastName, 
+        date, attachedFiles, receiverIds});
+    return response.data;
 };

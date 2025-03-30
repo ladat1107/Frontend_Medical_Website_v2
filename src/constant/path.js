@@ -23,7 +23,7 @@ export const PATHS = {
         HANDBOOK: "/doctorHandbook",
         SCHEDULE: "/doctorSchedule",
         PROFILE: "/doctorProfile",
-        NOTIFICATION: "/notification", 
+        NOTIFICATION: "/staffNotification", 
     },
     RECEPTIONIST: {
         DASHBOARD: "/receptionist",
@@ -45,6 +45,7 @@ export const PATHS = {
         BOOKING: "/make-appointment",
         INSTRUCTION: "/instruction",
         LOGIN: "/login",
+        NOTIFICATION: "/notification",
     },
     SYSTEM: {
         GET_NUMBER: "/getNumber",

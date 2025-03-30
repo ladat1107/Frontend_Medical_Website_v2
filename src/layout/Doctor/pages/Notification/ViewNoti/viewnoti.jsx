@@ -1,99 +1,115 @@
 import React, { useState, useEffect } from 'react'
 import NotiItem from '../NotiItem/notiItem'
-import './ViewNoti.scss'
 import PropTypes from 'prop-types'
 import socket from '@/Socket/socket'
+import './ViewNoti.scss'
 
-const ViewNoti = ({ initialNotifications = { count: 0, rows: [] } }) => {
+const ViewNoti = ({ initialNotifications = { count: 0, rows: [] }, onUnreadCountChange }) => {
     const [notifications, setNotifications] = useState(initialNotifications)
+    const [socketNotifications, setSocketNotifications] = useState([])
     const [todayNotifications, setTodayNotifications] = useState([])
     const [earlierNotifications, setEarlierNotifications] = useState([])
-
+    
+    // Cập nhật state khi initialNotifications thay đổi
     useEffect(() => {
-        // Cập nhật state ban đầu
         setNotifications(initialNotifications)
     }, [initialNotifications])
-
+    
+    // Xử lý khi nhận thông báo mới từ socket
     useEffect(() => {
-        // Xử lý khi nhận được thông báo mới từ socket
         const handleNewNotification = (data) => {
-
             const newNotification = {
+                id: Date.now(),
                 title: data.title,
-                status: 1,
+                status: 1, // Chưa đọc
                 htmlDescription: data.htmlDescription,
                 date: data.date,
                 NotificationSenderData: {
                     firstName: data.firstName,
                     lastName: data.lastName,
                 },
-                NotificationAttachFileData: {
-                    link: data.link,
-                    type: data.type,
-                }
+                NotificationAttachFileData: data?.attachedFiles,
             }
-
-            setNotifications(prev => {
-                const updatedRows = [newNotification, ...prev.rows]
-                return {
-                    count: updatedRows.length,
-                    rows: updatedRows
-                }
-            })
+            
+            setSocketNotifications(prev => [newNotification, ...prev])
         }
-
-        // Đăng ký lắng nghe sự kiện thông báo
+        
         socket.on("notification", handleNewNotification)
-
-        // Hủy đăng ký khi component unmount
         return () => {
             socket.off("notification", handleNewNotification)
         }
     }, [])
-
+    
+    // Kết hợp thông báo từ API và từ socket
     useEffect(() => {
-        // Phân loại thông báo theo ngày
+        const allNotifications = {
+            count: notifications.rows.length + socketNotifications.length,
+            rows: [...socketNotifications, ...notifications.rows]
+        }
+        
         const today = new Date().toDateString()
-
-        const todayNoti = notifications.rows.filter(noti => {
+        
+        const todayNoti = allNotifications.rows.filter(noti => {
             const createdDate = noti.createdAt || noti.date
             const notiDate = new Date(createdDate).toDateString()
             return notiDate === today
         })
-
-        const earlierNoti = notifications.rows.filter(noti => {
+        
+        const earlierNoti = allNotifications.rows.filter(noti => {
             const createdDate = noti.createdAt || noti.date
             const notiDate = new Date(createdDate).toDateString()
             return notiDate !== today
         })
-
+        
         setTodayNotifications(todayNoti)
         setEarlierNotifications(earlierNoti)
-    }, [notifications])
-
+        
+        // Tính toán số thông báo chưa đọc từ socket
+        const socketUnreadCount = socketNotifications.filter(noti => noti.status === 1).length;
+        
+        // Thông báo cho component cha về số thông báo chưa đọc mới
+        if (onUnreadCountChange && typeof onUnreadCountChange === 'function') {
+            onUnreadCountChange(socketUnreadCount);
+        }
+    }, [notifications, socketNotifications, onUnreadCountChange])
+    
+    // Lắng nghe sự kiện đánh dấu tất cả đã đọc
+    useEffect(() => {
+        const handleMarkAllAsRead = () => {
+            setSocketNotifications(prev => 
+                prev.map(noti => ({ ...noti, status: 2 }))
+            )
+        }
+        
+        document.addEventListener('markAllNotificationsAsRead', handleMarkAllAsRead)
+        return () => {
+            document.removeEventListener('markAllNotificationsAsRead', handleMarkAllAsRead)
+        }
+    }, [])
+    
     return (
         <div className="notification-container">
-            {notifications.count === 0 ? (
+            {notifications.count === 0 && socketNotifications.length === 0 ? (
                 <p className="no-notifications">Không có thông báo nào</p>
             ) : (
                 <>
                     {todayNotifications.length > 0 && (
                         <>
-                            <p className="date">Hôm nay</p>
+                            <p className="date mt-4">Hôm nay</p>
                             <div className='list-noti'>
                                 {todayNotifications.map((noti) => (
-                                    <NotiItem key={noti.id} noti={noti} />
+                                    <NotiItem key={noti.id || `today-${Date.now()}-${Math.random()}`} noti={noti} />
                                 ))}
                             </div>
                         </>
                     )}
-
+                    
                     {earlierNotifications.length > 0 && (
                         <>
-                            <p className="date">Trước đó</p>
+                            <p className="date mt-4">Trước đó</p>
                             <div className='list-noti'>
                                 {earlierNotifications.map((noti) => (
-                                    <NotiItem key={noti.id} noti={noti} />
+                                    <NotiItem key={noti.id || `earlier-${Date.now()}-${Math.random()}`} noti={noti} />
                                 ))}
                             </div>
                         </>
@@ -108,7 +124,8 @@ ViewNoti.propTypes = {
     initialNotifications: PropTypes.shape({
         count: PropTypes.number,
         rows: PropTypes.array
-    })
+    }),
+    onUnreadCountChange: PropTypes.func
 }
 
 export default ViewNoti

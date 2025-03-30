@@ -43,9 +43,10 @@ import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
 import { useEffect } from "react";
 import socket, { getSocket } from "./Socket/socket";
-import Notification2 from "./layout/Notification/Notification";
 import Notification from "./layout/Doctor/pages/Notification/notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
+import NotificationUser from "./layout/User/pages/Notification/notification";
+import { NotificationProvider } from './contexts/NotificationContext.jsx';
 function App() {
 
   useEffect(() => {
@@ -75,6 +76,7 @@ function App() {
         },
       }}
     >
+      <NotificationProvider>
       <Routes>
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
@@ -88,6 +90,7 @@ function App() {
           <Route path={`${PATHS.HOME.HANDBOOK_DETAIL}/:id`} element={<BlogDetail />} />
           <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
           <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
+          <Route path={`${PATHS.HOME.NOTIFICATION}`} element={<NotificationUser />} />
         </Route>
         <Route path={PATHS.HOME.LOGIN} element={<Login />} />
         <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
@@ -123,6 +126,7 @@ function App() {
           </Route>
         </Route>
       </Routes>
+      </NotificationProvider>
     </ConfigProvider>
   );
 }

@@ -9,11 +9,9 @@ import { TIMESLOTS, TYPE_NUMBER } from "@/constant/value";
 import { convertDateTime } from "@/utils/formatDate";
 import DropdownSpecialty from "../../components/Dropdown/DropdownSpecialty";
 import userService from "@/services/userService";
-import { set } from "lodash";
 import Loading from "@/components/Loading/Loading";
 import dayjs from "dayjs";
 import StepModal from "../../components/StepModal/StepModal";
-import Notification from "@/layout/Notification/Notification";
 
 const ReceptionistDashboard = () => {
     let [type, setType] = useState(TYPE_NUMBER.NORMAL);
@@ -290,7 +288,6 @@ const ReceptionistDashboard = () => {
     // #region Return
     return (
         <div className="dashboard-container">
-            <Notification/>
             <div className="dashboard-header ms-1 row gap2">
                 {/* <div className="col-3 statistical-item">
                     <div className="row">

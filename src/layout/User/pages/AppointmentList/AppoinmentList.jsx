@@ -158,7 +158,7 @@ const AppointmentList = () => {
                                         <div className="patient-actions">
                                             {profile?.status === STATUS_BE.INACTIVE &&  //Đã hủy
                                                 <span className="btn cancel">{profile?.paymentId ? "Đã hoàn tiền" : "Đã hủy"}</span>}
-                                            {profile?.status !== STATUS_BE.INACTIVE && profile?.status !== STATUS_BE.PENDING && <span className="status-success">Đã khám</span>  //Đã xác nhận}
+                                            {profile?.status !== STATUS_BE.INACTIVE && profile?.status !== STATUS_BE.PENDING && <span className="status-success">Đã hoàn thành</span>  //Đã xác nhận}
                                             }
                                             {profile?.status === STATUS_BE.PENDING &&  //Chờ xác nhận}
                                                 <>

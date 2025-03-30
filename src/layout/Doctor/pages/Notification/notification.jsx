@@ -3,11 +3,10 @@ import './Notification.scss'
 import ViewNoti from './ViewNoti/viewnoti';
 import SendNoti from './SendNoti/sendnoti';
 import { useMutation } from '@/hooks/useMutation';
-import { getAllNotification, getAllUserToNotify } from '@/services/doctorService';
-import { Pagination } from 'antd';
+import { getAllNotification, getAllUserToNotify, markAllRead } from '@/services/doctorService';
+import { message, Pagination } from 'antd';
 import { useSelector } from 'react-redux';
-import { ALL_ROLE } from '@/constant/role';
-import { set } from 'lodash';
+import { removeExtraSpaces } from '@/utils/formatString';
 
 const Notification = () => {
     let { user } = useSelector((state) => state.authen);
@@ -19,10 +18,13 @@ const Notification = () => {
     const [userDataLoaded, setUserDataLoaded] = useState(false);
     const [notiDataLoaded, setNotiDataLoaded] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(100);
+    const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
     const [search, setSearch] = useState('');
     const [unreadCount, setUnreadCount] = useState(0);
+    const [searchValue, setSearchValue] = useState(null);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [socketUnreadCount, setSocketUnreadCount] = useState(0);
 
     const handlePageChange = (page, pageSize) => {
         setCurrentPage(page);
@@ -34,7 +36,15 @@ const Notification = () => {
     };
 
     const handleSearchChange = (e) => {
-        setSearch(e.target.value);
+        const value = removeExtraSpaces(e.target.value);
+        setSearch(value);
+        setSearchValue(value);
+    };
+
+    const handleSeach = async () => {
+        setSearchLoading(true);
+        await fetchAllNoti();
+        setSearchLoading(false);
     };
 
     const isDeanById = (id) => {
@@ -46,6 +56,26 @@ const Notification = () => {
         );
     };
 
+    const handleMarkAllAsRead = () => {
+        try {
+            markAllRead();  
+            
+            setNotiData(prev => ({
+                ...prev,
+                rows: prev.rows.map((noti) => ({ ...noti, status: 2 }))
+            }));
+            
+            setUnreadCount(0);
+            setSocketUnreadCount(0);
+            
+            document.dispatchEvent(new CustomEvent('markAllNotificationsAsRead'));
+            
+            message.success("Đánh dấu tất cả thông báo đã đọc thành công!");
+        } catch (error) {
+            console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
+        }
+    };
+
     let {
         data: dataUser,
         loading: listUserLoading,
@@ -55,7 +85,6 @@ const Notification = () => {
     useEffect(() => {
         if (dataUser && dataUser.DT !== undefined) {
             setUserData(dataUser.DT);
-            console.log(dataUser.DT);
             setUserDataLoaded(true);
         }
     }, [dataUser]);
@@ -68,7 +97,7 @@ const Notification = () => {
 
     useEffect(() => {
         if (dataNoti && dataNoti.DT !== undefined) {
-            setTotal(dataNoti.DT.count);
+            setTotal(dataNoti.DT.totalNotifications);
             setNotiData(dataNoti.DT.notifications);
             setUnreadCount(dataNoti.DT.unreadCount);
             setNotiDataLoaded(true);
@@ -88,17 +117,38 @@ const Notification = () => {
 
     useEffect(() => {
         fetchAllNoti();
-    }, [currentPage, search]);
+    }, [currentPage]);
 
     const renderContent = () => {
         if (selectedRadio === 'viewnoti') {
             return (
                 <div className='view-noti-container'>
+                    <div className='d-flex align-items-center justify-content-between gap-2'>
                     <div className='noti-search'>
-                        <i className="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" placeholder="Tìm kiếm thông báo" onChange={handleSearchChange}/>
+                        <input type="text" placeholder="Nhập để tìm kiếm..." onChange={handleSearchChange}/>
+                        {searchLoading ? (
+                            <i className="fa-solid fa-spinner fa-spin"></i>
+                        ) : (
+                            <i className="fa-solid fa-magnifying-glass" 
+                            style={{ color: searchValue ? "#003D80" : "" }}
+                            onClick={handleSeach}
+                            />
+                        )}
                     </div>
-                    <ViewNoti initialNotifications={notiData} />
+                        <button 
+                            className='button' 
+                            onClick={handleMarkAllAsRead}
+                            disabled={(unreadCount === 0) && (socketUnreadCount === 0)} 
+                        >
+                            <i className="fa-solid fa-check" ></i>
+                            Đánh dấu tất cả đã đọc
+                        </button>
+                    </div>
+                    
+                    <ViewNoti 
+                        initialNotifications={notiData}
+                        onUnreadCountChange={(count) => setSocketUnreadCount(count)}
+                    />
                     
                     <div className='row mt-3'>
                         {notiData.count > 0 && (
@@ -134,12 +184,6 @@ const Notification = () => {
             <div className='header-send-noti'>
                 <div className="d-flex justify-content-between align-items-center">
                     <div className='text'>Thông báo</div>
-                    <div>
-                        <button className='button'>
-                            <i className="fa-solid fa-check"></i>
-                            Đánh dấu là đã đọc
-                        </button>
-                    </div>
                 </div>
                 {loading ? (
                     <div>

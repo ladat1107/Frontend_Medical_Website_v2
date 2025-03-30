@@ -27,6 +27,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true, // Mở trình duyệt khi chạy dev
+    host: '0.0.0.0'
   },
   optimizeDeps: {
     include: ["swiper"], // Đảm bảo Swiper được tối ưu hóa

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from 'antd';
-import AdminFooter from './components/AdminFooter/AdminFooter';
 import AdminHeader from './components/AdminHeader/AdminHeader';
 import './Admin.scss';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ROLE } from '@/constant/role';
-import { PATHS } from '@/constant/path';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@/redux/authenSlice';
 import Sidebar from '@/components/Sidebar/SidebarAdmin';
+import { handleLogout } from '@/redux/actions/authenActions';
 const { Content } = Layout;
 
 const AdminLayout = () => {
@@ -20,8 +18,7 @@ const AdminLayout = () => {
     const location = useLocation();
     useEffect(() => {
         if (user.role !== ROLE.ADMIN) {  // Clears the localStorage (optional)
-            dispatch(logout());
-            navigate(PATHS.HOME.LOGIN);
+            dispatch(handleLogout());
         }
     }, [location, user.role, dispatch, navigate]);
     // Cập nhật kích thước màn hình khi thay đổi

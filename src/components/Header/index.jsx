@@ -5,7 +5,6 @@ import Dropdown from "../Dropdown";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/redux/authenSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarCheck, faHospital, } from "@fortawesome/free-regular-svg-icons";
 import { faStethoscope, faSyringe, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +19,8 @@ import NotiItem from "@/layout/Doctor/pages/Notification/NotiItem/notiItem";
 import { useMutation } from "@/hooks/useMutation";
 import { getAllNotification } from "@/services/doctorService";
 
+import { handleLogout } from "@/redux/actions/authenActions";
+import { ROLE } from "@/constant/role";
 // Tạo instance của classnames với bind styles
 const cx = classNames.bind(styles);
 
@@ -140,6 +141,9 @@ function Header() {
         { title: "Thông tin cá nhân", icon: null, action: PATHS.HOME.PROFILE },
         { title: "Lịch sử đặt hẹn", icon: null, action: PATHS.HOME.APPOINTMENT_LIST },
         { title: "Thông báo cá nhân", icon: null, action: PATHS.HOME.NOTIFICATION },
+        ...(user.role === ROLE.ADMIN || user.staff ? [{
+          title: "Trang quản lý", icon: null, action: user.role === ROLE.ADMIN ? PATHS.ADMIN.DASHBOARD : PATHS.STAFF.DASHBOARD
+        }] : [])
       ],
     }] : [])
   ];
@@ -247,7 +251,7 @@ function Header() {
                 </div>
               }
               {user ?
-                <div className={cx("account-btn", "header-text")} onClick={() => { dispatch(logout()), navigate(PATHS.HOME.LOGIN) }} >Đăng xuất</div>
+                <div className={cx("account-btn", "header-text")} onClick={() => { dispatch(handleLogout()); }} >Đăng xuất</div>
                 :
                 <div className={cx("account-btn", "header-text")} onClick={() => navigate(PATHS.HOME.LOGIN)}>Đăng nhập</div>
               }

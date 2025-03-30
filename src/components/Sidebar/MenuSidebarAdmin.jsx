@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { HomeOutlined, UserSwitchOutlined, SettingOutlined } from '@ant-design/icons';
+import { HomeOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAddressCard, faBuilding, faCalendarDays, faHospital } from '@fortawesome/free-regular-svg-icons';
+import { faAddressCard, faCalendarDays, faHospital } from '@fortawesome/free-regular-svg-icons';
 import { PATHS } from '@/constant/path';
 import emitter from '@/utils/eventEmitter';
 import { EMIT } from '@/constant/value';
 import "./Sidebar.scss";
 import { faArrowRightFromBracket, faBookMedical, faStethoscope } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@/redux/authenSlice';
+import { handleLogout } from '@/redux/actions/authenActions';
 const MenuSidebar = () => {
-    let navigate = useNavigate();
     let { user } = useSelector((state) => state.authen);
     let dispatch = useDispatch();
     const [openKeys, setOpenKeys] = useState([]);
@@ -121,7 +120,7 @@ const MenuSidebar = () => {
             key: 'logout',
             label: ("Đăng xuất"),
             icon: <FontAwesomeIcon icon={faArrowRightFromBracket} rotation={180} />,
-            onClick: () => { dispatch(logout()); navigate(PATHS.HOME.LOGIN); }
+            onClick: () => { dispatch(handleLogout()) },
         },
     ];
 

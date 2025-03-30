@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+
+import {  createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     isLoggedIn: false,
@@ -6,6 +7,7 @@ const initialState = {
     user: null,
     rememberLogin: [],
 };
+
 export const authenSlice = createSlice({
     name: 'authen',
     initialState,

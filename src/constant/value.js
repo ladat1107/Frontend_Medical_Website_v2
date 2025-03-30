@@ -321,3 +321,11 @@ export const COVERED = {
     4: 1
 }
 
+export const STATUS_MESSAGE = {
+    FAILED: "failed",
+    SENDING: "sending",
+    SENT: "sent",
+    RECEIVED: "received",
+    READ: "read"
+}
+

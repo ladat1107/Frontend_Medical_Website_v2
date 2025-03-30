@@ -1,35 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dropdown, Space } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faUserAstronaut } from '@fortawesome/free-solid-svg-icons';
-import { primaryColorAdmin } from '@/styles/variables';
-const DropdownSelectMessage = (props) => {
-    //const [selectedLabel, setSelectedLabel] = useState(props?.page || 10);
-    let handleChange = (value) => {
-        props.setPage(value);  // Trả về key
-        setSelectedLabel(value); // Cập nhật label
-    };
+import { faUserAstronaut } from '@fortawesome/free-solid-svg-icons';
+import { primaryColorAdmin, secondaryColorAdmin } from '@/styles/variables';
+const DropdownSelectMessage = ({ typeMessage, setTypeMessage }) => {
+  
+    useEffect(() => {
+        setTypeMessage(typeMessage);
+    }, [typeMessage])
     let items = [
         {
-            label: "Nhắn tin với nhân viên y tế",
+            label: (<div style={{ color: secondaryColorAdmin }}>Nhắn tin với nhân viên y tế</div>),
             key: '1',
-            onClick: () => { handleChange(1) }
+            onClick: () => { setTypeMessage(1) },
+            hidden: typeMessage === 1,
         },
         {
-            label: "Nhắn tin với Hoa Sen Mini",
+            label: (<div style={{ color: secondaryColorAdmin }}>Hoa Sen Mini</div>),
             key: '2',
-            onClick: () => { handleChange(2) }
+            onClick: () => { setTypeMessage(2) },
+            hidden: typeMessage === 2,
         },
     ]
 
     return (
         <Dropdown
-            menu={{
-                items,
-            }}
+            menu={{ items }}
             trigger={['hover']}
             overlayClassName="dropdownPage"
-            placement="bottomCenter">
+            placement="bottomLeft">
             <Space>
                 <FontAwesomeIcon icon={faUserAstronaut} beat color={primaryColorAdmin} style={{ cursor: "pointer", }} />
             </Space>

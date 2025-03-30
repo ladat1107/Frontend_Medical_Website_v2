@@ -1,6 +1,7 @@
 import axiosInstance from "@/utils/axiosInstance";
 
 const userService = {
+
   getTicket(query = "") {
     return axiosInstance.get(`api/getCurrentNumber${query}`);
   },
@@ -58,8 +59,10 @@ const userService = {
     return axiosInstance.get(`/api/paymentAppoinmentMomo`, { params: query });
   },
   sendMessage(data) {
-    console.log(data)
     return axiosInstance.post(`/api/messageSystem`, data);
+  },
+  getConversation(query = "") {
+    return axiosInstance.get(`/api/getConversation`, { params: query });
   }
 };
 

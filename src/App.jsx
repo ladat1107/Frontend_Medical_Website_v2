@@ -41,6 +41,7 @@ import DepartmentList from "./layout/User/pages/DepartmentList";
 import Instruction from "./layout/User/pages/Instruction/Instruction";
 import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
+import MessengerReceptionist from "./layout/Receptionist/pages/Messenger/MessengerReceptionist";
 import { useEffect } from "react";
 import socket, { connectSocket, disconnectSocket, getSocket } from "./Socket/socket";
 import Notification from "./layout/Doctor/pages/Notification/notification";
@@ -94,10 +95,12 @@ function App() {
             <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
             <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
             <Route path={`${PATHS.HOME.NOTIFICATION}`} element={<NotificationUser />} />
+       
           </Route>
           <Route path={PATHS.HOME.LOGIN} element={<Login />} />
           <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
           <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />
+           <Route path={PATHS.STAFF.CONSULTANT} element={<MessengerReceptionist />} />
           <Route element={<PrivateRoute />}>
             <Route element={<AdminLayout />}>
               <Route path={PATHS.ADMIN.DASHBOARD} element={<AdminDashboard />} />

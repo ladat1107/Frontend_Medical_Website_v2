@@ -161,10 +161,6 @@
                         }
                     }
                 }
-
-
-
-
             }
 
             .scroll-to-bottom {
@@ -190,11 +186,9 @@
             }
         }
 
-
-
         .chat-input-container {
             display: flex;
-            align-items: center;
+            align-items: end;
             padding: 8px;
             border-top: 1px solid #ddd;
 
@@ -218,4 +212,58 @@
         }
     }
 
+}
+
+.message-status {
+    font-size: 10px;
+    color: #666;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+
+    .text-danger {
+        color: #ff4d4f;
+    }
+}
+
+.typing-indicator {
+    padding: 10px;
+    color: #666;
+    font-size: 12px;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    &::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        background-color: #666;
+        border-radius: 50%;
+        animation: typing 1s infinite;
+    }
+
+    &::after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        background-color: #666;
+        border-radius: 50%;
+        animation: typing 1s infinite 0.2s;
+    }
+}
+
+@keyframes typing {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
 }

@@ -26,6 +26,7 @@ const GetNumber = () => {
             setCurrentNumber(ticketData.DT[0])
         }
     }, [ticketData]);
+    
     useEffect(() => {
         if (!socket) return;
         // Lắng nghe cập nhật số thứ tự từ server

@@ -182,10 +182,11 @@ export const markAllRead = async (data) => {
 
 export const sendNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds) => {
     const response = axios.post('/api/send-notification', {
-        title, 
-        htmlDescription, 
-        firstName, 
-        lastName, 
-        date, attachedFiles, receiverIds});
+        title,
+        htmlDescription,
+        firstName,
+        lastName,
+        date, attachedFiles, receiverIds
+    });
     return response.data;
 };

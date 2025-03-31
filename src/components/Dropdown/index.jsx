@@ -1,55 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Menu, MenuItem, Button, ListItemIcon } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import './dropdown.scss'; // Import SCSS
+import classNames from 'classnames/bind';
+import styles from './dropdown.module.scss';
 import { useNavigate } from 'react-router-dom';
 
-function Dropdown({ title, items }) {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+const cx = classNames.bind(styles);
 
-  let navigate = useNavigate();
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+const Dropdown = ({ trigger, menu, className }) => {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleAction = (action) => {
-    navigate(action);
-    handleClose();
-  }
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div className="dropdown">
-      <Button
-        aria-controls={open ? 'dropdown-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon className={open ? 'Mui-expanded' : ''} />}
-
-      >
-        <p className='header-text' > {title}</p>
-      </Button>
-      <Menu
-        id="dropdown-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'dropdown-button',
-        }}
-      >
-        {items?.map((item, index) => (
-          <MenuItem key={index} onClick={() => handleAction(item.action)}>
-            {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
-            <p  >{item.title}</p>
-          </MenuItem>
-        ))}
-      </Menu>
+    <div className={cx('dropdown', className)} ref={dropdownRef}>
+      <div onClick={() => setOpen(!open)}>
+        {trigger}
+      </div>
+      {open && (
+        <div className={cx('menu')}>
+          {menu}
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default Dropdown;

@@ -53,11 +53,24 @@ function App() {
     // Khởi tạo socket khi ứng dụng khởi động
     const socket = getSocket();
 
+    // Kết nối socket
+    socket.connect();
+
+    // Lắng nghe sự kiện xác thực thành công
+    socket.on('authenticated', () => {
+      console.log('Socket authenticated successfully');
+    });
+
+    // Lắng nghe sự kiện xác thực thất bại
+    socket.on('authentication_error', (error) => {
+      console.error('Socket authentication failed:', error);
+    });
+
     // Cleanup khi component unmount
     return () => {
-      if (socket) {
-        socket.disconnect();
-      }
+      socket.off('authenticated');
+      socket.off('authentication_error');
+      socket.disconnect();
     };
   }, []);
 
@@ -77,55 +90,55 @@ function App() {
       }}
     >
       <NotificationProvider>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path={`${PATHS.HOME.DOCTOR_DETAIL}/:id`} element={<DoctorDetail />} />
-          <Route path={PATHS.HOME.DOCTOR_LIST} element={<DoctorList />} />
-          <Route path={PATHS.HOME.DEPARTMENT_LIST} element={<DepartmentList />} />
-          <Route path={PATHS.HOME.BOOKING} element={<Booking />} />
-          <Route path={`${PATHS.HOME.HANDBOOK_LIST}/:id`} element={<BlogList />} />
-          <Route path={PATHS.HOME.PROFILE} element={<ProfileUser />} />
-          <Route path={PATHS.HOME.APPOINTMENT_LIST} element={<AppointmentList />} />
-          <Route path={`${PATHS.HOME.HANDBOOK_DETAIL}/:id`} element={<BlogDetail />} />
-          <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
-          <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
-          <Route path={`${PATHS.HOME.NOTIFICATION}`} element={<NotificationUser />} />
-        </Route>
-        <Route path={PATHS.HOME.LOGIN} element={<Login />} />
-        <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
-        <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />
-        <Route element={<PrivateRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route path={PATHS.ADMIN.DASHBOARD} element={<AdminDashboard />} />
-            <Route path={PATHS.ADMIN.PATIENT_MANAGE} element={<PatientManage />} />
-            <Route path={PATHS.ADMIN.STAFF_MANAGE} element={<StaffManage />} />
-            <Route path={PATHS.ADMIN.DEPARTMENT_MANAGE} element={<DepartmentManage />} />
-            <Route path={PATHS.ADMIN.SERVICE_MANAGE} element={<ServiceOfRoom />} />
-            <Route path={PATHS.ADMIN.ROOM_MANAGE} element={<Room />} />
-            <Route path={PATHS.ADMIN.SPECIALTY_MANAGE} element={<Specialty />} />
-            <Route path={PATHS.ADMIN.PROFILE} element={<ProfileAdmin />} />
-            <Route path={PATHS.ADMIN.HANDBOOK_MANAGE} element={<HandbookAdmin />} />
-            <Route path={`${PATHS.ADMIN.HANDBOOK_DETAIL}/:id`} element={<HandbookAdminDetail />} />
-            <Route path={PATHS.ADMIN.SCHEDULE_MANAGE} element={<ScheduleManage />} />
-            <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path={`${PATHS.HOME.DOCTOR_DETAIL}/:id`} element={<DoctorDetail />} />
+            <Route path={PATHS.HOME.DOCTOR_LIST} element={<DoctorList />} />
+            <Route path={PATHS.HOME.DEPARTMENT_LIST} element={<DepartmentList />} />
+            <Route path={PATHS.HOME.BOOKING} element={<Booking />} />
+            <Route path={`${PATHS.HOME.HANDBOOK_LIST}/:id`} element={<BlogList />} />
+            <Route path={PATHS.HOME.PROFILE} element={<ProfileUser />} />
+            <Route path={PATHS.HOME.APPOINTMENT_LIST} element={<AppointmentList />} />
+            <Route path={`${PATHS.HOME.HANDBOOK_DETAIL}/:id`} element={<BlogDetail />} />
+            <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
+            <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
+            <Route path={`${PATHS.HOME.NOTIFICATION}`} element={<NotificationUser />} />
           </Route>
-          <Route element={<DoctorLayout />}>
-            <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />
-            <Route path={PATHS.STAFF.EXAMINATION} element={<Examination />} />
-            <Route path={PATHS.STAFF.HANDBOOK} element={<Handbook />} />
-            <Route path={`${PATHS.STAFF.HANDBOOK}/:id`} element={<HandbookDetail />} />
-            <Route path={PATHS.STAFF.SCHEDULE} element={<Schedule />} />
-            <Route path={PATHS.STAFF.PROFILE} element={<ProfileStaff />} />
-            <Route path={PATHS.RECEPTIONIST.DASHBOARD} element={<ReceptionistDashboard />} />
-            <Route path={PATHS.STAFF.DASHBOARD} element={<DoctorHomePage />} />
-            <Route path={PATHS.RECEPTIONIST.CASHIER} element={<Cashier />} />
-            <Route path={PATHS.STAFF.PARACLINICAL} element={<ParaclinicalList />} />
-            <Route path={PATHS.RECEPTIONIST.PRESCRIBE} element={<Prescribe />} />
-            <Route path={PATHS.STAFF.NOTIFICATION} element={<Notification />} />
+          <Route path={PATHS.HOME.LOGIN} element={<Login />} />
+          <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
+          <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />
+          <Route element={<PrivateRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route path={PATHS.ADMIN.DASHBOARD} element={<AdminDashboard />} />
+              <Route path={PATHS.ADMIN.PATIENT_MANAGE} element={<PatientManage />} />
+              <Route path={PATHS.ADMIN.STAFF_MANAGE} element={<StaffManage />} />
+              <Route path={PATHS.ADMIN.DEPARTMENT_MANAGE} element={<DepartmentManage />} />
+              <Route path={PATHS.ADMIN.SERVICE_MANAGE} element={<ServiceOfRoom />} />
+              <Route path={PATHS.ADMIN.ROOM_MANAGE} element={<Room />} />
+              <Route path={PATHS.ADMIN.SPECIALTY_MANAGE} element={<Specialty />} />
+              <Route path={PATHS.ADMIN.PROFILE} element={<ProfileAdmin />} />
+              <Route path={PATHS.ADMIN.HANDBOOK_MANAGE} element={<HandbookAdmin />} />
+              <Route path={`${PATHS.ADMIN.HANDBOOK_DETAIL}/:id`} element={<HandbookAdminDetail />} />
+              <Route path={PATHS.ADMIN.SCHEDULE_MANAGE} element={<ScheduleManage />} />
+              <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
+            </Route>
+            <Route element={<DoctorLayout />}>
+              <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />
+              <Route path={PATHS.STAFF.EXAMINATION} element={<Examination />} />
+              <Route path={PATHS.STAFF.HANDBOOK} element={<Handbook />} />
+              <Route path={`${PATHS.STAFF.HANDBOOK}/:id`} element={<HandbookDetail />} />
+              <Route path={PATHS.STAFF.SCHEDULE} element={<Schedule />} />
+              <Route path={PATHS.STAFF.PROFILE} element={<ProfileStaff />} />
+              <Route path={PATHS.RECEPTIONIST.DASHBOARD} element={<ReceptionistDashboard />} />
+              <Route path={PATHS.STAFF.DASHBOARD} element={<DoctorHomePage />} />
+              <Route path={PATHS.RECEPTIONIST.CASHIER} element={<Cashier />} />
+              <Route path={PATHS.STAFF.PARACLINICAL} element={<ParaclinicalList />} />
+              <Route path={PATHS.RECEPTIONIST.PRESCRIBE} element={<Prescribe />} />
+              <Route path={PATHS.STAFF.NOTIFICATION} element={<Notification />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
+        </Routes>
       </NotificationProvider>
     </ConfigProvider>
   );

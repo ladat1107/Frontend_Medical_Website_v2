@@ -96,21 +96,22 @@ const MenuSidebar = () => {
             {
                 key: 'sub7',
                 label: (
-                  <NavLink 
-                    to={PATHS.STAFF.NOTIFICATION}
-                    onClick={() => {
-                    }}
-                  > 
-                    Thông báo
-                    {totalUnreadCount > 0 && (
-                      <Badge count={totalUnreadCount} offset={[80, 0]} />
-                    )}
-                  </NavLink>
+                    <NavLink
+                        to={PATHS.STAFF.NOTIFICATION}
+                        onClick={() => {
+
+                        }}
+                    >
+                        Thông báo
+                        {totalUnreadCount > 0 && (
+                            <Badge count={totalUnreadCount} offset={[80, 0]} />
+                        )}
+                    </NavLink>
                 ),
                 icon: (
-                  <Badge dot={totalUnreadCount > 0}>
-                    <i className="fa-solid fa-bell"></i>
-                  </Badge>
+                    <Badge dot={totalUnreadCount > 0}>
+                        <i className="fa-solid fa-bell"></i>
+                    </Badge>
                 ),
             },
             {
@@ -136,7 +137,7 @@ const MenuSidebar = () => {
     const items = getMenuItem();
 
     const onClick = (e) => {
-        // console.log('click ', e);
+
     };
     return (
         <div className='menu-item'>

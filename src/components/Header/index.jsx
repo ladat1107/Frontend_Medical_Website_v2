@@ -1,4 +1,3 @@
-
 import SvgIcon from "../SvgIcon";
 import classNames from "classnames/bind";
 import styles from "./header.module.scss";
@@ -11,8 +10,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarCheck, faHospital, } from "@fortawesome/free-regular-svg-icons";
 import { faStethoscope, faSyringe, faUser } from "@fortawesome/free-solid-svg-icons";
 import { TAGS } from "@/constant/value";
-import { Badge } from "antd";
+import { Badge, Dropdown as AntDropdown } from "antd";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useState } from "react";
+import { timeAgo } from "@/utils/formatDate";
+import ParseHtml from "@/components/ParseHtml";
+import { Drawer } from "antd";
+import NotiItem from "@/layout/Doctor/pages/Notification/NotiItem/notiItem";
+
 // Tạo instance của classnames với bind styles
 const cx = classNames.bind(styles);
 
@@ -20,7 +25,9 @@ function Header() {
   let navigate = useNavigate();
   let { user } = useSelector(state => state.authen);
   let dispatch = useDispatch();
-  const { totalUnreadCount } = useNotification();
+  const { totalUnreadCount, notifications } = useNotification();
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [open, setOpen] = useState(false);
 
   // language
   const items = [
@@ -74,6 +81,40 @@ function Header() {
     }] : [])
   ];
 
+  const notificationItems = {
+    items: [
+      ...(notifications?.slice(0, 5).map((noti, index) => ({
+        key: index,
+        label: (
+          <div className={cx("notification-item")} onClick={() => navigate(PATHS.HOME.NOTIFICATION)}>
+            <div className={cx("notification-title")}>
+              {noti.title || 'Thông báo mới'}
+              {noti.status === 1 && <span className={cx("unread-badge")}></span>}
+            </div>
+            <div className={cx("notification-content")}>
+              {noti.htmlDescription ? (
+                <ParseHtml htmlString={noti.htmlDescription} />
+              ) : (
+                <span>Không có nội dung</span>
+              )}
+            </div>
+            <div className={cx("notification-time")}>
+              {noti.date ? timeAgo(noti.date) : 'Vừa nãy'}
+            </div>
+          </div>
+        )
+      })) || []),
+      {
+        key: 'view-all',
+        label: (
+          <div className={cx("view-all")} onClick={() => navigate(PATHS.HOME.NOTIFICATION)}>
+            Xem tất cả thông báo
+          </div>
+        )
+      }
+    ]
+  };
+
   return (
     <>
       <div className={cx("wrapper")}>
@@ -107,12 +148,22 @@ function Header() {
             </div>
 
             <div className={cx("auth")}>
-              <div className={cx("item")}
-                style={{ cursor: "pointer" }}>
-                <Badge dot={totalUnreadCount > 0} offset={[-15, 5]}>
-                  <svg xmlns="http://www.w3.org/2000/svg" height="30" width="26" viewBox="0 0 448 512"><path fill="#ffc107" d="M224 0c-17.7 0-32 14.3-32 32l0 19.2C119 66 64 130.6 64 208l0 18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416l384 0c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8l0-18.8c0-77.4-55-142-128-156.8L256 32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3l-64 0-64 0c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z"/></svg>
-                </Badge>
-              </div>
+              {user && (
+                <AntDropdown
+                  menu={notificationItems}
+                  trigger={['click']}
+                  open={isDropdownVisible}
+                  onOpenChange={setIsDropdownVisible}
+                >
+                  <div className={cx("item")} style={{ cursor: "pointer" }}>
+                    <Badge dot={totalUnreadCount > 0} offset={[-15, 5]}>
+                      <svg xmlns="http://www.w3.org/2000/svg" height="30" width="26" viewBox="0 0 448 512">
+                        <path fill="#ffc107" d="M224 0c-17.7 0-32 14.3-32 32l0 19.2C119 66 64 130.6 64 208l0 18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416l384 0c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8l0-18.8c0-77.4-55-142-128-156.8L256 32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3l-64 0-64 0c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
+                      </svg>
+                    </Badge>
+                  </div>
+                </AntDropdown>
+              )}
               {
                 user && <div className={cx("language")}>
                   {/* <Dropdown title="Language" items={items} /> */}
@@ -147,6 +198,20 @@ function Header() {
           </div>
         </div>
       </div>
+
+      <Drawer
+        title="Thông báo"
+        placement="right"
+        open={open}
+        onClose={() => setOpen(false)}
+        width={400}
+      >
+        <div className={styles.notificationList}>
+          {notifications?.map((noti) => (
+            <NotiItem key={noti.id} noti={noti} />
+          ))}
+        </div>
+      </Drawer>
     </>
   );
 }

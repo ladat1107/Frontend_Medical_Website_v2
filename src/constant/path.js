@@ -12,6 +12,7 @@ export const PATHS = {
         HANDBOOK_MANAGE: "/adminHandbook",
         HANDBOOK_DETAIL: "/adminHandbookDetail",
         SCHEDULE_MANAGE: "/adminSchedule",
+        NOTIFICATION: "/adminNotification",
         //EXAMINATION_MANAGE: "/adminExamination",
     },
     STAFF: {
@@ -22,6 +23,7 @@ export const PATHS = {
         HANDBOOK: "/doctorHandbook",
         SCHEDULE: "/doctorSchedule",
         PROFILE: "/doctorProfile",
+        NOTIFICATION: "/staffNotification", 
     },
     RECEPTIONIST: {
         DASHBOARD: "/receptionist",
@@ -43,6 +45,7 @@ export const PATHS = {
         BOOKING: "/make-appointment",
         INSTRUCTION: "/instruction",
         LOGIN: "/login",
+        NOTIFICATION: "/notification",
     },
     SYSTEM: {
         GET_NUMBER: "/getNumber",

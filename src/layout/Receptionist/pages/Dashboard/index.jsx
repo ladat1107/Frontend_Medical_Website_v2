@@ -3,21 +3,24 @@ import "./Dashboard.scss"
 import { useEffect, useState } from "react";
 import AddExamModal from "../../components/AddExamModal/AddExamModal";
 import { useMutation } from "@/hooks/useMutation";
-import { getAllDisease, getExaminations, getSpecialties } from "@/services/doctorService";
+import { getAllDisease, getExaminations, getPatienSteps, getSpecialties } from "@/services/doctorService";
 import PatientItem from "../../components/PatientItem/PatientItem";
 import { TIMESLOTS, TYPE_NUMBER } from "@/constant/value";
 import { convertDateTime } from "@/utils/formatDate";
 import DropdownSpecialty from "../../components/Dropdown/DropdownSpecialty";
 import userService from "@/services/userService";
-import { set } from "lodash";
 import Loading from "@/components/Loading/Loading";
+import dayjs from "dayjs";
+import StepModal from "../../components/StepModal/StepModal";
 
 const ReceptionistDashboard = () => {
     let [type, setType] = useState(TYPE_NUMBER.NORMAL);
     let [currentNumber, setCurrentNumber] = useState({});
     let [loading, setLoading] = useState(false);
-    const today = new Date().toISOString();
+    let [loadingSteps, setLoadingSteps] = useState(false);
+    const today = dayjs();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalStepOpen, setIsModalStepOpen] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [patientData, setPatientData] = useState({});
@@ -31,6 +34,7 @@ const ReceptionistDashboard = () => {
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState(2);
     const [listExam, setListExam] = useState([]);
+    const [listStep, setListStep] = useState([]);
 
     const [totalPatient, setTotalPatient] = useState(0);
     const [totalAppointment, setTotalAppointment] = useState(0);
@@ -111,7 +115,7 @@ const ReceptionistDashboard = () => {
         loading: loadingExaminations,
         error: errorExaminations,
         execute: fetchExaminations,
-    } = useMutation(() => getExaminations(today, status, '', isAppointment, currentPage, pageSize, search, time))
+    } = useMutation(() => getExaminations(today, today, status, '', isAppointment, currentPage, pageSize, search, time))
 
     useEffect(() => {
         fetchExaminations();
@@ -158,7 +162,6 @@ const ReceptionistDashboard = () => {
     const handleClickItem = (id) => {
         const selectedPatient = listExam.find(item => item.id === id);
         if (selectedPatient) {
-
             setExamId(id);
             setIsEditMode(true);
             setPatientData(selectedPatient);
@@ -169,6 +172,32 @@ const ReceptionistDashboard = () => {
             message.error('Không tìm thấy thông tin bệnh nhân');
         }
     }
+
+    const handleClickStep = async (id) => {
+        const selectedPatient = listExam.find(item => item.id === id);
+        if (selectedPatient) {
+            try {
+                setLoadingSteps(true)
+                const response = await getPatienSteps(selectedPatient.id);
+                if (response.EC === 0) {
+                    setListStep(response);
+                    setIsModalStepOpen(true);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                message.error('Lấy dữ liệu bước khám thất bại');
+            } finally {
+                setLoadingSteps(false)
+            }
+        } else {
+            // Xử lý trường hợp không tìm thấy bệnh nhân
+            message.error('Không tìm thấy thông tin bệnh nhân');
+        }
+    }
+
+    const handleCloseModal = () => {
+        setIsModalStepOpen(false);
+    };
 
     // #endregion
 
@@ -376,51 +405,61 @@ const ReceptionistDashboard = () => {
                     <button className="find-button" onClick={() => openAddExam(null)} >Thêm bệnh nhân trực tiếp</button>
                 </div>
             </div>
-            <div className="dashboard-content mt-4">
-                {loadingExaminations ? (
-                    <div className="loading">
-                        <Spin />
+            <div className="relative-steps">
+                {loadingSteps && (
+                    <div className="loading-steps absolute-steps inset-steps-0 bg-black/20 flex items-center justify-center z-10">
+                        <Spin size="large" />
                     </div>
-                ) : (
-                    <>
-                        {isAppointment === 1 && (
-                            renderExaminationByTimeSlot()
-                        )}
-                        {isAppointment === 0 && (
-                            listExam && listExam.length > 0 ? listExam.map((item, index) => (
-                                <PatientItem
-                                    key={item.id}
-                                    index={index + 1}
-                                    id={item.id}
-                                    name={`${item.userExaminationData.lastName} ${item.userExaminationData.firstName}`}
-                                    symptom={item.symptom}
-                                    special={item.special}
-                                    room={item.roomName}
-                                    doctor={`${item.examinationStaffData.staffUserData.lastName} ${item.examinationStaffData.staffUserData.firstName}`}
-                                    downItem={downItem}
-                                    visit_status={item.visit_status}
-                                    onClickItem={() => handleClickItem(item.id)}
-                                    sort={true}
-                                />
-                            )) : (
-                                <div className="no-patient d-flex justify-content-center mt-2">
-                                    <p>Không tìm thấy bệnh nhân!</p>
-                                </div>
-                            )
-                        )}
-                    </>
                 )}
-            </div>
-            <div className='row mt-4'>
-                {!loadingExaminations && isAppointment !== 1 && listExam.length > 0 && (
-                    <Pagination
-                        align="center"
-                        current={currentPage}
-                        pageSize={pageSize}
-                        total={total}
-                        onChange={handlePageChange}
-                    />
-                )}
+                <div className={`${loadingSteps ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <div className="dashboard-content mt-4">
+                        {loadingExaminations ? (
+                            <div className="loading">
+                                <Spin />
+                            </div>
+                        ) : (
+                            <>
+                                {isAppointment === 1 && (
+                                    renderExaminationByTimeSlot()
+                                )}
+                                {isAppointment === 0 && (
+                                    listExam && listExam.length > 0 ? listExam.map((item, index) => (
+                                        <PatientItem
+                                            key={item.id}
+                                            index={index + 1}
+                                            id={item.id}
+                                            name={`${item.userExaminationData.lastName} ${item.userExaminationData.firstName}`}
+                                            symptom={item.symptom}
+                                            special={item.special}
+                                            room={item.roomName}
+                                            doctor={'Đang ở đâu'}
+                                            downItem={downItem}
+                                            visit_status={item.visit_status}
+                                            onClickItem={() => handleClickStep(item.id)}
+                                            sort={true}
+                                            status={+item.status}
+                                        />
+                                    )) : (
+                                        <div className="no-patient d-flex justify-content-center mt-2">
+                                            <p>Không tìm thấy bệnh nhân!</p>
+                                        </div>
+                                    )
+                                )}
+                            </>
+                        )}
+                    </div>
+                    <div className='row mt-4'>
+                        {!loadingExaminations && isAppointment !== 1 && listExam.length > 0 && (
+                            <Pagination
+                                align="center"
+                                current={currentPage}
+                                pageSize={pageSize}
+                                total={total}
+                                onChange={handlePageChange}
+                            />
+                        )}
+                    </div>
+                </div>
             </div>
             {isModalOpen && (
                 <AddExamModal
@@ -436,6 +475,11 @@ const ReceptionistDashboard = () => {
                     key={patientData ? patientData.id + " " + Date.now() : "modal-closed"}
                 />
             )}
+            <StepModal
+                isOpen={isModalStepOpen}
+                onClose={handleCloseModal}
+                examinationData={listStep}
+            />
         </div>
     );
 }

@@ -111,6 +111,11 @@ const MenuSidebar = () => {
             icon: <FontAwesomeIcon icon={faCalendarDays} />,
         },
         {
+            key: 'notiAdmin',
+            label: (<NavLink to={PATHS.ADMIN.NOTIFICATION}>Thông báo</NavLink>),
+            icon: <i className="fa-solid fa-bell"></i>,
+        },
+        {
             type: 'divider',
         },
         {

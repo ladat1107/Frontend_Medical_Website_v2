@@ -10,14 +10,13 @@ import { convertDateTime } from "@/utils/convertToTimestamp";
 import { notification } from 'antd';
 import SelectBox2 from "@/layout/Doctor/components/Selectbox";
 
-const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
+const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
 
     const formatSafeDate = (dateString) => {
         if (!dateString) return new Date();
         const date = new Date(dateString);
         return isNaN(date.getTime()) ? new Date() : date;
     };
-
 
     const [formData, setFormData] = useState({
         medicalTreatmentTier: examData.medicalTreatmentTier?.toString() || '1',
@@ -147,20 +146,13 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
         <>
             {contextHolder}
             <div className="exam-container">
-                {/* <div className="row">
-                    <div className="col-4 mt-1 col-lg-2">
-                        <p>Bác sĩ khám:</p>
-                    </div>
-                    <div className="col-8 mt-1 col-lg-4">
-                        <p className="info">{formData.staffName}</p>
-                    </div>
-                </div> */}
                 <div className="row">
                     <div className="col-4 mt-3 col-lg-2">
                         <p>Lý do vào viện:</p>
                     </div>
                     <div className="col-8 mt-3 col-lg-4">
                         <input type="text" className="input"
+                            readOnly={!isEditMode} 
                             value={formData.reason}
                             onChange={handleInputChange('reason')}
                             placeholder="Mô tả lý do vào viện" />
@@ -171,6 +163,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                     <div className="col-8 mt-3 col-lg-4">
                         <input type="text" className="input"
                             value={formData.symptom}
+                            readOnly={!isEditMode} 
                             onChange={handleInputChange('symptom')}
                             placeholder="Mô tả chi tiết triệu chứng" />
                     </div>
@@ -186,6 +179,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                             value={formData.diseaseName}
                             placeholder="Nhập tên bệnh"
                             onChange={constHandleDiseaseChange}
+                            disabled={!isEditMode}
                         />
                     </div>
                     <div className="col-4 mt-3 col-lg-2">
@@ -196,6 +190,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                             options={comorbiditiesOptions}
                             placeholder="Chọn bệnh đi kèm"
                             onChange={handleComorbiditiesChange}
+                            disabled={!isEditMode}
                             value={formData.comorbidities}
                         />
                     </div>
@@ -209,6 +204,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                             className="select-box"
                             options={options}
                             value={formData.medicalTreatmentTier}
+                            disabled={!isEditMode}
                             onChange={handleInputChange('medicalTreatmentTier')} />
                     </div>
                     <div className="col-4 mt-3 col-lg-2">
@@ -217,6 +213,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                     <div className="col-8 mt-3 col-lg-4">
                         <input type="text" className="input"
                             value={formData.treatmentResult}
+                            readOnly={!isEditMode} 
                             onChange={handleInputChange('treatmentResult')}
                             placeholder="Kết quả điều trị" />
                     </div>
@@ -230,6 +227,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                             className="date-picker"
                             selectedDate={formData.admissionDate}
                             onDateChange={handleDateChange('admissionDate')}
+                            disabled={!isEditMode}
                             placeholder="Chọn ngày..." />
                     </div>
                     <div className="col-4 mt-3 col-lg-2">
@@ -240,6 +238,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                             className="date-picker"
                             selectedDate={formData.dischargeDate}
                             onDateChange={handleDateChange('dischargeDate')}
+                            disabled={!isEditMode}
                             placeholder="Chọn ngày..." />
                     </div>
                 </div>
@@ -258,6 +257,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions }) => {
                             className="select-box"
                             options={specialOptions}
                             value={formData.special}
+                            disabled={!isEditMode}
                             onChange={handleInputChange('special')} />
                     </div>
                 </div>
@@ -287,6 +287,7 @@ ExamInfo.propTypes = {
     examData: PropTypes.object.isRequired,
     refresh: PropTypes.func.isRequired,
     comorbiditiesOptions: PropTypes.array.isRequired,
+    isEditMode: PropTypes.bool.isRequired
 };
 
 export default ExamInfo;

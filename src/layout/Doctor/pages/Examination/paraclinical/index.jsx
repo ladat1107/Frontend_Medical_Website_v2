@@ -6,7 +6,7 @@ import { createRequestParaclinical, getServiceLaboratory } from '@/services/doct
 import './Paraclinical.scss';
 import { useMutation } from '@/hooks/useMutation';
 
-const Paraclinical = ({ listParaclinicals, examinationId, refresh }) => {
+const Paraclinical = ({ listParaclinicals, examinationId, refresh, isEditMode }) => {
     const [paracDetails, setParacDetails] = useState(listParaclinicals);
 
     const [inputParac, setInputParac] = useState('');
@@ -154,6 +154,7 @@ const Paraclinical = ({ listParaclinicals, examinationId, refresh }) => {
                             style={{ background: '#eeeeee', border: 'none', boxShadow: 'none' }}
                             value={inputParac}
                             onChange={handleInputChange}
+                            readOnly={!isEditMode} 
                             onFocus={() => setShowSearchResults(true)}
                         />
                         {/* Hiển thị danh sách bệnh đi kèm khi có kết quả tìm kiếm */}
@@ -177,7 +178,9 @@ const Paraclinical = ({ listParaclinicals, examinationId, refresh }) => {
                 </div>
                 <div className="row">
                     <div className='col-12'>
-                        <button className="add-button" onClick={handleParacRequest}>Thêm xét nghiệm</button>
+                        <button className={`add-button ${!isEditMode ? "disable-button" : ""}`}
+                            disabled={!isEditMode}
+                            onClick={handleParacRequest}>Thêm xét nghiệm</button>
                     </div>
                 </div>
                 <div className="row">
@@ -205,6 +208,7 @@ Paraclinical.propTypes = {
     listParaclinicals: PropTypes.array.isRequired,
     examinationId: PropTypes.number.isRequired,
     refresh: PropTypes.func.isRequired,
+    isEditMode: PropTypes.bool.isRequired,
 };
 
 export default Paraclinical;

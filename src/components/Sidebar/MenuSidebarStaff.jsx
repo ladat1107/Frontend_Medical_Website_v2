@@ -1,5 +1,5 @@
-import React from 'react';
-import { Menu } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Badge, Menu } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { PATHS } from '@/constant/path';
 import { logout } from '@/redux/authenSlice';
@@ -10,10 +10,13 @@ import { EMIT } from '@/constant/value';
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons';
 import emitter from '@/utils/eventEmitter';
 import { ROLE } from '@/constant/role';
+import { useNotification } from '@/contexts/NotificationContext';
 
 const MenuSidebar = () => {
     let { user } = useSelector(state => state.authen);
     let dispatch = useDispatch();
+    const { totalUnreadCount } = useNotification();
+
 
     const getMenuItem = () => {
         const items = [
@@ -91,6 +94,27 @@ const MenuSidebar = () => {
                 icon: <i className="fa-regular fa-calendar"></i>,
             },
             {
+                key: 'sub7',
+                label: (
+                    <NavLink
+                        to={PATHS.STAFF.NOTIFICATION}
+                        onClick={() => {
+
+                        }}
+                    >
+                        Thông báo
+                        {totalUnreadCount > 0 && (
+                            <Badge count={totalUnreadCount} offset={[80, 0]} />
+                        )}
+                    </NavLink>
+                ),
+                icon: (
+                    <Badge dot={totalUnreadCount > 0}>
+                        <i className="fa-solid fa-bell"></i>
+                    </Badge>
+                ),
+            },
+            {
                 type: 'divider',
             },
             {
@@ -113,7 +137,7 @@ const MenuSidebar = () => {
     const items = getMenuItem();
 
     const onClick = (e) => {
-        // console.log('click ', e);
+
     };
     return (
         <div className='menu-item'>

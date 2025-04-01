@@ -150,7 +150,7 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '' }) => {
                         <div className="patient-history row">
                             <p style={{ fontWeight: '600', fontSize: '17px' }}>Hồ sơ bệnh án</p>
                             <div className="col-12 mt-3 row">
-                                {historyData.userExaminationData && historyData.userExaminationData.map((item, index) => (
+                                {historyData?.userExaminationData && historyData?.userExaminationData.map((item, index) => (
                                     <HistoryItem key={index} id={index} data={item} />
                                 ))}
                             </div>

@@ -34,7 +34,7 @@ socket.on('disconnect', (reason) => {
 
 // Lắng nghe sự kiện notification
 socket.on('notification', (data) => {
-  console.log('Received notification:', data);
+  //console.log('Received notification:', data);
   // Xử lý thông báo ở đây
 });
 

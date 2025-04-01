@@ -36,9 +36,8 @@ export const NotificationProvider = ({ children }) => {
   // Socket event handling
   useEffect(() => {
     const handleNewNotification = (data) => {
-      // Kiểm tra xem thông báo đã tồn tại chưa
       const notificationExists = socketNotifications.some(
-        noti => noti.id === data.id || noti.date === data.date
+        noti => noti.notiCode === data.notiCode
       );
 
       if (!notificationExists) {
@@ -53,6 +52,7 @@ export const NotificationProvider = ({ children }) => {
             lastName: data.lastName,
           },
           NotificationAttachFileData: data?.attachedFiles,
+          notiCode: data.notiCode,
         };
 
         setSocketNotifications(prev => [newNotification, ...prev]);

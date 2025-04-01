@@ -8,6 +8,7 @@ import { uploadFileToCloudinary } from "@/utils/uploadToCloudinary";
 import { createNotification, sendNotification } from "@/services/doctorService";
 import { message } from "antd";
 import { useSelector } from "react-redux";
+import { generateUniqueKey } from "@/utils/UniqueKey";
 
 const SendNoti = ({ dataUser }) => {
 
@@ -188,10 +189,10 @@ const SendNoti = ({ dataUser }) => {
     };
 
     // Hàm xử lý khi gửi thông báo qua socket
-    const handleSocketNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds) => {
+    const handleSocketNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, notiCode, receiverIds) => {
         try {
             // Gửi thông báo qua socket với tiêu đề và danh sách người nhận
-            sendNotification(title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds);
+            sendNotification(title, htmlDescription, firstName, lastName, date, attachedFiles, notiCode, receiverIds);
             console.log('Đã gửi thông báo socket');
         } catch (error) {
             console.error('Lỗi gửi thông báo socket:', error);
@@ -224,6 +225,7 @@ const SendNoti = ({ dataUser }) => {
         try {
             const receiverIds = selectedUsers.map(user => user.id);
             const title = textAreaRef.current.value;
+            const notiCode = generateUniqueKey(16); // Giả sử bạn có hàm này để tạo mã thông báo duy nhất
 
             const data = {
                 dataNoti: {
@@ -233,11 +235,11 @@ const SendNoti = ({ dataUser }) => {
                     date: new Date().toISOString(),
                     status: 1
                 },
-                attachedFiles: attachedFiles
+                attachedFiles: attachedFiles,
+                notiCode: notiCode, // Giả sử bạn có hàm này để tạo mã thông báo duy nhất
             };
 
             const response = await createNotification(data);
-            console.log('Phản hồi thông báo:', response);
 
             const date = new Date().toISOString();
             const firstName = user.firstName || '';
@@ -247,7 +249,7 @@ const SendNoti = ({ dataUser }) => {
                 message.success('Thông báo đã được gửi thành công');
 
                 // Sau khi lưu thành công vào database, gửi thông báo qua socket
-                handleSocketNotification(title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds);
+                handleSocketNotification(title, htmlDescription, firstName, lastName, date, attachedFiles, notiCode, receiverIds);
 
                 // Reset form sau khi gửi thành công
                 textAreaRef.current.value = '';

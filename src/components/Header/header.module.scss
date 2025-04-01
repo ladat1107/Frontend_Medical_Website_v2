@@ -113,10 +113,10 @@
 }
 
 .notification-item {
-  padding: 12px;
+  padding: 0px 10px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
-  max-width: 300px;
+  width: 100%;
 
   &:hover {
     background-color: #f5f5f5;
@@ -155,7 +155,7 @@
 }
 
 .view-all {
-  padding: 12px;
+  padding: 5px;
   text-align: center;
   cursor: pointer;
   color: #1890ff;
@@ -164,6 +164,15 @@
   &:hover {
     background-color: #f5f5f5;
   }
+}
+
+.loading-container {
+  padding: 20px;
+  text-align: center;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 100%;
 }
 
 // Responsive Styles
@@ -207,7 +216,10 @@
       }
 
       .nav {
-        gap: 10px; // Giảm khoảng cách giữa các nav items
+        width: 100%; // Đảm bảo nav luôn chiếm toàn bộ chiều rộng có sẵn
+        justify-content: center; // Căn giữa các item
+        flex-wrap: wrap; // Cho phép các item xuống dòng khi không đủ chỗ
+        gap: 10px; // Khoảng cách giữa các item
       }
     }
   }

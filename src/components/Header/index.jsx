@@ -10,13 +10,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarCheck, faHospital, } from "@fortawesome/free-regular-svg-icons";
 import { faStethoscope, faSyringe, faUser } from "@fortawesome/free-solid-svg-icons";
 import { TAGS } from "@/constant/value";
-import { Badge, Dropdown as AntDropdown } from "antd";
+import { Badge, Dropdown as AntDropdown, Spin } from "antd";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { timeAgo } from "@/utils/formatDate";
 import ParseHtml from "@/components/ParseHtml";
 import { Drawer } from "antd";
 import NotiItem from "@/layout/Doctor/pages/Notification/NotiItem/notiItem";
+import { useMutation } from "@/hooks/useMutation";
+import { getAllNotification } from "@/services/doctorService";
 
 // Tạo instance của classnames với bind styles
 const cx = classNames.bind(styles);
@@ -25,9 +27,70 @@ function Header() {
   let navigate = useNavigate();
   let { user } = useSelector(state => state.authen);
   let dispatch = useDispatch();
-  const { totalUnreadCount, notifications } = useNotification();
+  const { totalUnreadCount, socketNotifications } = useNotification();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [open, setOpen] = useState(false);
+  
+  // States for combined notifications
+  const [apiNotifications, setApiNotifications] = useState({ rows: [] });
+  const [combinedNotifications, setCombinedNotifications] = useState([]);
+  
+  // Fetch notifications from API (similar to NotificationUser)
+  const {
+    data: dataNoti,
+    loading: listNotiLoading,
+    execute: fetchAllNoti,
+  } = useMutation(() => getAllNotification(1, 5, '')); // Fetch only 5 newest notifications
+  
+  // Fetch notifications when dropdown is opened
+  useEffect(() => {
+    if (isDropdownVisible && user) {
+      fetchAllNoti();
+    }
+  }, [isDropdownVisible]);
+  
+  // Update API notifications when data changes
+  useEffect(() => {
+    if (dataNoti && dataNoti.DT !== undefined) {
+      setApiNotifications(dataNoti.DT.notifications);
+    }
+  }, [dataNoti]);
+  
+  // Combine socket and API notifications
+  useEffect(() => {
+    if (!apiNotifications.rows) return;
+    
+    // Lấy tất cả thông báo từ cả hai nguồn
+    const allNotifications = [
+      ...socketNotifications,
+      ...(apiNotifications.rows || [])
+    ];
+    
+    const uniqueNotiMap = new Map();
+    
+    allNotifications.forEach(noti => {
+      if (noti.notiCode) {
+        // Nếu thông báo có cùng notiCode, giữ lại thông báo mới nhất
+        const existingNoti = uniqueNotiMap.get(noti.notiCode);
+        if (!existingNoti || new Date(noti.createdAt || noti.date) > new Date(existingNoti.createdAt || existingNoti.date)) {
+          uniqueNotiMap.set(noti.notiCode, noti);
+        }
+      } else {
+        const uniqueKey = noti.id || `temp-${Date.now()}-${Math.random()}`;
+        uniqueNotiMap.set(uniqueKey, noti);
+      }
+    });
+    
+    const uniqueNotifications = Array.from(uniqueNotiMap.values())
+      .sort((a, b) => {
+        const dateA = new Date(a.createdAt || a.date);
+        const dateB = new Date(b.createdAt || b.date);
+        return dateB - dateA;
+      })
+      .slice(0, 5);
+    
+    setCombinedNotifications(uniqueNotifications);
+  }, [apiNotifications, socketNotifications]);
 
   // language
   const items = [
@@ -81,25 +144,26 @@ function Header() {
     }] : [])
   ];
 
+  // Updated notification dropdown items using combined notifications
   const notificationItems = {
     items: [
-      ...(notifications?.slice(0, 5).map((noti, index) => ({
-        key: index,
+      ...(combinedNotifications.map((noti, index) => ({
+        key: noti.id || `noti-${index}`,
         label: (
           <div className={cx("notification-item")} onClick={() => navigate(PATHS.HOME.NOTIFICATION)}>
             <div className={cx("notification-title")}>
               {noti.title || 'Thông báo mới'}
-              {noti.status === 1 && <span className={cx("unread-badge")}></span>}
+              {(noti.status === 1 || noti.isRead === false) && <span className={cx("unread-badge")}></span>}
             </div>
             <div className={cx("notification-content")}>
               {noti.htmlDescription ? (
                 <ParseHtml htmlString={noti.htmlDescription} />
               ) : (
-                <span>Không có nội dung</span>
+                <span>{noti.description || 'Không có nội dung'}</span>
               )}
             </div>
             <div className={cx("notification-time")}>
-              {noti.date ? timeAgo(noti.date) : 'Vừa nãy'}
+              {(noti.date || noti.createdAt) ? timeAgo(noti.date || noti.createdAt) : 'Vừa nãy'}
             </div>
           </div>
         )
@@ -154,6 +218,18 @@ function Header() {
                   trigger={['click']}
                   open={isDropdownVisible}
                   onOpenChange={setIsDropdownVisible}
+                  overlayStyle={{ width: 350 }}
+                  dropdownRender={(menu) => (
+                    <div>
+                      {listNotiLoading ? (
+                        <div className={cx("loading-container")} style={{ padding: "20px", textAlign: "center" }}>
+                          <Spin tip="Đang tải thông báo..." />
+                        </div>
+                      ) : (
+                        menu
+                      )}
+                    </div>
+                  )}
                 >
                   <div className={cx("item")} style={{ cursor: "pointer" }}>
                     <Badge dot={totalUnreadCount > 0} offset={[-15, 5]}>
@@ -198,20 +274,6 @@ function Header() {
           </div>
         </div>
       </div>
-
-      <Drawer
-        title="Thông báo"
-        placement="right"
-        open={open}
-        onClose={() => setOpen(false)}
-        width={400}
-      >
-        <div className={styles.notificationList}>
-          {notifications?.map((noti) => (
-            <NotiItem key={noti.id} noti={noti} />
-          ))}
-        </div>
-      </Drawer>
     </>
   );
 }

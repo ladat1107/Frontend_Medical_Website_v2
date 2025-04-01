@@ -180,13 +180,16 @@ export const markAllRead = async (data) => {
     return axios.put(`/api/markAllRead`, data);
 }
 
-export const sendNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, receiverIds) => {
+export const sendNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, notiCode, receiverIds) => {
     const response = axios.post('/api/send-notification', {
         title,
         htmlDescription,
         firstName,
         lastName,
-        date, attachedFiles, receiverIds
+        date, 
+        attachedFiles, 
+        notiCode,
+        receiverIds
     });
     return response.data;
 };

@@ -61,8 +61,11 @@ const userService = {
   sendMessage(data) {
     return axiosInstance.post(`/api/messageSystem`, data);
   },
-  getConversation(query = "") {
+  getConversation(query = "") {    
     return axiosInstance.get(`/api/getConversation`, { params: query });
+  },
+  createMessage(data) {
+    return axiosInstance.post(`/api/createMessage`, data);
   }
 };
 

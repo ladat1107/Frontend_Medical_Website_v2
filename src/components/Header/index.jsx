@@ -14,8 +14,6 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useState, useEffect } from "react";
 import { timeAgo } from "@/utils/formatDate";
 import ParseHtml from "@/components/ParseHtml";
-import { Drawer } from "antd";
-import NotiItem from "@/layout/Doctor/pages/Notification/NotiItem/notiItem";
 import { useMutation } from "@/hooks/useMutation";
 import { getAllNotification } from "@/services/doctorService";
 
@@ -31,44 +29,44 @@ function Header() {
   const { totalUnreadCount, socketNotifications } = useNotification();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [open, setOpen] = useState(false);
-  
+
   // States for combined notifications
   const [apiNotifications, setApiNotifications] = useState({ rows: [] });
   const [combinedNotifications, setCombinedNotifications] = useState([]);
-  
+
   // Fetch notifications from API (similar to NotificationUser)
   const {
     data: dataNoti,
     loading: listNotiLoading,
     execute: fetchAllNoti,
   } = useMutation(() => getAllNotification(1, 5, '')); // Fetch only 5 newest notifications
-  
+
   // Fetch notifications when dropdown is opened
   useEffect(() => {
     if (isDropdownVisible && user) {
       fetchAllNoti();
     }
   }, [isDropdownVisible]);
-  
+
   // Update API notifications when data changes
   useEffect(() => {
     if (dataNoti && dataNoti.DT !== undefined) {
       setApiNotifications(dataNoti.DT.notifications);
     }
   }, [dataNoti]);
-  
+
   // Combine socket and API notifications
   useEffect(() => {
     if (!apiNotifications.rows) return;
-    
+
     // Lấy tất cả thông báo từ cả hai nguồn
     const allNotifications = [
       ...socketNotifications,
       ...(apiNotifications.rows || [])
     ];
-    
+
     const uniqueNotiMap = new Map();
-    
+
     allNotifications.forEach(noti => {
       if (noti.notiCode) {
         // Nếu thông báo có cùng notiCode, giữ lại thông báo mới nhất
@@ -81,7 +79,7 @@ function Header() {
         uniqueNotiMap.set(uniqueKey, noti);
       }
     });
-    
+
     const uniqueNotifications = Array.from(uniqueNotiMap.values())
       .sort((a, b) => {
         const dateA = new Date(a.createdAt || a.date);
@@ -89,7 +87,7 @@ function Header() {
         return dateB - dateA;
       })
       .slice(0, 5);
-    
+
     setCombinedNotifications(uniqueNotifications);
   }, [apiNotifications, socketNotifications]);
 

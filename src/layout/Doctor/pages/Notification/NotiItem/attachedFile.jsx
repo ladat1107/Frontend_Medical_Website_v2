@@ -1,6 +1,6 @@
 import { CSV, DOCX, JPG, PDF, PNG, PPT, RAR, TXT, XLS } from '@/components/TypeFile/typefile';
 import PropTypes from 'prop-types';
-
+import "./attachedFile.scss";
 const AttachedFile = ({ link, type }) => {
     const getFileIcon = () => {
         switch (type) {
@@ -39,10 +39,10 @@ const AttachedFile = ({ link, type }) => {
             <div className="icon-container">
                 {getFileIcon()}
             </div>
-            <a 
-                href={link} 
-                target="_blank" 
-                rel="noreferrer" 
+            <a
+                href={link}
+                target="_blank"
+                rel="noreferrer"
                 className="file-name"
             >
                 {fileName}

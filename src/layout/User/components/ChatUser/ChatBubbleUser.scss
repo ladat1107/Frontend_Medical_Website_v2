@@ -60,13 +60,13 @@
             padding: 10px 5px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
             scroll-behavior: smooth;
 
             .chat-message {
                 display: flex;
                 align-items: end;
-                margin-bottom: 10px;
+                margin-bottom: 2px;
                 width: 100%;
 
                 &.user {
@@ -124,11 +124,21 @@
                         padding: 5px 10px;
                         border-radius: 10px;
                         word-wrap: break-word; // Đảm bảo xuống dòng nếu quá dài
-                        display: inline-block; // Chiều rộng sẽ tự động co giãn theo nội dung    
+                        display: block; // Chiều rộng sẽ tự động co giãn theo nội dung    
 
                         ul {
                             padding-left: 20px;
                         }
+                    }
+
+                    .chat-image {
+                        max-width: 80%;
+                        height: 240px;
+                        border-radius: 12px;
+                        object-fit: fill;
+                        margin: 5px 0;
+                        cursor: pointer;
+                        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
                     }
 
                     .user {
@@ -162,6 +172,48 @@
                     }
                 }
             }
+
+            .typing-indicator {
+                padding: 10px;
+                color: $secondary-color-admin;
+                font-size: 12px;
+                font-style: italic;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+
+                &::before {
+                    content: '';
+                    width: 4px;
+                    height: 4px;
+                    background-color: $secondary-color-admin;
+                    border-radius: 50%;
+                    animation: typing 1s infinite;
+                }
+
+                &::after {
+                    content: '';
+                    width: 4px;
+                    height: 4px;
+                    background-color: $secondary-color-admin;
+                    border-radius: 50%;
+                    animation: typing 1s infinite 0.2s;
+                }
+            }
+
+            @keyframes typing {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-5px);
+                }
+            }
+
+
 
             .scroll-to-bottom {
                 position: fixed;
@@ -225,45 +277,5 @@
 
     .text-danger {
         color: #ff4d4f;
-    }
-}
-
-.typing-indicator {
-    padding: 10px;
-    color: #666;
-    font-size: 12px;
-    font-style: italic;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-
-    &::before {
-        content: '';
-        width: 8px;
-        height: 8px;
-        background-color: #666;
-        border-radius: 50%;
-        animation: typing 1s infinite;
-    }
-
-    &::after {
-        content: '';
-        width: 8px;
-        height: 8px;
-        background-color: #666;
-        border-radius: 50%;
-        animation: typing 1s infinite 0.2s;
-    }
-}
-
-@keyframes typing {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-5px);
     }
 }

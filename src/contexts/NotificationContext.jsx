@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import socket from '../Socket/socket';
 import { message } from 'antd';
 import { markAllRead, updateNotification, getAllNotification } from '../services/doctorService';
+import { useSelector } from 'react-redux';
 
 // Create the context
 const NotificationContext = createContext();
@@ -16,6 +17,7 @@ export const NotificationProvider = ({ children }) => {
 
   // Fetch notifications from database
   useEffect(() => {
+    if (!isLogin) return;
     const fetchNotifications = async () => {
       try {
         const response = await getAllNotification();
@@ -29,7 +31,6 @@ export const NotificationProvider = ({ children }) => {
         console.error('Lỗi khi lấy thông báo từ database:', error);
       }
     };
-
     fetchNotifications();
 
     // Set up a refresh interval (optional)

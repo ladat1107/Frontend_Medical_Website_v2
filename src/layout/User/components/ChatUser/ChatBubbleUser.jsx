@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Drawer } from "antd";
+import { Badge, Drawer } from "antd";
 import { MessageOutlined, CloseOutlined } from "@ant-design/icons";
 import "./ChatBubbleUser.scss";
 import { clearContent } from "@/redux/chatSlice";
@@ -15,18 +15,19 @@ import { useSelector } from "react-redux";
 const ChatBubbleUser = () => {
   const { user } = useSelector(state => state.authen)
   const [typeMessage, setTypeMessage] = useState(2);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false); 
 
   return (
     <div className="chat-bubble-container">
       <div className="chat-toggle" onClick={() => setVisible(!visible)}>
-        {visible ? <CloseOutlined /> : <MessageOutlined />}
+        {visible ? <CloseOutlined /> :
+          <Badge count={10} offset={[10, -15]}><MessageOutlined /> </Badge>}
       </div>
       <Drawer
         className="chat-drawer"
         title={<div className="chat-title">
           <FontAwesomeIcon style={{ cursor: "pointer" }} icon={faXmark} onClick={() => setVisible(false)} />
-          <div className="title" >Hỗ trợ trực tuyến
+          <div className="title" >Hỗ trợ trực tuyến {<span className="text-danger">({user?.firstName})</span>}
             {!user?.staff && <DropdownSelectMessage typeMessage={typeMessage} setTypeMessage={(value) => setTypeMessage(value)} />}
           </div>
           <FontAwesomeIcon style={{ cursor: "pointer", color: "gray" }} icon={faTrashCan} onClick={() => dispatch(clearContent())} />

@@ -1,7 +1,7 @@
 @import '../../../../styles/variables.scss';
 
 // Variables
-
+$primary-color: #00B5F1;
 $secondary-color: #F4F7FE;
 $text-color: #333;
 $border-color: #e4e6eb;
@@ -154,6 +154,9 @@ $hover-color: #f5f5f5;
                 min-width: 70px;
                 padding: 8px 16px;
                 position: relative;
+                word-wrap: break-word;
+                display: block;
+
                 // box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 
                 &.reception {
@@ -168,10 +171,17 @@ $hover-color: #f5f5f5;
                     // border: 1px solid $primary-color;
                 }
 
-                .chat-image {
-                    max-width: 100%;
-                    border-radius: 12px;
-                }
+
+            }
+
+            .chat-image {
+                max-width: 50%;
+                height: 240px;
+                border-radius: 12px;
+                object-fit: fill;
+                margin: 5px 0;
+                cursor: pointer;
+                box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
             }
 
             .scroll-to-bottom {
@@ -200,6 +210,7 @@ $hover-color: #f5f5f5;
             .scroll-to-bottom:hover {
                 background-color: #0077b6;
             }
+            
 
         }
 
@@ -242,15 +253,125 @@ $hover-color: #f5f5f5;
 }
 
 // Empty state
-.empty-chat {
+.empty-state {
     height: 100%;
-    @include flex-center;
-    flex-direction: column;
-    color: #65676b;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $secondary-color;
+    padding: 20px;
 
-    p {
-        font-size: 16px;
-        margin: 0;
+    .empty-state-content {
+        text-align: center;
+        width: 100%;
+        min-height: 100%;
+        padding: 40px;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 181, 241, 0.1);
+
+        .empty-state-icon {
+            margin-bottom: 32px;
+            color: $primary-color;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .welcome-icon {
+                margin-top: 20px;
+                animation: float 3s ease-in-out infinite;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: $primary-color;
+            margin-bottom: 16px;
+            text-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        .empty-state-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 32px;
+
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+                padding: 24px;
+                background: #fff;
+                border-radius: 16px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(0, 181, 241, 0.1);
+
+                &:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 20px rgba(0, 181, 241, 0.15);
+                    border-color: $primary-color;
+
+                    .feature-icon {
+                        background: rgba(0, 181, 241, 0.1);
+                        transform: scale(1.1);
+                    }
+                }
+
+                .feature-icon {
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 16px;
+                    background: rgba(0, 181, 241, 0.05);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s ease;
+                }
+
+                .feature-text {
+                    text-align: center;
+
+                    h3 {
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: $text-color;
+                        margin-bottom: 8px;
+                    }
+
+                    p {
+                        font-size: 14px;
+                        color: #666;
+                        margin: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
     }
 }
 

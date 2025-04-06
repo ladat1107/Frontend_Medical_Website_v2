@@ -29,16 +29,17 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
     const [isSearched, setIsSearched] = useState(false);
 
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+    const [loadingAddExam, setLoadingAddExam] = useState(false);
 
     const insuarance = async () => {
         try {
-            const response = await getUserInsuarance(patientData.userId);
+            // const response = await getUserInsuarance(patientData.userId);
 
-            let insuranceData = null;
+            // let insuranceData = null;
 
-            if (response.EC === 0 && response.DT) {
-                insuranceData = response.DT;
-            }
+            // if (response.EC === 0 && response.DT) {
+            //     insuranceData = response.DT;
+            // }
 
             const comorbidityObjects = patientData.comorbidities
                 ? patientData.comorbidities.split(',').map(comorbidityId => {
@@ -56,10 +57,9 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                 lastName: patientData.userExaminationData.lastName,
             });
 
-
             setSelectedComorbidities(comorbidityObjects);
             setSymptom(patientData.symptom || '');
-            setInsurance(patientData.insuaranceCode || '');
+            setInsurance(patientData.insuranceCode || '');
 
             // Tìm và set specialty
             const matchedSpecialty = specialtyOptions.find(
@@ -241,7 +241,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             symptom: symptom,
             special: prioritize ? prioritize : "normal",
             insuranceCoverage: insuranceCoverage || null,
-            insuaranceCode: insurance,
+            insuranceCode: insurance,
             roomName: specialtySelected.label,
             price: specialtySelected.staffPrice,
             comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
@@ -249,6 +249,8 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             is_appointment: timeSlot ? 1 : 0,
             status: timeSlot ? 2 : 4
         }
+
+        setLoadingAddExam(true);
 
         try {
             const response = await createExamination(data);
@@ -263,6 +265,8 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
         } catch (error) {
             console.error("Error creating examination:", error.response || error.message);
             message.error('Thêm khám bệnh thất bại!');
+        } finally {
+            setLoadingAddExam(false);
         }
     }
 
@@ -282,13 +286,15 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             symptom: symptom,
             special: prioritize ? prioritize : "normal",
             insuranceCoverage: insuranceCoverage || null,
-            insuaranceCode: insurance,
+            insuranceCode: insurance,
             roomName: specialtySelected.label,
             price: specialtySelected.staffPrice,
             comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
             status: patientData?.paymentId ? STATUS_BE.PAID : STATUS_BE.WAITING
             // is_appointment: 0, -->bỏ nhe. để thống kê
         }
+
+        setLoadingAddExam(true);
 
         try {
             const response = await updateExamination(data);
@@ -304,6 +310,8 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
         } catch (error) {
             console.error("Error:", error);
             message.error('Cập nhật bệnh nhân thất bại');
+        } finally {
+            setLoadingAddExam(false);
         }
     }
 
@@ -418,9 +426,17 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                                             maxLength={10}
                                                             type='text'
                                                             value={insurance}
-                                                            onChange={(e) => setInsurance(e.target.value)}
+                                                            onChange={(e) => {
+                                                                const onlyNums = e.target.value.replace(/\D/g, ""); // chỉ lấy số
+                                                                setInsurance(onlyNums);
+                                                            }}
                                                             placeholder='Nhập số BHYT...'
                                                         />
+                                                    </div>
+                                                    <div className='col-5 d-flex align-items-center'>
+                                                        {insurance.length > 0 && insurance.length < 10 && (
+                                                            <p style={{fontWeight: '400'}} className='text-danger mb-0'>Số BHYT không hợp lệ</p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -525,10 +541,28 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     {isEditMode ? (
                         <>
                             <button style={{ background: "#F44343" }} className='add-exam-btn me-2' onClick={() => deleteExam()}>Hủy lịch</button>
-                            <button className='add-exam-btn' onClick={() => updateExam()}>Xác nhận</button>
+                            <button className='add-exam-btn' onClick={() => updateExam()}>
+                                {loadingAddExam ? (
+                                    <>
+                                        <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                        Đang xử lý...
+                                    </>
+                                ) : (
+                                    'Cập nhật'
+                                )}
+                            </button>
                         </>
                     ) : (
-                        <button className='add-exam-btn' onClick={() => addExam()}>Thêm</button>
+                        <button className='add-exam-btn' onClick={() => addExam()}>
+                            {loadingAddExam ? (
+                                <>
+                                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                    Đang xử lý...
+                                </>
+                            ) : (
+                                'Thêm'
+                            )}
+                        </button>
                     )}
                 </div>
             </div>

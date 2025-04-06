@@ -74,7 +74,7 @@ const PrintPrescription = () => {
             </div>
             <div className="prescription__row">
               <span className="prescription__label">Số thẻ bảo hiểm y tế (nếu có):</span>
-              <span>{prescription?.insuaranceCode || ""}</span>
+              <span>{prescription?.insuranceCode || ""}</span>
             </div>
 
             <div className="prescription__row">

@@ -12,6 +12,8 @@ import SelectBox2 from "@/layout/Doctor/components/Selectbox";
 
 const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const formatSafeDate = (dateString) => {
         if (!dateString) return new Date();
         const date = new Date(dateString);
@@ -123,6 +125,8 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             status: 6,
         };
 
+        setIsLoading(true);
+
         try {
             const response = await updateExamination(data);
             if (response && response.DT.includes(1)) {
@@ -135,6 +139,8 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         } catch (error) {
             console.error("Error creating examination:", error.response || error.message);
             openNotification('Lưu thông tin khám bệnh thất bại.', 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -274,7 +280,12 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             className={`save-button ${!isChanged ? 'disabled' : ''}`}
                             onClick={handleSaveButton}
                             disabled={!isChanged}>
-                            Lưu
+                            {isLoading ? (
+                                <>
+                                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                    Đang xử lý...
+                                </>
+                            ) : 'Lưu'}
                         </button>
                     </div>
                 </div>

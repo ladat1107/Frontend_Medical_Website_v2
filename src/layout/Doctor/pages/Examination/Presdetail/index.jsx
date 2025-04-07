@@ -19,24 +19,15 @@ const Presdetail = ({ id, presdetailData, onDelete, isEditMode, onChange }) => {
     const SessionOptions = [{ value: '1', label: 'Sáng' }, { value: '2', label: 'Trưa' }, { value: '3', label: 'Chiều' }, { value: '4', label: 'Tối' }];
 
     const DoseOptions = [
-        { value: 1, label: '1 lần 1 viên' }, 
-        { value: 2, label: '1 lần 2 viên' },
-        { value: 3, label: '1 lần 3 viên' },
-        { value: 4, label: '1 lần 4 viên' },
-        { value: 5, label: '1 lần 5 viên' },
-        { value: 6, label: '1 lần 6 viên' },
-        { value: 7, label: '1 lần 7 viên' },
-        { value: 8, label: '1 lần 8 viên' },
-        { value: 9, label: '1 lần 9 viên' },
-        { value: 10, label: '1 lần 1 chai'},
-        { value: 11, label: '1 lần 2 chai'},
-        { value: 12, label: '1 lần 3 chai'},
-        { value: 13, label: '1 lần 4 chai'},
-        { value: 14, label: '1 lần 5 chai'},
-        { value: 15, label: '1 lần 6 chai'},
-        { value: 16, label: '1 lần 7 chai'},
-        { value: 17, label: '1 lần 8 chai'},
-        { value: 18, label: '1 lần 9 chai'}
+        { value: 1, label: `1 lần 1 ${medicineUnit}` }, 
+        { value: 2, label: `1 lần 2 ${medicineUnit}` },
+        { value: 3, label: `1 lần 3 ${medicineUnit}` },
+        { value: 4, label: `1 lần 4 ${medicineUnit}` },
+        { value: 5, label: `1 lần 5 ${medicineUnit}` },
+        { value: 6, label: `1 lần 6 ${medicineUnit}` },
+        { value: 7, label: `1 lần 7 ${medicineUnit}` },
+        { value: 8, label: `1 lần 8 ${medicineUnit}` },
+        { value: 9, label: `1 lần 9 ${medicineUnit}` }
     ];
     
     const handleSessionChange = (value) => {

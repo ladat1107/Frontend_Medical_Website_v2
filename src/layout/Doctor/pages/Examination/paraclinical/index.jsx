@@ -19,6 +19,8 @@ const Paraclinical = ({ listParaclinicals, examinationId, refresh, isEditMode })
     const inputRef = useRef(null);
     const searchResultsRef = useRef(null);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     //Paraclinical options
     let {
         data: dataParaclinicals,
@@ -55,16 +57,25 @@ const Paraclinical = ({ listParaclinicals, examinationId, refresh, isEditMode })
             listParaclinicals: selectedParaclinicals
         }
 
-        // Gọi API tạo yêu cầu xét nghiệm
-        const response = await createRequestParaclinical(data);
+        setIsLoading(true);
 
-        // console.log("Response:", response);
-        if (response.data && response.EC === 0) {
-            message.success('Tạo yêu cầu xét nghiệm thành công!');
-            refresh();
-            setSelectedParaclinicals([]);
-        } else {
-            message.error(response.EM);
+        try {
+            // Gọi API tạo yêu cầu xét nghiệm
+            const response = await createRequestParaclinical(data);
+
+            // console.log("Response:", response);
+            if (response.DT && response.EC === 0) {
+                message.success('Tạo yêu cầu xét nghiệm thành công!');
+                refresh();
+                setSelectedParaclinicals([]);
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error('Error creating request:', error);
+            message.error('Đã xảy ra lỗi khi tạo yêu cầu xét nghiệm!');
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -180,7 +191,14 @@ const Paraclinical = ({ listParaclinicals, examinationId, refresh, isEditMode })
                     <div className='col-12'>
                         <button className={`add-button ${!isEditMode ? "disable-button" : ""}`}
                             disabled={!isEditMode}
-                            onClick={handleParacRequest}>Thêm xét nghiệm</button>
+                            onClick={handleParacRequest}>
+                            {isLoading ? (
+                                <>
+                                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                    Đang xử lý...
+                                </>
+                            ) : 'Thêm xét nghiệm'}
+                        </button>
                     </div>
                 </div>
                 <div className="row">

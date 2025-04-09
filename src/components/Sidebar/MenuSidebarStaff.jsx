@@ -16,7 +16,26 @@ const MenuSidebar = () => {
     let { user } = useSelector(state => state.authen);
     let dispatch = useDispatch();
     const { totalUnreadCount } = useNotification();
-
+    
+    // Force re-render on notification changes
+    const [, setForceUpdate] = useState(0);
+    
+    useEffect(() => {
+        // Log for debugging
+        console.log('MenuSidebar: totalUnreadCount =', totalUnreadCount);
+        
+        // Subscribe to the markAllNotificationsAsRead event
+        const handleMarkAllRead = () => {
+            console.log('All notifications marked as read, updating menu');
+            setForceUpdate(prev => prev + 1);
+        };
+        
+        document.addEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+        
+        return () => {
+            document.removeEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+        };
+    }, [totalUnreadCount]);
 
     const getMenuItem = () => {
         const items = [
@@ -25,8 +44,8 @@ const MenuSidebar = () => {
             },
             {
                 key: 'personalAdmin',
-                label: (<NavLink to={PATHS.STAFF.PROFILE}>Cá nhân</NavLink>), //style={{ color: selectedKeys === "sub2" ? "red" : "" }}
-                icon: <FontAwesomeIcon icon={faAddressCard} />,  // style={{ color: selectedKeys === "sub2" ? "red" : "" }}
+                label: (<NavLink to={PATHS.STAFF.PROFILE}>Cá nhân</NavLink>),
+                icon: <FontAwesomeIcon icon={faAddressCard} />,
                 children: [
                     {
                         key: 'personalAdmin1',
@@ -96,15 +115,13 @@ const MenuSidebar = () => {
             {
                 key: 'sub7',
                 label: (
-                    <NavLink
-                        to={PATHS.STAFF.NOTIFICATION}
-                        onClick={() => {
-
-                        }}
-                    >
+                    <NavLink to={PATHS.STAFF.NOTIFICATION}>
                         Thông báo
                         {totalUnreadCount > 0 && (
-                            <Badge count={totalUnreadCount} offset={[80, 0]} />
+                            <Badge 
+                                count={totalUnreadCount} 
+                                offset={[60, 0]}
+                            />
                         )}
                     </NavLink>
                 ),
@@ -137,8 +154,9 @@ const MenuSidebar = () => {
     const items = getMenuItem();
 
     const onClick = (e) => {
-
+        console.log('Menu item clicked:', e.key);
     };
+    
     return (
         <div className='menu-item'>
             <Menu
@@ -147,7 +165,7 @@ const MenuSidebar = () => {
                 defaultOpenKeys={['sub1']}
                 mode="inline"
                 items={items}
-            />
+            />  
         </div>
     );
 }

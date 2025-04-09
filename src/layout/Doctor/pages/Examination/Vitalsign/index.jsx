@@ -6,6 +6,8 @@ import { createOrUpdateVitalSign } from "@/services/doctorService";
 
 const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const [formData, setFormData] = useState({
         height: vitalSignData.height || '',
         weight: vitalSignData.weight || '',
@@ -64,6 +66,8 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
             glycemicIndex: formData.glycemicIndex || null,
         }
 
+        setIsLoading(true);
+
         try {
             const response = await createOrUpdateVitalSign(data);
             if (response && response.DT) {
@@ -76,6 +80,8 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
         } catch (error) {
             console.error("Error creating examination:", error.response || error.message);
             openNotification('Lưu sinh hiệu thất bại.', 'error');
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -209,7 +215,12 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                             className={`save-button ${!isChanged ? 'disabled' : ''}`}
                             onClick={handleSaveButton}
                             disabled={!isChanged}>
-                            Lưu
+                            {isLoading ? (
+                                <>
+                                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                    Đang xử lý...
+                                </>
+                            ) : 'Lưu'}
                         </button>
                     </div>
                 </div>

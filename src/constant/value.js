@@ -314,4 +314,10 @@ export const TYPE_NUMBER = {
     PRIORITY: "priorityNumber",
     NORMAL: "normalNumber",
 }
+export const COVERED = {
+    1: 1,
+    2: 0.95,
+    3: 0.8,
+    4: 1
+}
 

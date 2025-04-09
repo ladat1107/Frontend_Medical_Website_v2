@@ -6,12 +6,14 @@ import { getThirdDigitFromLeft } from '@/utils/numberSeries';
 import { checkOutExamination, checkOutParaclinical, updateExamination, updateListPayParaclinicals } from '@/services/doctorService';
 import './PayModal.scss';
 import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';
+import { insuranceCovered } from '@/utils/coveredPrice';
 
 const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData }) => {
     const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
     const [insurance, setInsurance] = useState('');
     const [insuranceCoverage, setInsuranceCoverage] = useState(null);
     const [special, setSpecial] = useState('normal');
+    const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState({
         infouser: { firstName: '', lastName: '', cid: '' },
         infostaff: { firstName: '', lastName: '', position: '' },
@@ -44,7 +46,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 description: 'Khám bệnh',
             };
 
-            setInsurance(patientData?.insuaranceCode || '');
+            setInsurance(patientData?.insuranceCode || '');
             setInsuranceCoverage(patientData?.insuranceCoverage || null);
         } else {
             newSpecial = patientData?.special || 'normal';
@@ -63,7 +65,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 paraclinicalItems: patientData?.paraclinicalItems,
             };
 
-            setInsurance(patientData?.insuaranceCode || '');
+            setInsurance(patientData?.insuranceCode || '');
             setInsuranceCoverage(patientData?.insuranceCoverage || null);
         }
 
@@ -86,6 +88,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
     }, [isOpen]);
 
     const handlePay = async () => {
+        setIsLoading(true);
         try {
             let paymentData = {};
 
@@ -93,7 +96,9 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 paymentData = {
                     id: examId,
                     insuranceCoverage: insuranceCoverage || null,
-                    insuaranceCode: insurance,
+                    insuranceCode: insurance,
+                    insuranceCovered: insuranceCovered(+data.price, +insuranceCoverage),
+                    coveredPrice: +data.price - insuranceCovered(+data.price, +insuranceCoverage),
                     status: STATUS_BE.PAID,
                     payment: paymentMethod
                 };
@@ -120,7 +125,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 try {
                     const ids = patientData.paraclinicalItems.map(item => item.id);
                     if (paymentMethod === PAYMENT_METHOD.CASH) {
-                        const response = await updateListPayParaclinicals({ ids });
+                        const response = await updateListPayParaclinicals({ ids, insurance });
 
                         if (response.EC === 0) {
                             message.success('Cập nhật bệnh nhân thành công');
@@ -147,23 +152,14 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
         } catch (error) {
             console.log(error);
             message.error('Cập nhật bệnh nhân thất bại!');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const resetForm = () => {
         setInsurance('');
         setInsuranceCoverage(null);
-    };
-
-    const handleInsuaranceChange = (e) => {
-        const newInsurance = e.target.value;
-        setInsurance(newInsurance);
-
-        if (newInsurance.length === 10) {
-            setInsuranceCoverage(getThirdDigitFromLeft(newInsurance));
-        } else {
-            setInsuranceCoverage(null);
-        }
     };
 
     const SpecialText = ({ special }) => {
@@ -192,7 +188,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 specialText = 'P.nữ mang thai';
                 break;
             default:
-                specialClass = 'special';
+                specialClass = '';
         }
 
         return <p className={`special ${specialClass}`}>{specialText}</p>;
@@ -260,7 +256,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                                         <p style={{ fontWeight: "500", color: "#007BFF" }}>Cận lâm sàng: {item?.paracName}</p>
                                     </div>
                                     <div className='col-12 mt-2 mb-1 d-flex align-items-start'>
-                                        <div className='col-3'>
+                                        <div className='col-6'>
                                             <p className='text-start' style={{
                                                 width: "100%",
                                                 wordWrap: "break-word",
@@ -269,11 +265,15 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                                             }}>Bác sĩ: {item?.doctorInfo?.doctorName}</p>
                                         </div>
                                         <div className='col-6 d-flex align-items-center'>
-                                            <p className='text-end' style={{ fontWeight: "400", width: '100%' }}>Phòng: {item?.roomInfo?.name}</p>
+                                            <p className='text-start' style={{ fontWeight: "400", width: '100%' }}>Phòng: {item?.roomInfo?.name}</p>
                                         </div>
-                                        <div className='col-1' />
-                                        <div className='col-2 d-flex align-items-center'>
+                                    </div>
+                                    <div className='col-12 mb-1 d-flex align-items-start'>
+                                        <div className='col-6 d-flex align-items-center'>
                                             <p>Giá: {formatCurrency(item?.price)}</p>
+                                        </div>
+                                        <div className='col-6 d-flex align-items-center'>
+                                            <p>BHYT chi trả: {formatCurrency(insuranceCovered(+item?.price, +insuranceCoverage))}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -285,19 +285,31 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                             <p style={{ fontWeight: "400" }}>Số BHYT:</p>
                         </div>
                         <div className='col-3'>
-                            <input className='input-add-exam' style={{ width: "93%" }} maxLength={10}
-                                type='text' value={insurance} onChange={handleInsuaranceChange}
+                            <input 
+                                className='input-add-exam' 
+                                style={{ width: "93%" }} maxLength={10}
+                                type='text' value={insurance} 
+                                readOnly
                                 placeholder='Nhập số BHYT...' />
                         </div>
                         <div className='col-1' />
-                        <div className='col-2 d-flex align-items-center'>
-                            <p style={{ fontWeight: "400" }}>Mức hưởng:</p>
-                        </div>
-                        <div className='col-2 d-flex align-items-center'>
-                            <p>
-                                {insuranceCoverage === 0 ? '' : insuranceCoverage}
-                            </p>
-                        </div>
+
+                        {insuranceCoverage in [0, 1, 2, 3, 4] || insurance === null || insurance === '' ? (
+                            <>
+                                <div className='col-2 d-flex align-items-center'>
+                                    <p style={{ fontWeight: "400" }}>Mức hưởng:</p>
+                                </div>
+                                <div className='col-2 d-flex align-items-center'>
+                                    <p>
+                                        {insuranceCoverage === 0 ? '' : insuranceCoverage}
+                                    </p>
+                                </div>
+                            </>
+                        ) : (
+                            <div className='col-5 d-flex align-items-center'>
+                                <p style={{ fontWeight: "400", color: '#F44343' }}>BHYT không hợp lệ</p>
+                            </div>
+                        )}
                     </div>
                     <div className='col-12 d-flex flex-row mt-3'>
                         <div className='col-3 d-flex align-items-center'>
@@ -305,6 +317,21 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         </div>
                         <div className='col-3'>
                             <p>{formatCurrency(data.price)}</p>
+                        </div>
+                        <div className='col-1' />
+                        <div className='col-2 d-flex align-items-center'>
+                            <p style={{ fontWeight: "400" }}>BHYT chi trả:</p>
+                        </div>
+                        <div className='col-2 d-flex align-items-center'>
+                            <p>{formatCurrency(insuranceCovered(+data.price, +insuranceCoverage))}</p>
+                        </div>
+                    </div>
+                    <div className='col-12 d-flex flex-row mt-4'>
+                        <div className='col-3 d-flex align-items-center'>
+                            <p style={{ fontWeight: "600" }}>Phải trả:</p>
+                        </div>
+                        <div className='col-3' style={{ color: "#008EFF", fontWeight: '600' }}>
+                            <p>{formatCurrency(+data.price - insuranceCovered(+data.price, +insuranceCoverage))}</p>
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
@@ -338,7 +365,14 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                     <button className="close-user-btn" onClick={onClose}>Đóng</button>
                     {+patientData?.status === STATUS_BE.PAID ? <></>
                         :
-                        <button className='payment-btn' onClick={handlePay}>Hoàn thành</button>
+                        <button className='payment-btn' onClick={handlePay}>
+                        {isLoading ? (
+                                <>
+                                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                    Đang xử lý...
+                                </>
+                            ) : 'Thanh toán'}
+                        </button>
                     }
                 </div>
             </div>

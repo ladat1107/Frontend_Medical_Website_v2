@@ -10,20 +10,20 @@ const NotificationContext = createContext();
 export const NotificationProvider = ({ children }) => {
   const [socketNotifications, setSocketNotifications] = useState([]);
   const [dbNotifications, setDbNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [apiUnreadCount, setApiUnreadCount] = useState(0);
+  const [unReadDBCount, setUnReadDBCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
+  const [apiUnreadCount, setApiUnreadCount] = useState(0);
 
   // Fetch notifications from database
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const response = await getAllNotification();
-        if (response && response.data) {
-          const notifications = response.data.notifications || [];
+        console.log('DB Notifications response:', response);
+        if (response && response.DT) {
+          const notifications = response.DT.notifications.rows || [];
           setDbNotifications(notifications);
-          const unreadCount = notifications.filter(n => n.status === 1).length;
-          setUnreadCount(prev => prev + unreadCount);
+          setUnReadDBCount(response.DT.unreadCount || 0);
         }
       } catch (error) {
         console.error('Lỗi khi lấy thông báo từ database:', error);
@@ -31,11 +31,18 @@ export const NotificationProvider = ({ children }) => {
     };
 
     fetchNotifications();
+
+    // Set up a refresh interval (optional)
+    const intervalId = setInterval(fetchNotifications, 5 * 60 * 1000); // Refresh every 5 minutes
+    
+    return () => clearInterval(intervalId);
   }, []);
 
   // Socket event handling
   useEffect(() => {
     const handleNewNotification = (data) => {
+      console.log('New socket notification received:', data);
+      
       const notificationExists = socketNotifications.some(
         noti => noti.notiCode === data.notiCode
       );
@@ -56,7 +63,6 @@ export const NotificationProvider = ({ children }) => {
         };
 
         setSocketNotifications(prev => [newNotification, ...prev]);
-        setUnreadCount(prev => prev + 1);
       }
     };
 
@@ -70,40 +76,35 @@ export const NotificationProvider = ({ children }) => {
       console.log('Socket disconnected');
     };
 
-    const handleReconnect = (attemptNumber) => {
-      console.log('Socket reconnecting, attempt:', attemptNumber);
-    };
-
-    const handleReconnectError = (error) => {
-      console.error('Socket reconnection error:', error);
-    };
-
-    const handleReconnectFailed = () => {
-      console.error('Socket reconnection failed');
-    };
-
     // Đăng ký các event listeners
     socket.on("notification", handleNewNotification);
     socket.on("connect", handleConnect);
-    socket.on("disconnect", handleDisconnect);
-    socket.on("reconnect_attempt", handleReconnect);
-    socket.on("reconnect_error", handleReconnectError);
-    socket.on("reconnect_failed", handleReconnectFailed);
+    //socket.on("disconnect", handleDisconnect);
+    socket.on("reconnect_attempt", (attemptNumber) => console.log('Socket reconnecting, attempt:', attemptNumber));
+    socket.on("reconnect_error", (error) => console.error('Socket reconnection error:', error));
+    socket.on("reconnect_failed", () => console.error('Socket reconnection failed'));
+
+    // Check socket connection status on mount
+    if (socket.connected) {
+      setIsConnected(true);
+    }
 
     return () => {
       // Cleanup event listeners
       socket.off("notification", handleNewNotification);
       socket.off("connect", handleConnect);
-      socket.off("disconnect", handleDisconnect);
-      socket.off("reconnect_attempt", handleReconnect);
-      socket.off("reconnect_error", handleReconnectError);
-      socket.off("reconnect_failed", handleReconnectFailed);
+      //socket.off("disconnect", handleDisconnect);
+      socket.off("reconnect_attempt");
+      socket.off("reconnect_error");
+      socket.off("reconnect_failed");
     };
   }, [socketNotifications]);
 
   // Đánh dấu một thông báo cụ thể là đã đọc
   const markNotificationAsRead = async (notificationId) => {
     try {
+      console.log('Marking notification as read:', notificationId);
+      
       // Cập nhật trạng thái trong state
       setSocketNotifications(prev =>
         prev.map(noti =>
@@ -116,10 +117,6 @@ export const NotificationProvider = ({ children }) => {
           noti.id === notificationId ? { ...noti, status: 2 } : noti
         )
       );
-
-      // Giảm số lượng thông báo chưa đọc
-      setUnreadCount(prev => Math.max(0, prev - 1));
-      setApiUnreadCount(prev => Math.max(0, prev - 1));
 
       // Gọi API để cập nhật trạng thái trên server
       await updateNotification({
@@ -135,6 +132,8 @@ export const NotificationProvider = ({ children }) => {
   // Mark all notifications as read
   const markAllNotificationsAsRead = async () => {
     try {
+      console.log('Marking all notifications as read');
+      
       // Call API to mark all as read
       await markAllRead();
 
@@ -148,10 +147,6 @@ export const NotificationProvider = ({ children }) => {
         prev.map(noti => ({ ...noti, status: 2 }))
       );
 
-      // Reset unread counts
-      setUnreadCount(0);
-      setApiUnreadCount(0);
-
       // Notify other components
       document.dispatchEvent(new CustomEvent('markAllNotificationsAsRead'));
 
@@ -162,34 +157,34 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
-  // Update API unread count
   const updateApiUnreadCount = (count) => {
     setApiUnreadCount(count);
   };
 
-  // Get total unread count from both sources
-  const totalUnreadCount = unreadCount + apiUnreadCount;
+  // Calculate total unread count - directly from both notification arrays
+  const socketUnreadCount = socketNotifications.filter(noti => noti.status === 1).length;
+  const dbUnreadCount = unReadDBCount;
+  const totalUnreadCount = socketUnreadCount + dbUnreadCount;
 
   // Combine notifications from both sources and sort by date
   const allNotifications = [...socketNotifications, ...dbNotifications].sort((a, b) => {
     return new Date(b.date) - new Date(a.date);
   });
 
+  const contextValue = {
+    socketNotifications,
+    dbNotifications,
+    socketUnreadCount,
+    dbUnreadCount,
+    totalUnreadCount,
+    markAllNotificationsAsRead,
+    markNotificationAsRead,
+    updateApiUnreadCount,
+    notifications: allNotifications
+  };
+
   return (
-    <NotificationContext.Provider
-      value={{
-        socketNotifications,
-        dbNotifications,
-        unreadCount,
-        apiUnreadCount,
-        totalUnreadCount,
-        markAllNotificationsAsRead,
-        markNotificationAsRead,
-        updateApiUnreadCount,
-        isConnected,
-        notifications: [...(dbNotifications || []), ...(socketNotifications || [])].sort((a, b) => new Date(b.date) - new Date(a.date))
-      }}
-    >
+    <NotificationContext.Provider value={contextValue}>
       {children}
     </NotificationContext.Provider>
   );

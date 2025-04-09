@@ -42,7 +42,7 @@ import Instruction from "./layout/User/pages/Instruction/Instruction";
 import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
 import MessengerReceptionist from "./layout/Receptionist/pages/Messenger/MessengerReceptionist";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import socket, { connectSocket, disconnectSocket, getSocket } from "./Socket/socket";
 import Notification from "./layout/Doctor/pages/Notification/notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
@@ -80,20 +80,20 @@ function App() {
       },
     }),
   })
-  
+
   const { token } = useSelector((state) => state.authen);
 
   // Handle socket connection
   useEffect(() => {
     // Connect and authenticate socket
     connectSocket(token);
-    
+
     // Clean up function to properly disconnect socket
     return () => {
       disconnectSocket();
     };
   }, [token]);
-  
+
 
   useEffect(() => {
     if (previousPath.current === PATHS.STAFF.CONSULTANT && location.pathname !== PATHS.STAFF.CONSULTANT) {

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import socket from '../Socket/socket';
 import { message } from 'antd';
 import { markAllRead, updateNotification, getAllNotification } from '../services/doctorService';
-import { useSelector } from 'react-redux';
 
 // Create the context
 const NotificationContext = createContext();
@@ -17,7 +16,6 @@ export const NotificationProvider = ({ children }) => {
 
   // Fetch notifications from database
   useEffect(() => {
-    if (!isLogin) return;
     const fetchNotifications = async () => {
       try {
         const response = await getAllNotification();
@@ -31,11 +29,12 @@ export const NotificationProvider = ({ children }) => {
         console.error('Lỗi khi lấy thông báo từ database:', error);
       }
     };
+
     fetchNotifications();
 
     // Set up a refresh interval (optional)
     const intervalId = setInterval(fetchNotifications, 5 * 60 * 1000); // Refresh every 5 minutes
-    
+
     return () => clearInterval(intervalId);
   }, []);
 
@@ -43,7 +42,7 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     const handleNewNotification = (data) => {
       console.log('New socket notification received:', data);
-      
+
       const notificationExists = socketNotifications.some(
         noti => noti.notiCode === data.notiCode
       );
@@ -105,7 +104,7 @@ export const NotificationProvider = ({ children }) => {
   const markNotificationAsRead = async (notificationId) => {
     try {
       console.log('Marking notification as read:', notificationId);
-      
+
       // Cập nhật trạng thái trong state
       setSocketNotifications(prev =>
         prev.map(noti =>
@@ -134,7 +133,7 @@ export const NotificationProvider = ({ children }) => {
   const markAllNotificationsAsRead = async () => {
     try {
       console.log('Marking all notifications as read');
-      
+
       // Call API to mark all as read
       await markAllRead();
 

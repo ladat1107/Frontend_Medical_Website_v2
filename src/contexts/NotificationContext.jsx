@@ -12,6 +12,7 @@ export const NotificationProvider = ({ children }) => {
   const [dbNotifications, setDbNotifications] = useState([]);
   const [unReadDBCount, setUnReadDBCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
+  const [apiUnreadCount, setApiUnreadCount] = useState(0);
 
   // Fetch notifications from database
   useEffect(() => {
@@ -78,7 +79,7 @@ export const NotificationProvider = ({ children }) => {
     // Đăng ký các event listeners
     socket.on("notification", handleNewNotification);
     socket.on("connect", handleConnect);
-    socket.on("disconnect", handleDisconnect);
+    //socket.on("disconnect", handleDisconnect);
     socket.on("reconnect_attempt", (attemptNumber) => console.log('Socket reconnecting, attempt:', attemptNumber));
     socket.on("reconnect_error", (error) => console.error('Socket reconnection error:', error));
     socket.on("reconnect_failed", () => console.error('Socket reconnection failed'));
@@ -92,7 +93,7 @@ export const NotificationProvider = ({ children }) => {
       // Cleanup event listeners
       socket.off("notification", handleNewNotification);
       socket.off("connect", handleConnect);
-      socket.off("disconnect", handleDisconnect);
+      //socket.off("disconnect", handleDisconnect);
       socket.off("reconnect_attempt");
       socket.off("reconnect_error");
       socket.off("reconnect_failed");
@@ -156,6 +157,10 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
+  const updateApiUnreadCount = (count) => {
+    setApiUnreadCount(count);
+  };
+
   // Calculate total unread count - directly from both notification arrays
   const socketUnreadCount = socketNotifications.filter(noti => noti.status === 1).length;
   const dbUnreadCount = unReadDBCount;
@@ -174,7 +179,7 @@ export const NotificationProvider = ({ children }) => {
     totalUnreadCount,
     markAllNotificationsAsRead,
     markNotificationAsRead,
-    isConnected,
+    updateApiUnreadCount,
     notifications: allNotifications
   };
 

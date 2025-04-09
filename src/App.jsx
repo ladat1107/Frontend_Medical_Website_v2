@@ -42,37 +42,27 @@ import Instruction from "./layout/User/pages/Instruction/Instruction";
 import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
 import { useEffect } from "react";
-import socket, { getSocket } from "./Socket/socket";
+import socket, { connectSocket, disconnectSocket, getSocket } from "./Socket/socket";
 import Notification from "./layout/Doctor/pages/Notification/notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
 import NotificationUser from "./layout/User/pages/Notification/notification";
 import { NotificationProvider } from './contexts/NotificationContext.jsx';
+import { useSelector } from "react-redux";
 function App() {
+  
+  const { token } = useSelector((state) => state.authen);
 
+  // Handle socket connection
   useEffect(() => {
-    // Khởi tạo socket khi ứng dụng khởi động
-    const socket = getSocket();
-
-    // Kết nối socket
-    socket.connect();
-
-    // Lắng nghe sự kiện xác thực thành công
-    socket.on('authenticated', () => {
-      console.log('Socket authenticated successfully');
-    });
-
-    // Lắng nghe sự kiện xác thực thất bại
-    socket.on('authentication_error', (error) => {
-      console.error('Socket authentication failed:', error);
-    });
-
-    // Cleanup khi component unmount
+    // Connect and authenticate socket
+    connectSocket(token);
+    
+    // Clean up function to properly disconnect socket
     return () => {
-      socket.off('authenticated');
-      socket.off('authentication_error');
-      socket.disconnect();
+      disconnectSocket();
     };
-  }, []);
+  }, [token]);
+  
 
   return (
     <ConfigProvider

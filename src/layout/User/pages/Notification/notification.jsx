@@ -160,7 +160,7 @@ const NotificationUser = () => {
         </div>
       )}
       
-      <div className='row mt-3'>
+      <div className='row mt-3 mb-4'>
         {total > pageSize && (
           <Pagination
             align="center"

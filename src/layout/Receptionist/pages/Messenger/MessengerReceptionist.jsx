@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { Layout, Input, Avatar, List, Badge, Dropdown, Upload, Button, Form, message, Tooltip, Progress } from "antd";
-import { SendOutlined, SearchOutlined, PaperClipOutlined } from "@ant-design/icons";
+import { Layout, Input, Avatar, List, Badge, Dropdown, Button, Form, message, Progress, Tooltip } from "antd";
+import { SendOutlined, SearchOutlined, SmileOutlined } from "@ant-design/icons";
 import "./MessengerReceptionist.scss";
 import { useSelector } from "react-redux";
 import { ROLE } from "@/constant/role";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { ArrowLeft, Check, CheckCheck, Image, Paperclip } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, Image, Paperclip, Smile } from "lucide-react";
 import { convertDateTimeToString, timeAgo } from "@/utils/formatDate";
 import dayjs from "dayjs";
 import { primaryColorAdmin, secondaryColorAdmin } from "@/styles/variables";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";
 import MessengerSkeleton from "./Skeleton/MessengerSkeleton";
 import SkeletonChatContent from "./Skeleton/SkeletonChatContent";
@@ -19,28 +19,33 @@ import EmptyContent from "./Skeleton/EmptyContent";
 import { uploadFileToCloudinary, uploadToCloudinary } from "@/utils/uploadToCloudinary";
 import AttachedFile from "@/layout/Doctor/pages/Notification/NotiItem/attachedFile";
 import { useConversation, useConversationForStaff, useCreateMessage } from "@/hooks/useConversations";
+import TooltipMessage from "@/components/Tooltip/TooltipMessage";
+import EmojiPicker from 'emoji-picker-react';
 
 const { Header, Sider, Content } = Layout;
 const { TextArea } = Input;
 
 const MessengerReceptionist = () => {
     const { user } = useSelector((state) => state.authen);
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const { data: conversationSidebar, isLoading: conversationSidebarLoading, refetch: refetchConversationSidebar, isFetching: isFetchingConversationSidebar } = useConversationForStaff()
     const [conversationSelected, setConversationSelected] = useState(null);
     const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData, isFetching: isFetchingConversationData } = useConversation(conversationSelected?.patientId)
-    const [showScrollDown, setShowScrollDown] = useState(false);
-    const chatContentRef = useRef(null);
-    const inputRef = useRef(null);
-    const navigate = useNavigate();
+    const { mutate: createMessage, isPending: isCreatingMessage } = useCreateMessage();
+
     const [hovered, setHovered] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [search, setSearch] = useState("");
     const [conversations, setConversations] = useState([]);
-    const { mutate: createMessage, isPending: isCreatingMessage } = useCreateMessage();
+    const [showScrollDown, setShowScrollDown] = useState(false);
     const [messages, setMessages] = useState([]);
-
     const [isUploading, setIsUploading] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+    const chatContentRef = useRef(null);
+    const inputRef = useRef(null);
+    const emojiPickerRef = useRef(null);
 
     const scrollToBottom = () => {
         chatContentRef.current?.scrollTo({ top: chatContentRef.current.scrollHeight, behavior: "smooth" });
@@ -71,20 +76,31 @@ const MessengerReceptionist = () => {
             navigate(PATHS.HOME.LOGIN);
             message.info("Vui lòng đăng nhập để nhắn tin");
         }
+
+        const handleClickOutside = (event) => {
+            if (
+                emojiPickerRef.current &&
+                !emojiPickerRef.current.contains(event.target)
+            ) {
+                setShowEmojiPicker(false);
+            }
+        };
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     useEffect(() => {
         if (conversationData?.EC === 0) {
-            setMessages(conversationData?.DT?.messageData);
+            setMessages(conversationData?.DT?.messageData || []);
         }
     }, [conversationData])
 
     useEffect(() => {
         scrollToBottom();
         if (inputRef.current) inputRef.current.focus(); // Tự động focus vào ô input khi mở chat
-    }, [messages]);
-
-
+    }, [messages, isUploading, uploadProgress, isCreatingMessage]);
 
     // Theo dõi vị trí thanh cuộn và hiển thị nút cuộn xuống nếu cần
     const handleScroll = () => {
@@ -134,6 +150,7 @@ const MessengerReceptionist = () => {
             setIsUploading(false);
         }
     }
+
     const menu = [{ label: "Ẩn", key: "1" }, { label: "Xóa", key: "2" }]
 
     const handleCreateMessage = (link, content) => {
@@ -153,6 +170,16 @@ const MessengerReceptionist = () => {
             },
         });
     }
+
+    const onEmojiClick = (emojiData) => {
+        const currentMessage = form.getFieldValue('message') || '';
+        form.setFieldsValue({
+            message: currentMessage + emojiData.emoji,
+        });
+        // Focus lại vào input sau khi chọn emoji
+        inputRef.current?.focus();
+    };
+
     return (
         <Layout className="chat-container">
             {conversationLoading || conversationSidebarLoading ? (
@@ -248,29 +275,29 @@ const MessengerReceptionist = () => {
                                                                         size={30}
                                                                         src={conversationSelected?.patientData?.avatar}
                                                                     />)}
-                                                                <Tooltip title={statusName + " " + dayjs(msg.createdAt).format("HH:mm") + " " + convertDateTimeToString(msg.createdAt)}
-                                                                    overlayInnerStyle={{ whiteSpace: "nowrap", padding: "6px", width: "fit-content", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                                                                    overlayStyle={{ maxWidth: 'fit-content' }}
-                                                                    placement="bottom"
-                                                                    getPopupContainer={(triggerNode) => triggerNode.parentNode}
-                                                                    arrow={false}
-                                                                >
-                                                                    {msg?.link ?
-                                                                        msg.link.includes("image") ?
-                                                                            <img src={msg?.link} alt="Uploaded" className="chat-image" />
+
+                                                                {msg?.link ?
+                                                                    <div style={{ marginLeft: isShowAvatar ? "" : "35px", width: "100%", display: "flex", justifyContent: msg.senderId === user?.id ? "flex-end" : "flex-start" }}>
+                                                                        {msg.link.includes("image") ?
+                                                                            <TooltipMessage statusName={statusName} createdAt={msg.createdAt}>
+                                                                                <img src={msg?.link} alt="Uploaded" onClick={() => window.open(msg?.link, "_blank")} className="chat-image" />
+                                                                            </TooltipMessage>
                                                                             :
                                                                             <AttachedFile
                                                                                 link={msg.link}
                                                                                 type={msg?.link?.split(".")?.pop()?.toLowerCase()}
                                                                             />
-                                                                        :
-                                                                        <div className={`chat-message ${msg.senderId === user?.id ? "reception" : "user"}`} style={{ marginLeft: isShowAvatar ? "" : "35px", borderRadius: msg.content.length > 110 ? "20px" : "50px" }}>
+                                                                        }
+                                                                    </div>
+                                                                    :
+                                                                    <div className={`chat-message ${msg.senderId === user?.id ? "reception" : "user"}`} style={{ marginLeft: isShowAvatar ? "" : "35px", borderRadius: msg.content.length > 110 ? "20px" : "50px" }}>
+                                                                        <TooltipMessage statusName={statusName} createdAt={msg.createdAt}>
                                                                             {msg.content}
-                                                                        </div>}
-                                                                </Tooltip>
+                                                                        </TooltipMessage>
+                                                                    </div>}
                                                             </div>
 
-                                                            {!nextMsg && msg.senderId === user?.id && (
+                                                            {!nextMsg && msg.senderId === user?.id && !isUploading && (
                                                                 <div className="text-end text-muted mt-2" style={{ fontSize: "10px", color: secondaryColorAdmin }}>
                                                                     {msg.status === STATUS_MESSAGE.SENDING && <span className="d-flex align-items-center justify-content-end gap-1 me-3">Đang gửi...</span>}
                                                                     {msg.status === STATUS_MESSAGE.SENT && <span className="d-flex align-items-center justify-content-end gap-1 me-3">Đã gửi <Check size={10} /></span>}
@@ -288,9 +315,7 @@ const MessengerReceptionist = () => {
                                                 {isUploading && (
                                                     <div className="d-flex flex-row-reverse">
                                                         <div className="d-flex flex-column align-items-end" style={{ width: "70%" }}>
-                                                            <img src={"https://mediatech.vn/assets/images/imgstd.jpg"} alt="Uploaded"
-                                                                style={{ maxWidth: "50%", height: "200px", objectFit: "cover", boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)", borderRadius: "10px" }} />
-                                                            <div style={{ marginTop: '8px', width: '40%', }}>
+                                                            <div style={{ marginTop: '8px', width: '40%', height: "40px" }}>
                                                                 <Progress percent={uploadProgress} status="active" />
                                                             </div>
                                                         </div>
@@ -338,6 +363,26 @@ const MessengerReceptionist = () => {
                                             }}
                                         />
                                     </Form.Item>
+                                    <div ref={emojiPickerRef} style={{ position: 'relative' }}>
+                                        <Smile
+                                            size={20}
+                                            style={{ color: 'gray', cursor: 'pointer', paddingTop: '2px' }}
+                                            onClick={() => setShowEmojiPicker(prev => !prev)}
+                                        />
+                                        {showEmojiPicker && (
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: '50px', // đẩy lên trên icon
+                                                    right: 0,       // sát phải icon// đẩy sang trái hoàn toàn
+                                                    zIndex: 999,
+                                                }}
+                                            >
+                                                <EmojiPicker onEmojiClick={onEmojiClick} skinTonesDisabled={true} previewConfig={{ showPreview: false }} />
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <Button
                                         icon={<SendOutlined />}
                                         htmlType="submit"
@@ -348,9 +393,10 @@ const MessengerReceptionist = () => {
                             </Layout>
                         }
                     </>
-                )}
+                )
+            }
 
-        </Layout>
+        </Layout >
     );
 };
 

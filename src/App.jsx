@@ -1,7 +1,7 @@
 import { ConfigProvider } from "antd";
 import MainLayout from "./layout/User/index";
 import HomePage from "./layout/User/pages/Home/index";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import PrivateRoute from "./components/AuthComponent/PrivateRouter";
 import StaffManage from "./layout/Admin/pages/UserManage/Staff/StaffManage";
 import PatientManage from "./layout/Admin/pages/UserManage/Patient/PatientManage";
@@ -51,8 +51,11 @@ import { NotificationProvider } from './contexts/NotificationContext.jsx';
 import { useSelector } from "react-redux";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { deleteAssistantForCustomer } from "./services/doctorService";
 
 function App() {
+  const location = useLocation();
+  const previousPath = useRef(null);
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
@@ -92,6 +95,16 @@ function App() {
   }, [token]);
   
 
+  useEffect(() => {
+    if (previousPath.current === PATHS.STAFF.CONSULTANT && location.pathname !== PATHS.STAFF.CONSULTANT) {
+      handleDeleteAssistantForCustomer();
+    }
+    previousPath.current = location.pathname;
+  }, [location.pathname])
+
+  const handleDeleteAssistantForCustomer = async () => {
+    await deleteAssistantForCustomer();
+  }
   return (
     <ConfigProvider
       theme={{
@@ -102,7 +115,6 @@ function App() {
           Skeleton: {
             gradientFromColor: "rgba(0, 181, 241, 0.06)",
             gradientToColor: "rgba(0, 181, 241, 0.12)",
-
           },
         },
       }}

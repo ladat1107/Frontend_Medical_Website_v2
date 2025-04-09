@@ -133,7 +133,7 @@
 
                     .chat-image {
                         max-width: 80%;
-                        height: 240px;
+                        max-height: 240px;
                         border-radius: 12px;
                         object-fit: fill;
                         margin: 5px 0;
@@ -240,7 +240,7 @@
 
         .chat-input-container {
             display: flex;
-            align-items: end;
+            align-items: center;
             padding: 8px;
             border-top: 1px solid #ddd;
 

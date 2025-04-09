@@ -199,5 +199,8 @@ export const getConversationsForStaff = async () => {
     return axios.get(`/api/getConversationForStaff`);
 }
 
+export const deleteAssistantForCustomer = async () => {
+    return axios.delete(`/api/deleteAssistantForCustomer`);
+}
 
 

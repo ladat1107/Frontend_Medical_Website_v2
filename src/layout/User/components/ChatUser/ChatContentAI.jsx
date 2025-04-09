@@ -13,12 +13,23 @@ import userService from "@/services/userService";
 const { TextArea } = Input;
 
 const ChatContentAI = () => {
-    const { content, chatLoading } = useSelector(state => state.chat);
+    const { content, chatLoading, _persistedAt } = useSelector(state => state.chat);
     const [showScrollDown, setShowScrollDown] = useState(false); // Hiển thị mũi tên cuộn xuống
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const chatContentRef = useRef(null); // Tham chiếu vùng nội dung chat
     const inputRef = useRef(null);
+
+    useEffect(() => {
+        console.log(_persistedAt)
+        if (_persistedAt) {
+            const expired = Date.now() - _persistedAt > 30 * 1000 // 24 * 60 * 60 * 1000;
+            console.log(expired)
+            if (expired) {
+                dispatch(clearContent()); // Gọi action để xóa chat
+            }
+        }
+    }, [content]);
 
     const mdParser = new MarkdownIt({
         html: true, // Cho phép xử lý HTML
@@ -29,6 +40,7 @@ const ChatContentAI = () => {
     const scrollToBottom = () => {
         chatContentRef.current?.scrollTo({ top: chatContentRef.current.scrollHeight, behavior: "smooth" });
     };
+
     useEffect(() => {
         scrollToBottom(); // Nếu không cuộn lên, tự động cuộn xuống
         if (inputRef.current) inputRef.current.focus(); // Tự động focus vào ô input khi mở chat
@@ -60,6 +72,7 @@ const ChatContentAI = () => {
             dispatch(setChatLoading(false)); // Tắt loading sau khi bot phản hồi
         }
     };
+    
     return (
         <>
             <div className="chat-content" ref={chatContentRef} onScroll={handleScroll}>

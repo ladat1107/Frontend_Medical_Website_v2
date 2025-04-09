@@ -2,24 +2,37 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { BASE_URL } from '@/constant/environment';
 
-
-const useSocket = () => {
+const sockets = {};
+const useSocket = (namespace = "") => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // Kết nối socket khi component mount
-        const newSocket = io(BASE_URL, {
-            withCredentials: true, // Hỗ trợ gửi cookie
-            transports: ["websocket"] // Tăng tốc kết nối, tránh lỗi CORS
-        });
+        if (!namespace) return;
 
-        setSocket(newSocket);
+        const socketNamespace = namespace ? `${BASE_URL}/${namespace}` : BASE_URL;
+
+        // Create socket if it doesn't exist for this namespace
+        if (!sockets[namespace]) {
+            console.log(`Creating new socket connection to ${socketNamespace}`);
+
+            const newSocket = io(socketNamespace, {
+                transports: ["websocket"],
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000,
+                autoConnect: true
+            });
+
+            sockets[namespace] = newSocket;
+        }
+
+        setSocket(sockets[namespace]);
 
         return () => {
-            // Ngắt kết nối khi component unmount
-            newSocket.disconnect();
+            // Don't close socket on component unmount to allow reuse
+            // Only disconnect when app is closing
         };
-    }, []);
+    }, [namespace]);
 
     return socket;
 };

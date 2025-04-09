@@ -1,53 +1,44 @@
 import { useState } from "react";
-import { Drawer, Input, Button, Avatar } from "antd";
-import { SendOutlined, MessageOutlined, CloseOutlined } from "@ant-design/icons";
+import { Badge, Drawer } from "antd";
+import { MessageOutlined, CloseOutlined } from "@ant-design/icons";
 import "./ChatBubbleUser.scss";
+import { clearContent } from "@/redux/chatSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+
+import DropdownSelectMessage from "../Dropdown/DropdownSelectMessage";
+import ChatContentAI from "./ChatContentAI";
+import ChatContentStaff from "./ChatContentStaff";
+import { useSelector } from "react-redux";
 
 const ChatBubbleUser = () => {
-  const [visible, setVisible] = useState(false);
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "Xin chào! Tôi có thể giúp gì cho bạn?" },
-  ]);
-  const [input, setInput] = useState("");
-
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    setMessages([...messages, { sender: "user", text: input }]);
-    setInput("");
-  };
+  const { user } = useSelector(state => state.authen)
+  const [typeMessage, setTypeMessage] = useState(2);
+  const [visible, setVisible] = useState(false); 
 
   return (
     <div className="chat-bubble-container">
       <div className="chat-toggle" onClick={() => setVisible(!visible)}>
-        {visible ? <CloseOutlined /> : <MessageOutlined />}
+        {visible ? <CloseOutlined /> :
+          <Badge count={10} offset={[10, -15]}><MessageOutlined /> </Badge>}
       </div>
       <Drawer
         className="chat-drawer"
-        title={<div className="chat-title">Hỗ trợ trực tuyến</div>}
+        title={<div className="chat-title">
+          <FontAwesomeIcon style={{ cursor: "pointer" }} icon={faXmark} onClick={() => setVisible(false)} />
+          <div className="title" >Hỗ trợ trực tuyến {<span className="text-danger">({user?.firstName})</span>}
+            {!user?.staff && <DropdownSelectMessage typeMessage={typeMessage} setTypeMessage={(value) => setTypeMessage(value)} />}
+          </div>
+          <FontAwesomeIcon style={{ cursor: "pointer", color: "gray" }} icon={faTrashCan} onClick={() => dispatch(clearContent())} />
+        </div>}
         placement="right"
+        width={window.innerWidth > 700 ? 600 : '100vw'}
         closable={false}
         onClose={() => setVisible(false)}
-        visible={visible}
+        open={visible}
       >
-        <div className="chat-content">
-          {messages.map((msg, index) => (
-            <div key={index} className={`chat-message ${msg.sender}`}>
-              <Avatar className="chat-avatar" size={30}>
-                {msg.sender === "bot" ? "🤖" : "👤"}
-              </Avatar>
-              <div className="chat-text">{msg.text}</div>
-            </div>
-          ))}
-        </div>
-        <div className="chat-input-container">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onPressEnter={sendMessage}
-            placeholder="Nhập tin nhắn..."
-          />
-          <Button icon={<SendOutlined />} onClick={sendMessage} />
-        </div>
+        {typeMessage === 1 ? <ChatContentStaff /> : <ChatContentAI />}
       </Drawer>
     </div>
   );

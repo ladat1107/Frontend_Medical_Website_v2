@@ -193,3 +193,14 @@ export const sendNotification = (title, htmlDescription, firstName, lastName, da
     });
     return response.data;
 };
+
+// messenger
+export const getConversationsForStaff = async () => {
+    return axios.get(`/api/getConversationForStaff`);
+}
+
+export const deleteAssistantForCustomer = async () => {
+    return axios.delete(`/api/deleteAssistantForCustomer`);
+}
+
+

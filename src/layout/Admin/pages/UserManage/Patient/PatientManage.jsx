@@ -108,7 +108,6 @@ const PatientManage = () => {
     }
 
     const handelPatientClick = (item) => {
-        // console.log(item)
         setModalId(item.id);
         showModal();
     }

@@ -5,7 +5,6 @@ import Dropdown from "../Dropdown";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/redux/authenSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarCheck, faHospital, } from "@fortawesome/free-regular-svg-icons";
 import { faStethoscope, faSyringe, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -15,11 +14,11 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useState, useEffect } from "react";
 import { timeAgo } from "@/utils/formatDate";
 import ParseHtml from "@/components/ParseHtml";
-import { Drawer } from "antd";
-import NotiItem from "@/layout/Doctor/pages/Notification/NotiItem/notiItem";
 import { useMutation } from "@/hooks/useMutation";
 import { getAllNotification } from "@/services/doctorService";
 
+import { handleLogout } from "@/redux/actions/authenActions";
+import { ROLE } from "@/constant/role";
 // Tạo instance của classnames với bind styles
 const cx = classNames.bind(styles);
 
@@ -30,44 +29,44 @@ function Header() {
   const { totalUnreadCount, socketNotifications } = useNotification();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [open, setOpen] = useState(false);
-  
+
   // States for combined notifications
   const [apiNotifications, setApiNotifications] = useState({ rows: [] });
   const [combinedNotifications, setCombinedNotifications] = useState([]);
-  
+
   // Fetch notifications from API (similar to NotificationUser)
   const {
     data: dataNoti,
     loading: listNotiLoading,
     execute: fetchAllNoti,
   } = useMutation(() => getAllNotification(1, 5, '')); // Fetch only 5 newest notifications
-  
+
   // Fetch notifications when dropdown is opened
   useEffect(() => {
     if (isDropdownVisible && user) {
       fetchAllNoti();
     }
   }, [isDropdownVisible]);
-  
+
   // Update API notifications when data changes
   useEffect(() => {
     if (dataNoti && dataNoti.DT !== undefined) {
       setApiNotifications(dataNoti.DT.notifications);
     }
   }, [dataNoti]);
-  
+
   // Combine socket and API notifications
   useEffect(() => {
     if (!apiNotifications.rows) return;
-    
+
     // Lấy tất cả thông báo từ cả hai nguồn
     const allNotifications = [
       ...socketNotifications,
       ...(apiNotifications.rows || [])
     ];
-    
+
     const uniqueNotiMap = new Map();
-    
+
     allNotifications.forEach(noti => {
       if (noti.notiCode) {
         // Nếu thông báo có cùng notiCode, giữ lại thông báo mới nhất
@@ -80,7 +79,7 @@ function Header() {
         uniqueNotiMap.set(uniqueKey, noti);
       }
     });
-    
+
     const uniqueNotifications = Array.from(uniqueNotiMap.values())
       .sort((a, b) => {
         const dateA = new Date(a.createdAt || a.date);
@@ -88,7 +87,7 @@ function Header() {
         return dateB - dateA;
       })
       .slice(0, 5);
-    
+
     setCombinedNotifications(uniqueNotifications);
   }, [apiNotifications, socketNotifications]);
 
@@ -140,6 +139,9 @@ function Header() {
         { title: "Thông tin cá nhân", icon: null, action: PATHS.HOME.PROFILE },
         { title: "Lịch sử đặt hẹn", icon: null, action: PATHS.HOME.APPOINTMENT_LIST },
         { title: "Thông báo cá nhân", icon: null, action: PATHS.HOME.NOTIFICATION },
+        ...(user.role === ROLE.ADMIN || user.staff ? [{
+          title: "Trang quản lý", icon: null, action: user.role === ROLE.ADMIN ? PATHS.ADMIN.DASHBOARD : PATHS.STAFF.DASHBOARD
+        }] : [])
       ],
     }] : [])
   ];
@@ -247,7 +249,7 @@ function Header() {
                 </div>
               }
               {user ?
-                <div className={cx("account-btn", "header-text")} onClick={() => { dispatch(logout()), navigate(PATHS.HOME.LOGIN) }} >Đăng xuất</div>
+                <div className={cx("account-btn", "header-text")} onClick={() => { dispatch(handleLogout()); }} >Đăng xuất</div>
                 :
                 <div className={cx("account-btn", "header-text")} onClick={() => navigate(PATHS.HOME.LOGIN)}>Đăng nhập</div>
               }

@@ -9,6 +9,9 @@ export const handleConfirmUser = (data) => {
 export const handleLogin = (data) => {
     return axios.post(`/api/handleLogin`, data)
 }
+export const handleLogoutService = () => {
+    return axios.post(`/api/handleLogout`)
+}
 export const handleForgotPassword = (data) => {
     return axios.post(`/api/forgotPassword`, data)
 }

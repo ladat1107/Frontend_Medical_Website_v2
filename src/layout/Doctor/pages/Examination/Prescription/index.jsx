@@ -15,7 +15,6 @@ const Prescription = ({ examinationId, isEditMode, prescriptionData, refresh }) 
     
     
     const [presDetails, setPresDetails] = useState([]);
-    console.log("check thuốc: ", presDetails)
     const [medicineOptions, setMedicineOptions] = useState([]);
     const [note, setNote] = useState('');
     const [prescriptionPrice, setPrescriptionPrice] = useState(0);
@@ -65,6 +64,13 @@ const Prescription = ({ examinationId, isEditMode, prescriptionData, refresh }) 
         }
     }, [dataMedicines]);
     //#endregion
+
+    let {
+        data: dataPrescription,
+        loading: prescriptionLoading,
+        error: prescriptionError,
+        execute: fetchPrescription,
+    } = useMutation(() => getPrescriptionByExaminationId(examinationId));
 
     useEffect(() => {
       

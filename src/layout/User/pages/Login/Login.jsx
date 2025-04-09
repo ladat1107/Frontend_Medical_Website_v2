@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Col, Form, Input, message, Row, Tooltip } from 'antd';
 import "./Login.scss";
-import { BASE_URL } from "@/constant/environment";
 import { handleConfirmUser, handleLogin } from '@/services/adminService';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, addRememberLogin, removeRememberAccount } from '@/redux/authenSlice';
@@ -67,7 +66,6 @@ const Login = () => {
             let response = await handleLogin(values);
             if (response?.EC === 0) {
                 dispatch(login(response.DT));
-
                 // Xác thực socket sau khi đăng nhập thành công
                 authenticateSocket(response.DT.accessToken);
 
@@ -111,6 +109,7 @@ const Login = () => {
             }
         }
     }
+
     return (
         <div className='login-container'>
             <div className='login-content'>

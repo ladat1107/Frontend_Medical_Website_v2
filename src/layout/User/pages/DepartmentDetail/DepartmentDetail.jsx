@@ -25,7 +25,11 @@ const DepartmentDetail = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         if (departmentData) {
-            setListStaff(departmentData.DT.staffDepartmentData);
+            let _listStaff = (departmentData?.DT?.staffDepartmentData || []).map((item) => {
+                return { ...item, staffDepartmentData: { name: departmentData?.DT?.name } };
+            });
+
+            setListStaff(_listStaff);
         }
     }, [departmentData]);
 

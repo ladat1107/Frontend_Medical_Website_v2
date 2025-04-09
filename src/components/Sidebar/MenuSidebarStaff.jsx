@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Badge, Menu } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { PATHS } from '@/constant/path';
-import { logout } from '@/redux/authenSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { EMIT } from '@/constant/value';
-import { faAddressCard } from '@fortawesome/free-regular-svg-icons';
+import { faAddressCard, faCommentDots } from '@fortawesome/free-regular-svg-icons';
 import emitter from '@/utils/eventEmitter';
 import { ROLE } from '@/constant/role';
 import { useNotification } from '@/contexts/NotificationContext';
+import { handleLogout } from '@/redux/actions/authenActions';
 
 const MenuSidebar = () => {
     let { user } = useSelector(state => state.authen);
@@ -132,13 +132,19 @@ const MenuSidebar = () => {
                 ),
             },
             {
+                key: 'message',
+                label: (<NavLink to={PATHS.STAFF.CONSULTANT}>Tư vấn</NavLink>),
+                icon: <FontAwesomeIcon icon={faCommentDots} />,
+                hidden: user.role !== ROLE.RECEPTIONIST
+            },
+            {
                 type: 'divider',
             },
             {
                 key: 'logout',
                 label: ("Đăng xuất"),
                 icon: <FontAwesomeIcon icon={faArrowRightFromBracket} rotation={180} />,
-                onClick: () => { dispatch(logout()); }
+                onClick: () => { dispatch(handleLogout()); },
             },
         ];
 

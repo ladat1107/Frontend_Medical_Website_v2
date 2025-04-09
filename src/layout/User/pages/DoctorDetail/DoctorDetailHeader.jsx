@@ -46,7 +46,7 @@ const DoctorDetailHeader = (props) => {
             <div className={cx('doctor-info-content')} >
               <div className={cx('style-info')} >
                 <label htmlFor="">Chuyên Khoa</label>
-                <span>{data?.staffUserData?.staffSpecialtyData?.name}</span>
+                <span>{data?.staffUserData?.staffDepartmentData?.name}</span>
               </div>
               <div className={cx('style-info')} >
                 <label htmlFor="">Chuyên Trị</label>

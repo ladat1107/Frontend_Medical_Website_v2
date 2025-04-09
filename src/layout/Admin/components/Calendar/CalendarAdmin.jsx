@@ -134,56 +134,6 @@ const ScheduleTable = (props) => {
         setIsModalOpen(false);
         props.refresh();
     }
-    // const exportPDF = () => {
-    //     const doc = new jsPDF();
-    //     // Thêm font Roboto (hoặc font khác hỗ trợ tiếng Việt)
-    //     doc.setFont("Roboto");
-    //     // Tiêu đề tài liệu
-    //     doc.setFontSize(12);
-    //     doc.text("Lịch Trực Nhân Viên", 14, 10);
-
-    //     const tableColumns = [
-    //         "Khoa",
-    //         "Phòng",
-    //         ...daysOfWeek.map((date) => dayjs(date).format("YYYY-MM-DD")),
-    //     ];
-
-    //     const tableRows = tableData.map((data) => {
-    //         const row = [
-    //             data.departmentName || "",
-    //             data.roomName || "",
-    //             ...daysOfWeek.map((date) => {
-    //                 const shiftsForDate = shifts[0]?.filter(
-    //                     (shift) =>
-    //                         shift.roomId === data.roomId &&
-    //                         shift.date === date.format("YYYY-MM-DD")
-    //                 );
-    //                 return shiftsForDate
-    //                     ?.map(
-    //                         (shift) =>
-    //                             `${shift.roleId === ROLE.DOCTOR
-    //                                 ? `BS.${shift.doctor}`
-    //                                 : shift.doctor
-    //                             }`
-    //                     )
-    //                     .join(", ") || "";
-    //             }),
-    //         ];
-    //         return row;
-    //     });
-    //     console.log(tableRows);
-    //     doc.autoTable({
-    //         head: [tableColumns],
-    //         body: tableRows,
-    //         startY: 20,
-    //         styles: { font: "Roboto", fontSize: 12, cellPadding: 5 },
-    //         headStyles: { fillColor: [22, 160, 133], textColor: [255, 255, 255], fontSize: 12 },
-    //         bodyStyles: { fontSize: 12 },
-    //     });
-
-    //     // Lưu file
-    //     doc.save("lich_truc.pdf");
-    // };
 
     const exportToExcel = () => {
         // Chuẩn bị dữ liệu để xuất

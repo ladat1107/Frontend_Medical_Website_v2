@@ -1462,6 +1462,30 @@
   dependencies:
     tslib "^2.4.0"
 
+"@tanstack/query-core@5.71.10":
+  version "5.71.10"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.71.10.tgz#1f2dc5abf595156e7d9c5d6e4f47e805a7083c30"
+  integrity sha512-/fKEY8fO1nbszfrBatzmhJa1nEwIKn0c6Tv2A1ocSA5OiD2GukOIV8nnBbvJRgZb/VIoBy9/N4PVbABI8YQLow==
+
+"@tanstack/query-devtools@5.71.5":
+  version "5.71.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-devtools/-/query-devtools-5.71.5.tgz#65ba36c1589a88707a4985b8b0e7742171ba72e3"
+  integrity sha512-Fq1JeAp+I52Md/KnyeFxzG7G0RpdHgeOfDNhSPkZQs/JqqXuAfpUf+wFHDz+vP0GZbSnla2JmcLSQebOkIb1yA==
+
+"@tanstack/react-query-devtools@^5.71.10":
+  version "5.71.10"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query-devtools/-/react-query-devtools-5.71.10.tgz#517bcc88992c9f1a0c0b01621b019c7642296166"
+  integrity sha512-n0xsIzwNvkIoZCmfHww28jFmnVTVzOt5dHj/py3LNFMJHGnJq9o9ttQESzVt2Hr7as00Aqf8ElVwH6na1o6dnw==
+  dependencies:
+    "@tanstack/query-devtools" "5.71.5"
+
+"@tanstack/react-query@^5.71.10":
+  version "5.71.10"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.71.10.tgz#940d485a499b86aaa37764e26709ed79b393fe29"
+  integrity sha512-mQYM/ObpL8YMDz8vCoUuHkbe8Yu7NnVRH8aBaBa/3zlufjp1f1VuWjeO3TcumNHfuVMDwEAGinsgwrB7OKADiQ==
+  dependencies:
+    "@tanstack/query-core" "5.71.10"
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.npmjs.org/@types/babel__core/-/babel__core-7.20.5.tgz"
@@ -1577,6 +1601,11 @@
   version "4.2.5"
   resolved "https://registry.npmjs.org/@types/stylis/-/stylis-4.2.5.tgz"
   integrity sha512-1Xve+NMN7FWjY14vLoY5tL3BVEQ/n42YLwaqJIPYhotZ9uBHt87VceMwWQpzmdEt2TNXIorIFG+YeCUUW7RInw==
+
+"@types/trusted-types@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
+  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
 "@types/use-sync-external-store@^0.0.3":
   version "0.0.3"
@@ -2272,6 +2301,13 @@ dompurify@^2.5.4:
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-2.5.7.tgz#6e0d36b9177db5a99f18ade1f28579db5ab839d7"
   integrity sha512-2q4bEI+coQM8f5ez7kt2xclg1XsecaV9ASJk/54vwlfRRNQfDqJz2pzQ8t0Ix/ToBpXlVjrRIx7pFC/o8itG2Q==
 
+dompurify@^3.2.4:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.2.4.tgz#af5a5a11407524431456cf18836c55d13441cd8e"
+  integrity sha512-ysFSFEDVduQpyhzAob/kkuJjf5zWkZD8/A9ywSp1byueyuCfHamrCBa14/Oc2iiB0e51B+NpxSl5gmzn+Ms/mg==
+  optionalDependencies:
+    "@types/trusted-types" "^2.0.7"
+
 dotenv@^16.4.5:
   version "16.4.5"
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.4.5.tgz"
@@ -2290,6 +2326,13 @@ electron-to-chromium@^1.5.28:
   version "1.5.36"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.36.tgz"
   integrity sha512-HYTX8tKge/VNp6FGO+f/uVDmUkq+cEfcxYhKf15Akc4M5yxt5YmorwlAitKWjWhWQnKcDRBAQKXkhqqXMqcrjw==
+
+emoji-picker-react@^4.12.2:
+  version "4.12.2"
+  resolved "https://registry.yarnpkg.com/emoji-picker-react/-/emoji-picker-react-4.12.2.tgz#323fbbf763daf1ffc1a9ff819966408e1ec30bab"
+  integrity sha512-6PDYZGlhidt+Kc0ay890IU4HLNfIR7/OxPvcNxw+nJ4HQhMKd8pnGnPn4n2vqC/arRFCNWQhgJP8rpsYKsz0GQ==
+  dependencies:
+    flairup "1.0.0"
 
 engine.io-client@~6.6.1:
   version "6.6.3"
@@ -2708,6 +2751,11 @@ find-up@^5.0.0:
   dependencies:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
+
+flairup@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/flairup/-/flairup-1.0.0.tgz#d3af0052ad02734c12d2446608a869498adb351b"
+  integrity sha512-IKlE+pNvL2R+kVL1kEhUYqRxVqeFnjiIvHWDMLFXNaqyUdFXQM2wte44EfMYJNHkW16X991t2Zg8apKkhv7OBA==
 
 flat-cache@^3.0.4:
   version "3.2.0"
@@ -3409,10 +3457,10 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
-lucide-react@^0.477.0:
-  version "0.477.0"
-  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.477.0.tgz#41aff9cf8447a1abbeb1e28de9caefafc8340cf6"
-  integrity sha512-yCf7aYxerFZAbd8jHJxjwe1j7jEMPptjnaOqdYeirFnEy85cNR3/L+o0I875CYFYya+eEVzZSbNuRk8BZPDpVw==
+lucide-react@^0.485.0:
+  version "0.485.0"
+  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.485.0.tgz#96079022f766e7feabcc1b1d9c084bc529802ff6"
+  integrity sha512-NvyQJ0LKyyCxL23nPKESlr/jmz8r7fJO1bkuptSNYSy0s8VVj4ojhX0YAgmE1e0ewfxUZjIlZpvH+otfTnla8Q==
 
 luxon@^3.2.1:
   version "3.5.0"

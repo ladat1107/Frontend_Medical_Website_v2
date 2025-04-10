@@ -7,9 +7,11 @@ import { getAllNotification, getAllUserToNotify, markAllRead } from '@/services/
 import { message, Pagination } from 'antd';
 import { useSelector } from 'react-redux';
 import { removeExtraSpaces } from '@/utils/formatString';
+import { useNotification } from '@/contexts/NotificationContext';
 
 const Notification = () => {
     let { user } = useSelector((state) => state.authen);
+    const { markAllNotificationsAsRead } = useNotification();
 
     const [selectedRadio, setSelectedRadio] = useState('viewnoti');
     const [userData, setUserData] = useState({});
@@ -56,25 +58,26 @@ const Notification = () => {
         );
     };
 
-    const handleMarkAllAsRead = () => {
-        try {
-            markAllRead();  
-            
-            setNotiData(prev => ({
-                ...prev,
-                rows: prev.rows.map((noti) => ({ ...noti, status: 2 }))
-            }));
-            
-            setUnreadCount(0);
-            setSocketUnreadCount(0);
-            
-            document.dispatchEvent(new CustomEvent('markAllNotificationsAsRead'));
-            
-            message.success("Đánh dấu tất cả thông báo đã đọc thành công!");
-        } catch (error) {
-            console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
-        }
-    };
+
+const handleMarkAllAsRead = async () => {
+    try {
+        // Sử dụng hàm từ context để đảm bảo cập nhật tất cả các component
+        await markAllNotificationsAsRead();
+        
+        // Cập nhật local state của component này
+        setNotiData(prev => ({
+            ...prev,
+            rows: prev.rows?.map((noti) => ({ ...noti, status: 2 })) || []
+        }));
+        
+        setUnreadCount(0);
+        setSocketUnreadCount(0);
+
+    } catch (error) {
+        console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
+        message.error("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+    }
+};
 
     let {
         data: dataUser,

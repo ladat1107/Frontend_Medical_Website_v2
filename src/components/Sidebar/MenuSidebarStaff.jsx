@@ -20,20 +20,28 @@ const MenuSidebar = () => {
     // Force re-render on notification changes
     const [, setForceUpdate] = useState(0);
     
+    // Trong MenuSidebar.js
     useEffect(() => {
         // Log for debugging
         console.log('MenuSidebar: totalUnreadCount =', totalUnreadCount);
         
-        // Subscribe to the markAllNotificationsAsRead event
+        // Subscribe to events
         const handleMarkAllRead = () => {
             console.log('All notifications marked as read, updating menu');
             setForceUpdate(prev => prev + 1);
         };
         
+        const handleCountUpdated = (event) => {
+            console.log('Notification count updated:', event.detail.count);
+            setForceUpdate(prev => prev + 1); 
+        };
+        
         document.addEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+        document.addEventListener('notificationCountUpdated', handleCountUpdated);
         
         return () => {
             document.removeEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+            document.removeEventListener('notificationCountUpdated', handleCountUpdated);
         };
     }, [totalUnreadCount]);
 

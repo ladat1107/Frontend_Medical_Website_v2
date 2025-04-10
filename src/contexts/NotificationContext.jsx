@@ -14,32 +14,37 @@ export const NotificationProvider = ({ children }) => {
   const [unReadDBCount, setUnReadDBCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
   const [apiUnreadCount, setApiUnreadCount] = useState(0);
-  const { isLogin } = useSelector(state => state.authen);
-  // Fetch notifications from database
-  useEffect(() => {
-    if (!isLogin) return;
+  const { user } = useSelector(state => state.authen);
 
-    const fetchNotifications = async () => {
-      try {
-        const response = await getAllNotification();
-        console.log('DB Notifications response:', response);
-        if (response && response.DT) {
-          const notifications = response.DT.notifications.rows || [];
-          setDbNotifications(notifications);
-          setUnReadDBCount(response.DT.unreadCount || 0);
-        }
-      } catch (error) {
-        console.error('Lỗi khi lấy thông báo từ database:', error);
+// Fetch notifications from database
+useEffect(() => {
+  if (!user) return;
+  
+  const fetchNotifications = async () => {
+    try {
+      const response = await getAllNotification();
+      console.log('DB Notifications response:', response);
+      if (response && response.DT) {
+        const notifications = response.DT.notifications.rows || [];
+        setDbNotifications(notifications);
+        setUnReadDBCount(response.DT.unreadCount || 0);
+        
+        // Đảm bảo các thành phần UI được cập nhật
+        document.dispatchEvent(new CustomEvent('notificationCountUpdated', { 
+          detail: { count: response.DT.unreadCount || 0 }
+        }));
       }
-    };
+    } catch (error) {
+      console.error('Lỗi khi lấy thông báo từ database:', error);
+    }
+  };
 
-    fetchNotifications();
+  fetchNotifications();
 
-    // Set up a refresh interval (optional)
-    const intervalId = setInterval(fetchNotifications, 5 * 60 * 1000); // Refresh every 5 minutes
-
-    return () => clearInterval(intervalId);
-  }, [isLogin]);
+  // Thiết lập interval và xử lý cleanup
+  const intervalId = setInterval(fetchNotifications, 5 * 60 * 1000);
+  return () => clearInterval(intervalId);
+}, [user?.id]); // Thêm user.id để đảm bảo re-fetch khi người dùng thay đổi
 
   // Socket event handling
   useEffect(() => {
@@ -133,30 +138,34 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // Mark all notifications as read
+  // Trong NotificationContext.js
   const markAllNotificationsAsRead = async () => {
     try {
-      console.log('Marking all notifications as read');
+        console.log('Marking all notifications as read');
 
-      // Call API to mark all as read
-      await markAllRead();
+        // Call API to mark all as read
+        await markAllRead();
 
-      // Update socket notifications
-      setSocketNotifications(prev =>
-        prev.map(noti => ({ ...noti, status: 2 }))
-      );
+        // Update socket notifications
+        setSocketNotifications(prev =>
+            prev.map(noti => ({ ...noti, status: 2 }))
+        );
 
-      // Update database notifications
-      setDbNotifications(prev =>
-        prev.map(noti => ({ ...noti, status: 2 }))
-      );
+        // Update database notifications
+        setDbNotifications(prev =>
+            prev.map(noti => ({ ...noti, status: 2 }))
+        );
 
-      // Notify other components
-      document.dispatchEvent(new CustomEvent('markAllNotificationsAsRead'));
+        // Đặt unReadDBCount về 0
+        setUnReadDBCount(0);
 
-      message.success("Đánh dấu tất cả thông báo đã đọc thành công!");
+        // Notify other components
+        document.dispatchEvent(new CustomEvent('markAllNotificationsAsRead'));
+
+        message.success("Đánh dấu tất cả thông báo đã đọc thành công!");
     } catch (error) {
-      console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
-      message.error("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+        console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
+        message.error("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
     }
   };
 

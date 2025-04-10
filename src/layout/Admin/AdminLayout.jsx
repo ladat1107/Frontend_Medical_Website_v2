@@ -7,6 +7,7 @@ import { ROLE } from '@/constant/role';
 import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from '@/components/Sidebar/SidebarAdmin';
 import { handleLogout } from '@/redux/actions/authenActions';
+import 'bootstrap/dist/css/bootstrap.min.css';
 const { Content } = Layout;
 
 const AdminLayout = () => {

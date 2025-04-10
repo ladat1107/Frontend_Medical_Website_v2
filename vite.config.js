@@ -3,6 +3,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import * as path from "path";
 import sass from 'sass';
+import tailwindcss from 'tailwindcss'; // Sử dụng import thay vì require
+import autoprefixer from 'autoprefixer';
 export default defineConfig({
   plugins: [react()],
   css: {
@@ -10,6 +12,12 @@ export default defineConfig({
       scss: {
         implementation: sass,
       },
+    },
+    postcss: {
+      plugins: [
+        tailwindcss, // Sử dụng biến tailwindcss đã import
+        autoprefixer, // Sử dụng biến autoprefixer đã import
+      ],
     },
   },
   resolve: {

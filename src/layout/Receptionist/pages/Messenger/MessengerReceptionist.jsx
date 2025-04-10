@@ -26,12 +26,12 @@ const { Header, Sider, Content } = Layout;
 const { TextArea } = Input;
 
 const MessengerReceptionist = () => {
-    const { user } = useSelector((state) => state.authen);
+    const { user, isLogin } = useSelector((state) => state.authen);
     const navigate = useNavigate();
     const [form] = Form.useForm();
-    const { data: conversationSidebar, isLoading: conversationSidebarLoading, refetch: refetchConversationSidebar, isFetching: isFetchingConversationSidebar } = useConversationForStaff()
+    const { data: conversationSidebar, isLoading: conversationSidebarLoading } = useConversationForStaff({ enabled: isLogin })
     const [conversationSelected, setConversationSelected] = useState(null);
-    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData, isFetching: isFetchingConversationData } = useConversation(conversationSelected?.patientId)
+    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData } = useConversation({ receiverId: conversationSelected?.patientId, enabled: isLogin })
     const { mutate: createMessage, isPending: isCreatingMessage } = useCreateMessage();
 
     const [hovered, setHovered] = useState(null);
@@ -50,19 +50,6 @@ const MessengerReceptionist = () => {
     const scrollToBottom = () => {
         chatContentRef.current?.scrollTo({ top: chatContentRef.current.scrollHeight, behavior: "smooth" });
     };
-
-    useEffect(() => {
-        if (!isFetchingConversationData && !isCreatingMessage) {
-            setTimeout(() => {
-                refetchConversationData();
-            }, 2000);
-        }
-        if (!isFetchingConversationSidebar && !isCreatingMessage) {
-            setTimeout(() => {
-                refetchConversationSidebar();
-            }, 2000);
-        }
-    }, [isFetchingConversationData, isFetchingConversationSidebar, isCreatingMessage])
 
     useEffect(() => {
         if (conversationSidebar?.DT?.length > 0 && conversationSidebar?.EC === 0) {
@@ -190,7 +177,7 @@ const MessengerReceptionist = () => {
                         <Sider width={300} className="chat-sidebar">
                             <Header color={primaryColorAdmin} className="chat-header">
                                 <ArrowLeft style={{ cursor: 'pointer' }} onClick={() => navigate(PATHS.STAFF.DASHBOARD)} />
-                                <span>Danh sách chat</span>
+                                <span>Danh sách tin nhắn</span>
                             </Header>
                             <div className="p-2 mb-2">
                                 <Input

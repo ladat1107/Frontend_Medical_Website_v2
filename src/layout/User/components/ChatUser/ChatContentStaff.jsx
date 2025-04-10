@@ -20,8 +20,8 @@ import EmojiPicker from 'emoji-picker-react';
 
 const { TextArea } = Input;
 const ChatContentStaff = () => {
-    const { user } = useSelector(state => state.authen);
-    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData, isFetching: isFetchingConversationData } = useConversation()
+    const { user, isLogin } = useSelector(state => state.authen);
+    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData } = useConversation({ enabled: isLogin })
     const { mutate: createMessage, isPending: isCreatingMessage } = useCreateMessage();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -40,15 +40,6 @@ const ChatContentStaff = () => {
     const scrollToBottom = () => {
         chatContentRef.current?.scrollTo({ top: chatContentRef.current.scrollHeight, behavior: "smooth" });
     };
-
-    useEffect(() => {
-        if (!isFetchingConversationData && !isCreatingMessage) {
-            setTimeout(() => {
-                refetchConversationData();
-            }, 2000);
-        }
-    }, [isFetchingConversationData, isCreatingMessage])
-
     useEffect(() => {
         if (conversationData?.EC === 0) {
             setMessages(conversationData?.DT?.messageData || []);

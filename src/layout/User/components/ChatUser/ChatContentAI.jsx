@@ -20,17 +20,6 @@ const ChatContentAI = () => {
     const chatContentRef = useRef(null); // Tham chiếu vùng nội dung chat
     const inputRef = useRef(null);
 
-    useEffect(() => {
-        console.log(_persistedAt)
-        if (_persistedAt) {
-            const expired = Date.now() - _persistedAt > 30 * 1000 // 24 * 60 * 60 * 1000;
-            console.log(expired)
-            if (expired) {
-                dispatch(clearContent()); // Gọi action để xóa chat
-            }
-        }
-    }, [content]);
-
     const mdParser = new MarkdownIt({
         html: true, // Cho phép xử lý HTML
         linkify: true, // Tự động nhận diện link
@@ -44,6 +33,13 @@ const ChatContentAI = () => {
     useEffect(() => {
         scrollToBottom(); // Nếu không cuộn lên, tự động cuộn xuống
         if (inputRef.current) inputRef.current.focus(); // Tự động focus vào ô input khi mở chat
+
+        if (_persistedAt) {
+            const expired = Date.now() - _persistedAt > 24 * 60 * 60 * 1000;
+            if (expired) {
+                dispatch(clearContent()); // Gọi action để xóa chat
+            }
+        }
     }, [content]);
 
     // Theo dõi vị trí thanh cuộn và hiển thị nút cuộn xuống nếu cần
@@ -58,27 +54,27 @@ const ChatContentAI = () => {
 
         let history = [...content];
         const userMessage = { sender: "user", text: data.message };
-        dispatch(setContent([...content, userMessage])); // Lưu tin nhắn của user vào Redux
+        dispatch(setContent(userMessage)); // Lưu tin nhắn của user vào Redux
         form.resetFields();
         dispatch(setChatLoading(true)); // Hiển thị loading khi chờ phản hồi từ bot
         try {
             const response = await userService.sendMessage({ message: data.message, history: history.slice(-8) })
             if (response?.EC !== 0) return;
             const botResponse = { sender: "bot", text: response?.DT?.text?.trim(), link: response?.DT?.link || [{}] };
-            dispatch(setContent([...content, userMessage, botResponse]));
+            dispatch(setContent(botResponse));
         } catch (error) {
             clearContent(); // Xóa nội dung chat nếu có lỗi
         } finally {
             dispatch(setChatLoading(false)); // Tắt loading sau khi bot phản hồi
         }
     };
-    
+
     return (
         <>
             <div className="chat-content" ref={chatContentRef} onScroll={handleScroll}>
                 {content?.map((msg, index) => (
                     <div key={index} className={`chat-message ${msg.sender}`}>
-                        <Avatar className="chat-avatar" size={30}>{msg.sender === "bot" ? "🤖" : "👤"}</Avatar>
+                        {msg.sender === "bot" && <Avatar style={{ backgroundColor: "#000", border: "2px solid #00B5F1", borderRadius: "50%" }} src={"https://media.gettyimages.com/id/1492548051/vector/chatbot-logo-icon.jpg?s=612x612&w=0&k=20&c=oh9mrvB70HTRt0FkZqOu9uIiiJFH9FaQWW3p4M6iNno="} className="chat-avatar" size={30}></Avatar>}
                         <div className="chat-text">
                             <span className={`chat-text-content ${msg.sender}`} dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(mdParser.render(msg?.text)),

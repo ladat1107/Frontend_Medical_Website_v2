@@ -10,7 +10,7 @@ export const chatSlice = createSlice({
     initialState,
     reducers: {
         setContent: (state, action) => {
-            state.content = action.payload;
+            state.content = [...state.content, action.payload];
             if (!state._persistedAt) {
                 state._persistedAt = Date.now();
             }

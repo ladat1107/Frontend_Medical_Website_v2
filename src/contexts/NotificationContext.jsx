@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import socket from '../Socket/socket';
 import { message } from 'antd';
 import { markAllRead, updateNotification, getAllNotification } from '../services/doctorService';
+import { useSelector } from 'react-redux';
 
 // Create the context
 const NotificationContext = createContext();
@@ -13,9 +14,11 @@ export const NotificationProvider = ({ children }) => {
   const [unReadDBCount, setUnReadDBCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
   const [apiUnreadCount, setApiUnreadCount] = useState(0);
-
+  const { isLogin } = useSelector(state => state.authen);
   // Fetch notifications from database
   useEffect(() => {
+    if (!isLogin) return;
+
     const fetchNotifications = async () => {
       try {
         const response = await getAllNotification();
@@ -36,7 +39,7 @@ export const NotificationProvider = ({ children }) => {
     const intervalId = setInterval(fetchNotifications, 5 * 60 * 1000); // Refresh every 5 minutes
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [isLogin]);
 
   // Socket event handling
   useEffect(() => {

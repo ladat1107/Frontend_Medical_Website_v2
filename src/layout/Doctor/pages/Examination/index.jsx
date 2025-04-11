@@ -11,11 +11,12 @@ import { convertGender } from "@/utils/convertGender";
 import { useParams } from "react-router-dom";
 import { Modal, Spin } from "antd";
 import HistoryModal from "../../components/HistoryModal/HistoryModal";
+import OldParaclinacalModal from "@/components/Modals/OldParaclinicalModal";
 
 const Examination = () => {
     const { examId } = useParams();
     const [isLoading, setIsLoading] = useState(true);
-
+    const [isShowOldParaclinicalModal, setIsShowOldParaclinicalModal] = useState(false);
     const [selectedRadio, setSelectedRadio] = useState('vitalsign');
     const [patientData, setPatientData] = useState({});
     const [examinationData, setExaminationData] = useState({});
@@ -94,7 +95,7 @@ const Examination = () => {
                 "id", "userId", "staffId", "symptom", "diseaseName", "comorbidities",
                 "treatmentResult", "admissionDate", "dischargeDate", "status",
                 "reason", "medicalTreatmentTier", "paymentDoctorStatus",
-                "price", "special", "insuranceCoverage"
+                "price", "special", "insuranceCoverage", "oldParaclinical"
             ];
 
             const disease = dataExamination.DT?.diseaseName?.split(" - ") || "";
@@ -119,7 +120,7 @@ const Examination = () => {
             setParaclinicalData(dataExamination.DT.examinationResultParaclincalData || []);
             setPrescriptionData(dataExamination.DT.prescriptionExamData || []);
 
-            if(dataExamination.DT.status === 7) setIsEditMode(false);
+            if (dataExamination.DT.status === 7) setIsEditMode(false);
 
             setIsLoading(false);
         }
@@ -128,7 +129,6 @@ const Examination = () => {
     const handleRadioChange = (e) => {
         setSelectedRadio(e.target.value);
     };
-
     return (
         <>
             <div className="container">
@@ -140,11 +140,13 @@ const Examination = () => {
                     ) : (
                         <>
                             <div className="exam-content">
-                                <div className="row">
-                                    <div className="col-10">
-                                        <p className="exam-header">Thông tin bệnh nhân</p>
-                                    </div>
-                                    <div className="col-2">
+                                <div className="d-flex justify-content-between ">
+                                    <p className="exam-header">Thông tin bệnh nhân</p>
+                                    <div className="d-flex justify-content-end gap-2">
+                                        {examinationData?.oldParaclinical &&
+                                            <button className="old-paraclinical-button" onClick={() => setIsShowOldParaclinicalModal(true)}>
+                                                Phiếu xét nghiệm cũ
+                                            </button>}
                                         <button
                                             onClick={showModal}
                                             className='history-button'>
@@ -152,12 +154,12 @@ const Examination = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <hr />
+                                <hr className="my-2" />
                                 <div className="row">
                                     {patientData && patientData.cid &&
                                         <>
                                             <div className="col-12 col-lg-5 mb-0">
-                                                <div className="row">
+                                                <div className="row mb-2">
                                                     <div className="col-4">
                                                         <p className="title">Họ tên</p>
                                                     </div>
@@ -167,7 +169,7 @@ const Examination = () => {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="row">
+                                                <div className="row mb-2">
                                                     <div className="col-4">
                                                         <p className="title">Ngày sinh</p>
                                                     </div>
@@ -175,7 +177,7 @@ const Examination = () => {
                                                         <p className="info">{convertDateTime(patientData.dob)}</p>
                                                     </div>
                                                 </div>
-                                                <div className="row">
+                                                <div className="row mb-2">
                                                     <div className="col-4">
                                                         <p className="title">Giới tính</p>
                                                     </div>
@@ -185,7 +187,7 @@ const Examination = () => {
                                                 </div>
                                             </div>
                                             <div className="col-12 col-lg-5 mb-0">
-                                                <div className="row">
+                                                <div className="row mb-2">
                                                     <div className="col-4">
                                                         <p className="title">Số điện thoại</p>
                                                     </div>
@@ -193,7 +195,7 @@ const Examination = () => {
                                                         <p className="info">{patientData.phoneNumber}</p>
                                                     </div>
                                                 </div>
-                                                <div className="row">
+                                                <div className="row mb-2">
                                                     <div className="col-4">
                                                         <p className="title">CCCD</p>
                                                     </div>
@@ -201,7 +203,7 @@ const Examination = () => {
                                                         <p className="info">{patientData.cid}</p>
                                                     </div>
                                                 </div>
-                                                <div className="row">
+                                                <div className="row mb-2">
                                                     <div className="col-4">
                                                         <p className="title">BHYT:</p>
                                                     </div>
@@ -293,6 +295,11 @@ const Examination = () => {
                         </>
                     )}
                 </div>
+                <OldParaclinacalModal
+                    visible={isShowOldParaclinicalModal}
+                    onCancel={() => setIsShowOldParaclinicalModal(false)}
+                    oldParaclinical={examinationData?.oldParaclinical || ""}
+                />
                 {!isLoading && (
                     <div className="modal-history-content">
                         <HistoryModal

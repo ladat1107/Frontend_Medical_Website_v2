@@ -290,6 +290,19 @@
                     }
                 }
 
+                .btn-old-paraclinical {
+                    background: linear-gradient(135deg, #138fb8, #24C8FF);
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+
+                    &:hover {
+                        scale: 1.02;
+                    }
+
+                }
             }
 
 

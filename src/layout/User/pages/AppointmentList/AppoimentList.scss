@@ -89,6 +89,15 @@
                     border: 2px solid red;
 
                 }
+
+                &.old-paraclinical {
+                    background: rgb(144, 112, 198);
+                    color: white;
+                    cursor: pointer;
+                    border: 2px solid rgb(144, 112, 198);
+                    ;
+
+                }
             }
 
             .status-success {

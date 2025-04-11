@@ -9,15 +9,15 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        height: vitalSignData.height || '',
-        weight: vitalSignData.weight || '',
-        fetalWeight: vitalSignData.fetalWeight || '',
-        pulse: vitalSignData.pulse || '',
-        hightBloodPressure: vitalSignData.hightBloodPressure || '',
-        lowBloodPressure: vitalSignData.lowBloodPressure || '',
-        temperature: vitalSignData.temperature || '',
-        breathingRate: vitalSignData.breathingRate || '',
-        glycemicIndex: vitalSignData.glycemicIndex || '',
+        height: vitalSignData?.height || '',
+        weight: vitalSignData?.weight || '',
+        fetalWeight: vitalSignData?.fetalWeight || '',
+        pulse: vitalSignData?.pulse || '',
+        hightBloodPressure: vitalSignData?.hightBloodPressure || '',
+        lowBloodPressure: vitalSignData?.lowBloodPressure || '',
+        temperature: vitalSignData?.temperature || '',
+        breathingRate: vitalSignData?.breathingRate || '',
+        glycemicIndex: vitalSignData?.glycemicIndex || '',
     });
 
     const [initialVitalSign, setInitialVitalSign] = useState(formData);
@@ -101,7 +101,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.height}
                             onChange={handleInputChange('height')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: cm" />
                     </div>
@@ -112,7 +112,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.weight}
                             onChange={handleInputChange('weight')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: kg" />
                     </div>
@@ -125,7 +125,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.fetalWeight}
                             onChange={handleInputChange('fetalWeight')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: g" />
                     </div>
@@ -136,7 +136,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.pulse}
                             onChange={handleInputChange('pulse')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: Lần/phút" />
                     </div>
@@ -149,7 +149,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.hightBloodPressure}
                             onChange={handleInputChange('hightBloodPressure')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: mmHg" />
                     </div>
@@ -160,7 +160,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.lowBloodPressure}
                             onChange={handleInputChange('lowBloodPressure')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: mmHg" />
                     </div>
@@ -173,7 +173,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.temperature}
                             onChange={handleInputChange('temperature')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: oC" />
                     </div>
@@ -184,7 +184,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.breathingRate}
                             onChange={handleInputChange('breathingRate')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: Lần/phút" />
                     </div>
@@ -197,7 +197,7 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
                         <input type="text"
                             value={formData.glycemicIndex}
                             onChange={handleInputChange('glycemicIndex')}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             className="input"
                             placeholder="Đơn vị: mg/dl" />
                     </div>

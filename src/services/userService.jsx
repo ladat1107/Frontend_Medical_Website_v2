@@ -35,6 +35,9 @@ const userService = {
   getScheduleApoinment(query = "") {
     return axiosInstance.get(`api/getScheduleApoinment`, { params: query })
   },
+  updateOldParaclinical(data) {
+    return axiosInstance.put(`api/updateOldParaclinical`, data)
+  },
   getFolk() {
     return axiosInstance.get(`api/getFolk`);
   },

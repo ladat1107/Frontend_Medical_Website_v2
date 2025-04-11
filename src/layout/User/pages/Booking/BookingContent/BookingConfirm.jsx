@@ -8,7 +8,6 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { Button, message } from "antd";
 import { useState } from "react";
 import userService from "@/services/userService";
-import { set } from "lodash";
 import Loading from "@/components/Loading/Loading";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";
@@ -20,6 +19,7 @@ const BookingConfirm = (props) => {
     let doctor = props?.doctor;
     let schedule = props?.schedule;
     let [isLoading, setIsLoading] = useState(false);
+    console.log("profile", profile);
     const confirm = async () => {
         setIsLoading(true);
         try {
@@ -40,7 +40,6 @@ const BookingConfirm = (props) => {
     const handleViewMail = () => {
         window.location.href = "https://mail.google.com/mail/u/0/#inbox"
     }
-    console.log("profile", profile);
     return (
         <>
             <div className="header">
@@ -110,7 +109,7 @@ const BookingConfirm = (props) => {
                                 <div className="info-row">
                                     <FontAwesomeIcon icon={faMapMarkerAlt} className="icon" />
                                     <span>Địa chỉ:</span>
-                                    <strong>{profile?.address + ", " + profile?.obWard?.label || '' + ", " + profile?.obDistrict?.label || '' + ", " + profile?.obProvince?.label || ''}</strong>
+                                    <strong>{profile?.address + ", " + (profile?.obWard?.label || '') + ", " + (profile?.obDistrict?.label || '') + ", " + (profile?.obProvince?.label || '')}</strong>
                                 </div>
                             </div>
                             <div className="row-3 mt-5">

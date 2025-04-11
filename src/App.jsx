@@ -43,7 +43,7 @@ import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
 import MessengerReceptionist from "./layout/Receptionist/pages/Messenger/MessengerReceptionist";
 import { useEffect, useRef } from "react";
-import socket, { connectSocket, disconnectSocket, getSocket } from "./Socket/socket";
+import  { connectSocket, disconnectSocket } from "./Socket/socket";
 import Notification from "./layout/Doctor/pages/Notification/notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
 import NotificationUser from "./layout/User/pages/Notification/notification";

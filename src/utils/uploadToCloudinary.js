@@ -39,7 +39,7 @@ export const uploadToCloudinary = async (file, folder, onProgress) => {
     }
 };
 // Hàm xóa ảnh từ Cloudinary
-const deleteImageFromCloudinary = async (publicId) => {
+export const deleteImageFromCloudinary = async (publicId) => {
     const timestamp = Math.floor(Date.now() / 1000);
     const signature = generateSignatureDelete(publicId, timestamp);
     try {
@@ -108,11 +108,11 @@ export const uploadAndDeleteToCloudinary = async (file, folder, oldLink, onProgr
 
 export const uploadFileToCloudinary = async (file, folder = "documents", onProgress) => {
     const formData = new FormData();
-    
+
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET);
     formData.append("folder", folder);
-    formData.append("public_id", file.name); 
+    formData.append("public_id", file.name);
     formData.append("resource_type", "raw");
 
     try {
@@ -157,7 +157,7 @@ export const uploadFileToCloudinary2 = async (file, folder = "documents", onProg
                 },
             }
         );
-        return { url: response.data.secure_url, delete_token: response.data.delete_token }; 
+        return { url: response.data.secure_url, delete_token: response.data.delete_token };
     } catch (error) {
         console.error("Lỗi khi upload file lên Cloudinary:", error.response || error.message);
         throw error;

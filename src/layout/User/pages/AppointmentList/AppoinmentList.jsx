@@ -13,10 +13,12 @@ import dayjs from "dayjs";
 import { PATHS } from "@/constant/path";
 import { useMutation } from "@/hooks/useMutation";
 import ConfirmModal from "../../components/ConfirmModal/confirmModal";
+import { OldParaclinicalModal } from "@/components/Modals";
 
 
 const AppointmentList = () => {
     let [show, setShow] = useState(false);
+    let [showOldParaclinicalModal, setShowOldParaclinicalModal] = useState(false);
     let [obAppoinment, setObAppoinment] = useState(null);
     const location = useLocation();
     let navigate = useNavigate();
@@ -65,9 +67,18 @@ const AppointmentList = () => {
         } catch (e) { console.log(e); }
         finally { setIsLoading(null) }
     }
-    let refresh = () => {
+    const refresh = () => {
         setObAppoinment(null);
         getAppoinment();
+    }
+    const handleUpdateOldParaclinical = async (images) => {
+        try {
+            const response = await userService.updateOldParaclinical({ id: obAppoinment.id, oldParaclinical: images })
+            if (response?.EC === 0) {
+                message.success(response?.EM)
+                refresh()
+            } else { message.error(response?.EM) }
+        } catch (e) { console.log(e); message.error("Lỗi cập nhật phiếu khám cũ") }
     }
     return (
         <div className="bg-white" >
@@ -167,6 +178,8 @@ const AppointmentList = () => {
                                                         :
                                                         <button disabled={isLoading} className="btn checkout" onClick={() => { handleCheckOut(profile) }}>{isLoading === profile?.id && <i class="fa-solid fa-spinner fa-spin-pulse"></i>} Thanh toán</button>
                                                     }
+                                                    <button className="btn old-paraclinical" onClick={() => { setObAppoinment(profile), setShowOldParaclinicalModal(true) }}>Thêm phiếu xét nghiệm</button>
+
                                                     {// Không hiện nút hủy lịch hẹn nếu lịch hẹn đã qua
                                                         !dayjs(profile?.admissionDate).isBefore(dayjs().add(1, 'day').startOf('day')) &&
                                                         <button className="btn delete" onClick={() => { setObAppoinment(profile), setShow(true) }}>Hủy lịch hẹn</button>}
@@ -186,6 +199,12 @@ const AppointmentList = () => {
                 refresh={refresh}
                 table={TABLE.EXAMINATION}
                 key={obAppoinment ? obAppoinment.id + " " + Date.now() : "modal-closed"} />
+            <OldParaclinicalModal
+                visible={showOldParaclinicalModal}
+                onCancel={() => setShowOldParaclinicalModal(false)}
+                oldParaclinical={obAppoinment?.oldParaclinical}
+                onSave={handleUpdateOldParaclinical}
+            />
         </div>
     );
 }

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HomeOutlined, UserSwitchOutlined } from '@ant-design/icons';
-import { Menu } from 'antd';
+import { Badge, Menu } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressCard, faCalendarDays, faHospital } from '@fortawesome/free-regular-svg-icons';
@@ -11,11 +11,42 @@ import "./Sidebar.scss";
 import { faArrowRightFromBracket, faBookMedical, faPills, faStethoscope } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleLogout } from '@/redux/actions/authenActions';
+import { useNotification } from '@/contexts/NotificationContext';
 const MenuSidebar = () => {
     let { user } = useSelector((state) => state.authen);
     let dispatch = useDispatch();
     const [openKeys, setOpenKeys] = useState([]);
     const [selectedKeys, setSelectedKeys] = useState("sub2");
+
+    const { totalUnreadCount } = useNotification();
+        
+    // Force re-render on notification changes
+    const [, setForceUpdate] = useState(0);
+        
+    // Trong MenuSidebar.js
+    useEffect(() => {
+        // Log for debugging
+        console.log('MenuSidebar: totalUnreadCount =', totalUnreadCount);
+        
+        // Subscribe to events
+        const handleMarkAllRead = () => {
+            console.log('All notifications marked as read, updating menu');
+            setForceUpdate(prev => prev + 1);
+        };
+        
+        const handleCountUpdated = (event) => {
+            console.log('Notification count updated:', event.detail.count);
+            setForceUpdate(prev => prev + 1); 
+        };
+        
+        document.addEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+        document.addEventListener('notificationCountUpdated', handleCountUpdated);
+        
+        return () => {
+            document.removeEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+            document.removeEventListener('notificationCountUpdated', handleCountUpdated);
+        };
+    }, [totalUnreadCount]);
 
     const handleOpenChange = (keys) => {
         const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1);
@@ -113,8 +144,22 @@ const MenuSidebar = () => {
         },
         {
             key: 'notiAdmin',
-            label: (<NavLink to={PATHS.ADMIN.NOTIFICATION}>Thông báo</NavLink>),
-            icon: <i className="fa-solid fa-bell"></i>,
+            label: (
+                    <NavLink to={PATHS.ADMIN.NOTIFICATION}>
+                        Thông báo
+                        {totalUnreadCount > 0 && (
+                            <Badge 
+                                count={totalUnreadCount} 
+                                offset={[60, 0]}
+                            />
+                        )}
+                    </NavLink>
+                ),
+                icon: (
+                    <Badge dot={totalUnreadCount > 0}>
+                        <i className="fa-solid fa-bell"></i>
+                    </Badge>
+                ),
         },
         {
             type: 'divider',

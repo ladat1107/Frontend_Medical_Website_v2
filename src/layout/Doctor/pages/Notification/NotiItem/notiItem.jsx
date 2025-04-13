@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import AttachedFile from './attachedFile';
 import { useNotification } from '@/contexts/NotificationContext';
 import './NotiItem.scss'
+import truncate from 'html-truncate';
 
 const NotiItem = ({ noti }) => {
     const [isContentVisible, setIsContentVisible] = useState(false);
@@ -91,8 +92,8 @@ const NotiItem = ({ noti }) => {
                             transitionDuration: '0.3s',
                         }}
                     >
-                        {noti.htmlDescription && noti.htmlDescription.length > 100
-                            ? <ParseHtml htmlString={noti.htmlDescription.substring(0, 100) + '...'} />
+                        {noti.htmlDescription && noti.htmlDescription.length > 146
+                            ? <ParseHtml htmlString={truncate(noti.htmlDescription, 146)}/>
                             : <ParseHtml htmlString={noti.htmlDescription} />
                         }
                     </div>

@@ -180,6 +180,14 @@ export const markAllRead = async (data) => {
     return axios.put(`/api/markAllRead`, data);
 }
 
+export const getArrayUserId = async () => {
+    return axios.get(`/api/getArrayUserId`);
+}
+
+export const getArrayAdminId = async () => {
+    return axios.get(`/api/getArrayAdminId`);
+}
+
 export const sendNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, notiCode, receiverIds) => {
     const response = axios.post('/api/send-notification', {
         title,

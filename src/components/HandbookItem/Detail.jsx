@@ -12,12 +12,16 @@ import { useSelector } from 'react-redux';
 import ParseHtml from '../ParseHtml';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
+import useSendNotification from '@/hooks/useSendNotification';
+
 const DetailHandbook = (props) => {
     const navigate = useNavigate();
     let [isLoadingAction, setIsLoadingAction] = useState(null);
     let { user } = useSelector((state) => state.authen);
     const [handbookDetail, setHandbookDetail] = useState({});
     const [tags, setTags] = useState([]);
+    let { handleSendNoti } = useSendNotification();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -48,8 +52,23 @@ const DetailHandbook = (props) => {
             setIsLoadingAction(status);
             let response = await updateHandbook({ id: dataHandbook.DT.id, status });
             if (response?.EC === 0) {
+                console.log(response);
                 message.success(response?.EM || "Thành công");
                 navigate(-1);
+                
+                if(status === STATUS_HOSPITAL.ACTIVE.value) {
+                    handleSendNoti(
+                        `[Cẩm nang mới] ${response.DT?.title}` || 'Cẩm nang mới',
+                        `<p>
+                            <span style="color: rgb(234, 195, 148); font-weight: bold;">✨ Tin mới ✨</span> 
+                            Cẩm nang chăm sóc sức khỏe đã lên sóng! Khám phá ngay những bí quyết hữu ích để sống khỏe mỗi ngày 💪  
+                            👉 <a href="http://localhost:3000/handbookDetail/${response.DT.id}" rel="noopener noreferrer" target="_blank" style="color: #007bff; font-weight: bold;">Xem ngay</a>
+                        </p>` || response.DT?.htmlDescription,
+                        [],
+                        false,
+                        []
+                    )
+                }
             }
             else {
                 message.error(response?.EM || "Thất bại");
@@ -120,6 +139,11 @@ const DetailHandbook = (props) => {
             </div>
         </div>
     );
-}
+};
+
+
+DetailHandbook.propTypes = {
+    id: PropTypes.number.isRequired,
+};
 
 export default DetailHandbook;

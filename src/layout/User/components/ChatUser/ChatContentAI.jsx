@@ -99,7 +99,7 @@ const ChatContentAI = () => {
                 ))}
                 {chatLoading && (
                     <div className="chat-message bot">
-                        <Avatar className="chat-avatar" size={30}>🤖</Avatar>
+                        <Avatar className="chat-avatar" size={30} src={"https://media.gettyimages.com/id/1492548051/vector/chatbot-logo-icon.jpg?s=612x612&w=0&k=20&c=oh9mrvB70HTRt0FkZqOu9uIiiJFH9FaQWW3p4M6iNno="}></Avatar>
                         <div className="chat-loading">
                             <span className="dot-animation">
                                 <span>●</span><span>●</span><span>●</span></span>

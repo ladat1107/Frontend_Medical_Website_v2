@@ -13,6 +13,7 @@ export const PATHS = {
         HANDBOOK_DETAIL: "/adminHandbookDetail",
         SCHEDULE_MANAGE: "/adminSchedule",
         NOTIFICATION: "/adminNotification",
+        MEDICINE_MANAGE: "/adminMedicineManage",
         //EXAMINATION_MANAGE: "/adminExamination",
     },
     STAFF: {

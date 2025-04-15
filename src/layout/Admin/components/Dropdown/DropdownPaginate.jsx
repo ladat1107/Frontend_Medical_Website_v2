@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dropdown, Space } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 const DropdownPaginate = (props) => {
-    const [selectedLabel, setSelectedLabel] = useState(props?.page || 10);
+    const [selectedLabel, setSelectedLabel] = useState(10);
+
+    useEffect(() => {
+        if (props.page) {
+            setSelectedLabel(props.page);
+        }
+    }, [props.page]);
+
     let handleChange = (value) => {
         props.setPage(value);  // Trả về key
         setSelectedLabel(value); // Cập nhật label
     };
+
     let items = [
         {
             label: "10",

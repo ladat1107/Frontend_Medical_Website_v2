@@ -4,7 +4,7 @@ import './PaginateCustom.scss'
 const PaginateCustom = (props) => {
     return (
         <Paginate className="paginate"
-            defaultPage={props.setPage} // Optional Property
+            defaultPage={props.currentPage} // Optional Property
             totalPageCount={props.totalPageCount} // Required Property
             setPage={props.setPage} // Required Property
             activeDigitColor={"white"} // Optional Property

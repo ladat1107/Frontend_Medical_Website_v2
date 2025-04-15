@@ -17,6 +17,7 @@ export const TABLE = {
     ROOM: "ROOM",
     SPECIALTY: "SPECIALTY",
     EXAMINATION: "EXAMINATION",
+    MEDICINE: "MEDICINE"
 }
 export const TAGS = [
     {

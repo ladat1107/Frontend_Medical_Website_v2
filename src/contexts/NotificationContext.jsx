@@ -16,35 +16,35 @@ export const NotificationProvider = ({ children }) => {
   const [apiUnreadCount, setApiUnreadCount] = useState(0);
   const { user } = useSelector(state => state.authen);
 
-// Fetch notifications from database
-useEffect(() => {
-  if (!user) return;
-  
-  const fetchNotifications = async () => {
-    try {
-      const response = await getAllNotification();
-      console.log('DB Notifications response:', response);
-      if (response && response.DT) {
-        const notifications = response.DT.notifications.rows || [];
-        setDbNotifications(notifications);
-        setUnReadDBCount(response.DT.unreadCount || 0);
-        
-        // Đảm bảo các thành phần UI được cập nhật
-        document.dispatchEvent(new CustomEvent('notificationCountUpdated', { 
-          detail: { count: response.DT.unreadCount || 0 }
-        }));
+  // Fetch notifications from database
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await getAllNotification();
+        console.log('DB Notifications response:', response);
+        if (response && response.DT) {
+          const notifications = response.DT.notifications.rows || [];
+          setDbNotifications(notifications);
+          setUnReadDBCount(response.DT.unreadCount || 0);
+
+          // Đảm bảo các thành phần UI được cập nhật
+          document.dispatchEvent(new CustomEvent('notificationCountUpdated', {
+            detail: { count: response.DT.unreadCount || 0 }
+          }));
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy thông báo từ database:', error);
       }
-    } catch (error) {
-      console.error('Lỗi khi lấy thông báo từ database:', error);
-    }
-  };
+    };
 
-  fetchNotifications();
+    fetchNotifications();
 
-  // Thiết lập interval và xử lý cleanup
-  const intervalId = setInterval(fetchNotifications, 5 * 60 * 1000);
-  return () => clearInterval(intervalId);
-}, [user?.id]); // Thêm user.id để đảm bảo re-fetch khi người dùng thay đổi
+    // Thiết lập interval và xử lý cleanup
+    const intervalId = setInterval(fetchNotifications, 5 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, [user?.id]); // Thêm user.id để đảm bảo re-fetch khi người dùng thay đổi
 
   // Socket event handling
   useEffect(() => {
@@ -141,38 +141,37 @@ useEffect(() => {
   // Trong NotificationContext.js
   const markAllNotificationsAsRead = async () => {
     try {
-        console.log('Marking all notifications as read');
+      console.log('Marking all notifications as read');
 
-        // Call API to mark all as read
-        await markAllRead();
+      // Call API to mark all as read
+      await markAllRead();
 
-        // Update socket notifications
-        setSocketNotifications(prev =>
-            prev.map(noti => ({ ...noti, status: 2 }))
-        );
+      // Update socket notifications
+      setSocketNotifications(prev =>
+        prev.map(noti => ({ ...noti, status: 2 }))
+      );
 
-        // Update database notifications
-        setDbNotifications(prev =>
-            prev.map(noti => ({ ...noti, status: 2 }))
-        );
+      // Update database notifications
+      setDbNotifications(prev =>
+        prev.map(noti => ({ ...noti, status: 2 }))
+      );
 
-        // Đặt unReadDBCount về 0
-        setUnReadDBCount(0);
+      // Đặt unReadDBCount về 0
+      setUnReadDBCount(0);
 
-        // Notify other components
-        document.dispatchEvent(new CustomEvent('markAllNotificationsAsRead'));
+      // Notify other components
+      document.dispatchEvent(new CustomEvent('markAllNotificationsAsRead'));
 
-        message.success("Đánh dấu tất cả thông báo đã đọc thành công!");
+      message.success("Đánh dấu tất cả thông báo đã đọc thành công!");
     } catch (error) {
-        console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
-        message.error("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+      console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
+      message.error("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
     }
   };
 
   const updateApiUnreadCount = (count) => {
     setApiUnreadCount(count);
   };
-
   // Calculate total unread count - directly from both notification arrays
   const socketUnreadCount = socketNotifications.filter(noti => noti.status === 1).length;
   const dbUnreadCount = unReadDBCount;

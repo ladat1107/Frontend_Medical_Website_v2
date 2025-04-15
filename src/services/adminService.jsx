@@ -166,3 +166,22 @@ export const arrangeSchedule = (data) => {
 export const getStatisticalAppoinment = (query) => {
     return axios.get(`/api/admin/getStatisticalAppoinment`, { params: query })
 }
+
+// MEDICINE MANAGEMENT
+export const getAllMedicinesAdmin = () => {
+    return axios.get(`/api/admin/getAllMedicinesAdmin`)
+}
+export const createMedicine = (data) => {
+    return axios.post(`/api/admin/createMedicine`, data)
+}
+export const updateMedicine = (data) => {
+    return axios.put(`/api/admin/updateMedicineAdmin`, data)
+}
+export const deleteMedicine = (data) => {
+    return axios.delete(`/api/admin/deleteMedicine`, { data: { id: data.id } })
+}
+export const blockMedicine = (data) => {
+    return axios.put(`/api/admin/blockMedicine`, data)
+}
+
+

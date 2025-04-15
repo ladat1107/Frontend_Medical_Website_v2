@@ -1,4 +1,4 @@
-import { ConfigProvider } from "antd";
+import { ConfigProvider, message } from "antd";
 import MainLayout from "./layout/User/index";
 import HomePage from "./layout/User/pages/Home/index";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -43,7 +43,7 @@ import GetNumber from "./layout/GetNumberSystem/GetNumber/GetNumber";
 import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescription";
 import MessengerReceptionist from "./layout/Receptionist/pages/Messenger/MessengerReceptionist";
 import { useEffect, useRef } from "react";
-import  { connectSocket, disconnectSocket } from "./Socket/socket";
+import { connectSocket, disconnectSocket } from "./Socket/socket";
 import Notification from "./layout/Doctor/pages/Notification/notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
 import NotificationUser from "./layout/User/pages/Notification/notification";
@@ -52,6 +52,7 @@ import { useSelector } from "react-redux";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { deleteAssistantForCustomer } from "./services/doctorService";
+import MedicineManage from "./layout/Admin/pages/MedicineManage/MedicineMange";
 
 function App() {
   const location = useLocation();
@@ -59,27 +60,20 @@ function App() {
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
-        if (has(query.meta, 'ignoreGlobalError'))
-          if (query.meta.ignoreGlobalError) return
-        if (isAxiosError(error)) {
-          if (error.response?.data.code)
-            showErrorToast(error.response.data.code)
-        }
+        console.log(error)
+        if (query.meta?.ignoreGlobalError) return;
+        message.error("Có lỗi xảy ra");
       },
     }),
     mutationCache: new MutationCache({
-      onError: (error, _, __, mutation) => {
-        if (has(mutation.meta, 'ignoreGlobalError'))
-          if (mutation.meta.ignoreGlobalError) return
-        if (isAxiosError(error)) {
-          if (error.response?.data.statusCode) {
-            showErrorToast(error.response?.data.statusCode)
-          }
-          return
-        }
+      onError: (error, _variables, _context, mutation) => {
+        console.log(error)
+        if (mutation.meta?.ignoreGlobalError) return;
+        message.error("Có lỗi xảy ra");
       },
     }),
-  })
+  });
+
 
   const { token } = useSelector((state) => state.authen);
 
@@ -106,19 +100,7 @@ function App() {
     await deleteAssistantForCustomer();
   }
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          fontFamily: "Be Vietnam Pro",
-        },
-        components: {
-          Skeleton: {
-            gradientFromColor: "rgba(0, 181, 241, 0.06)",
-            gradientToColor: "rgba(0, 181, 241, 0.12)",
-          },
-        },
-      }}
-    >
+   
       <NotificationProvider>
         <QueryClientProvider client={queryClient}>
           <Routes>
@@ -154,6 +136,7 @@ function App() {
                 <Route path={`${PATHS.ADMIN.HANDBOOK_DETAIL}/:id`} element={<HandbookAdminDetail />} />
                 <Route path={PATHS.ADMIN.SCHEDULE_MANAGE} element={<ScheduleManage />} />
                 <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
+                <Route path={PATHS.ADMIN.MEDICINE_MANAGE} element={<MedicineManage />} />
               </Route>
               <Route element={<DoctorLayout />}>
                 <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />
@@ -174,7 +157,6 @@ function App() {
           {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
         </QueryClientProvider>
       </NotificationProvider>
-    </ConfigProvider>
   );
 }
 

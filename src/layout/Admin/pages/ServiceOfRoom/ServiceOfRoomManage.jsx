@@ -14,7 +14,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import Status from "../../components/Status";
 import DropdownAction from "../../components/Dropdown/DropdownAction";
 import SkeletonService from "./SkeletonService";
-import { set } from "lodash";
+
 const { TextArea } = Input;
 const ServiceOfRoom = () => {
     let [form] = Form.useForm();

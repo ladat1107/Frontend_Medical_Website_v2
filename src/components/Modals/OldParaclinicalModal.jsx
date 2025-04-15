@@ -7,14 +7,14 @@ import { ROLE } from "@/constant/role"
 
 const OldParaclinacalModal = ({ visible, onCancel, oldParaclinical, onSave }) => {
     const { user } = useSelector(state => state.authen)
-    const [images, setImages] = useState(oldParaclinical?.split("^") || [])
+    const [images, setImages] = useState(oldParaclinical ? oldParaclinical?.split("^") : [])
     const [uploading, setUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewImage, setPreviewImage] = useState("")
     useEffect(() => {
         if (visible) {
-            setImages(oldParaclinical?.split("^") || [])
+            setImages(oldParaclinical ? oldParaclinical?.split("^") : [])
         }
     }, [visible, oldParaclinical])
 
@@ -62,7 +62,8 @@ const OldParaclinacalModal = ({ visible, onCancel, oldParaclinical, onSave }) =>
 
     const handleSave = () => {
         if (onSave) {
-            onSave(images.join("^"))
+            if (images.length === 0) onSave("")
+            else onSave(images.join("^"))
         }
         onCancel()
     }

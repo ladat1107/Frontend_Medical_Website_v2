@@ -8,7 +8,7 @@ import { PATHS } from '@/constant/path';
 import emitter from '@/utils/eventEmitter';
 import { EMIT } from '@/constant/value';
 import "./Sidebar.scss";
-import { faArrowRightFromBracket, faBookMedical, faStethoscope } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faBookMedical, faPills, faStethoscope } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleLogout } from '@/redux/actions/authenActions';
 const MenuSidebar = () => {
@@ -49,13 +49,6 @@ const MenuSidebar = () => {
                     label: 'Đổi mật khẩu',
                     onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword); }
                 },
-                ...(user?.staff ? [{
-                    key: 'personal3',
-                    label: "Hồ sơ",
-                    onClick: () => {
-                        emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.staff);
-                    }
-                }] : [])
             ],
         },
         {
@@ -107,6 +100,11 @@ const MenuSidebar = () => {
             key: 'scheduleAdmin',
             label: (<NavLink to={PATHS.ADMIN.SCHEDULE_MANAGE}>Lịch trực</NavLink>),
             icon: <FontAwesomeIcon icon={faCalendarDays} />,
+        },
+        {
+            key: 'medicineAdmin',
+            label: (<NavLink to={PATHS.ADMIN.MEDICINE_MANAGE}>Quản lý thuốc</NavLink>),
+            icon: <FontAwesomeIcon icon={faPills} />,
         },
         {
             key: 'notiAdmin',

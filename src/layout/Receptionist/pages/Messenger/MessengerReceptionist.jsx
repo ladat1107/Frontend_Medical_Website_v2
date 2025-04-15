@@ -43,7 +43,7 @@ const MessengerReceptionist = () => {
     const { mutate: createMessage, isPending: isCreatingMessage } = useCreateMessage()
 
     const [hovered, setHovered] = useState(null)
-    const [isShowEmptyContent, setIsShowEmptyContent] = useState(false)
+
     const [isShowUploadFile, setIsShowUploadFile] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [search, setSearch] = useState("")
@@ -511,13 +511,7 @@ const MessengerReceptionist = () => {
                                             onClick={() => setShowEmojiPicker((prev) => !prev)}
                                         />
                                         {showEmojiPicker && (
-                                            <div
-                                                className="absolute bottom-12 right-0 z-50"
-                                                style={{
-                                                    right: isMobile ? "0" : "auto",
-                                                    transform: isMobile ? "translateX(-50%)" : "none",
-                                                }}
-                                            >
+                                            <div className="absolute bottom-12 right-[-25px] z-50">
                                                 <EmojiPicker
                                                     onEmojiClick={onEmojiClick}
                                                     skinTonesDisabled={true}

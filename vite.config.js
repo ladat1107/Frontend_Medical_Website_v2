@@ -2,7 +2,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import * as path from "path";
-import sass from 'sass';
+//import sass from 'sass';
 import tailwindcss from 'tailwindcss'; // Sử dụng import thay vì require
 import autoprefixer from 'autoprefixer';
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        implementation: sass,
+        // implementation: sass,
       },
     },
     postcss: {

@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { CLOUDINARY_FOLDER, STATUS } from '@/constant/value';
 import { ROLE } from '@/constant/role';
 import TextEditor from '@/components/TextEditor/TextEditor';
-import { set } from 'lodash';
 const { TextArea } = Input;
 const InsertDepartment = (props) => {
     const [form] = Form.useForm();

@@ -1,10 +1,10 @@
 import { TABLE } from '@/constant/value';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { deleteUser, blockUser, deleteDepartment, blockDepartment, deleteServiceOfRoom, blockServiceOfRoom, deleteRoom, blockRoom, deleteSpecialty, blockSpecialty } from "@/services/adminService";
+import { deleteUser, blockUser, deleteDepartment, blockDepartment, deleteServiceOfRoom, blockServiceOfRoom, deleteRoom, blockRoom, deleteSpecialty, blockSpecialty, deleteMedicine, blockMedicine } from "@/services/adminService";
 import { Button, message, Modal } from "antd";
 import { primaryColorAdmin } from '@/styles//variables';
-import { set } from 'lodash';
+
 const DeleteModal = (props) => {
     let [messageContent, setMessageContent] = useState("")
     let [isLoadingBlock, setIsLoadingBlock] = useState(false)
@@ -22,6 +22,8 @@ const DeleteModal = (props) => {
             setMessageContent("Xác nhận xóa phòng " + data.name + "?")
         } else if (props.table === TABLE.SPECIALTY) {
             setMessageContent("Xác nhận xóa chuyên khoa " + data.name + "?")
+        } else if (props.table === TABLE.MEDICINE) {
+            setMessageContent("Xác nhận xóa thuốc " + data.name + "?")
         }
     }, [props.data])
     const handleDelete = async () => {
@@ -43,7 +45,11 @@ const DeleteModal = (props) => {
         } else if (props.table === TABLE.SPECIALTY) {
             let response = await deleteSpecialty(data);
             notify(response);
+        } else if (props.table === TABLE.MEDICINE) {
+            let response = await deleteMedicine(data);
+            notify(response);
         }
+        setIsLoadingDelete(false)
     }
     const handleLock = async () => {
         setIsLoadingBlock(true)
@@ -63,11 +69,15 @@ const DeleteModal = (props) => {
         } else if (props.table === TABLE.SPECIALTY) {
             let response = await blockSpecialty(data);
             notify(response);
+        } else if (props.table === TABLE.MEDICINE) {
+            let response = await blockMedicine(data);
+            notify(response);
         }
+        setIsLoadingBlock(false)
     }
     const notify = (response) => {
-        setIsLoadingDelete(false)
         setIsLoadingBlock(false)
+        setIsLoadingDelete(false)
         if (response?.EC === 0) {
             message.success(response?.EM || "Thành công");
             props.isShow(false)
@@ -95,7 +105,9 @@ const DeleteModal = (props) => {
                     </Button>,
                 ]}
             >
-                <p> {messageContent}</p>
+                <div className='px-3 pt-3'>
+                    <p> {messageContent}</p>
+                </div>
             </Modal>
         </>
     );

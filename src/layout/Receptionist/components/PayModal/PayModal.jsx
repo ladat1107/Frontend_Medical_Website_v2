@@ -230,7 +230,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                     <hr className='mt-4' />
                     {type === 'examination' ? (
                         <>
-                            <div className='col-12 d-flex flex-row'>
+                            <div className='col-12 mt-4 d-flex flex-row'>
                                 <div className='col-3 d-flex align-items-center'>
                                     <p style={{ fontWeight: "400" }}>Bác sĩ:</p>
                                 </div>
@@ -378,7 +378,6 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
             </div>
         </div>
     )
-
 }
 
 PayModal.propTypes = {

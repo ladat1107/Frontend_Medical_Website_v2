@@ -1,12 +1,13 @@
-import { getExaminations } from "@/services/doctorService";
+import { getExaminations, getScheduleByStaffId, getScheduleByStaffIdFromToday } from "@/services/doctorService";
 import React, { useEffect, useState } from 'react'
 import "./Appointment.scss";
 import { useMutation } from "@/hooks/useMutation";
 import { useNavigate } from "react-router-dom";
 import { DatePicker, Pagination, Select, Spin } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientItem";
 import dayjs from "dayjs";
+import { setSchedule } from "@/redux/scheduleSlice";
 
 const Appointment = () => {
     const navigate = useNavigate();
@@ -21,8 +22,25 @@ const Appointment = () => {
     const [search, setSearch] = useState('');
     const [listExam, setListExam] = useState([]);
     const [status, setStatus] = useState(5);
+    const dispatch = useDispatch();
     const isAppointment = 0;
 
+    const {
+        data: dataSchedules,
+        loading: loadingSchedules,
+        error: errorSchedules,
+        execute: fetchSchedules,
+    } = useMutation(() => getScheduleByStaffIdFromToday())
+
+    useEffect(() => {
+        fetchSchedules();
+    }, [user.staff]);
+
+    useEffect(() => {
+        if (dataSchedules?.DT.length > 0) {
+            dispatch(setSchedule(dataSchedules.DT));
+        }
+    }, [dataSchedules]);
 
     const handleClickRow = (examinationId) => {
         navigate(`/doctorExamination/${examinationId}`);

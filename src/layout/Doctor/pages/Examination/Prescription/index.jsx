@@ -10,6 +10,7 @@ import { faPrint } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '@/constant/path';
 import SelectBox2 from '@/layout/Doctor/components/Selectbox';
+import EnhancedSelectBox from '@/components/EnhancedSelectBox/EnhancedSelectBox.jsx';
 
 const Prescription = ({ examinationId, isEditMode, prescriptionData, refresh }) => {
     
@@ -59,6 +60,9 @@ const Prescription = ({ examinationId, isEditMode, prescriptionData, refresh }) 
                 label: item.name,
                 price: item.price,
                 unit: item.unit,
+                batchNumber: item.batchNumber,
+                inventory: item.inventory,
+                exp: item.exp,
             }));
             setMedicineOptions(medicineOptions);
         }
@@ -210,7 +214,15 @@ const Prescription = ({ examinationId, isEditMode, prescriptionData, refresh }) 
                             <div className="row padding">
                                 <div className='col-8 col-lg-9 button'>
                                     <div className='col-12 mt-1 col-lg-7'>
-                                        <SelectBox2
+                                        {/* <SelectBox2
+                                            className="select-box2"
+                                            options={medicineOptions}
+                                            value={medicineId !== 0 ? medicineId : undefined}
+                                            placeholder="Nhập tên thuốc"
+                                            disabled={!isEditMode}
+                                            onChange={handleMedicineChange}
+                                        /> */}
+                                        <EnhancedSelectBox
                                             className="select-box2"
                                             options={medicineOptions}
                                             value={medicineId !== 0 ? medicineId : undefined}

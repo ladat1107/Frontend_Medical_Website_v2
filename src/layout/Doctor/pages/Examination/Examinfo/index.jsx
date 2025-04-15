@@ -1,18 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 import "./ExamInfo.scss"
-import SelectBox from "@/layout/Doctor/components/Combobox";
 import CustomDatePicker from "@/components/DatePicker";
-import { useMutation } from "@/hooks/useMutation";
-import { updateExamination, getAllDisease } from "@/services/doctorService";
+import { updateExamination } from "@/services/doctorService";
 import MultiSelect from "@/layout/Doctor/components/MultiSelect";
 import { convertDateTime } from "@/utils/convertToTimestamp";
-import { notification } from 'antd';
+import { message, notification } from 'antd';
 import SelectBox2 from "@/layout/Doctor/components/Selectbox";
+import CustomDatePickerWithHighlights from "@/components/DatePicker/CustomDatePickerWithHighlights";
+import { useSelector } from "react-redux";
+import { TIMESLOTS } from "@/constant/value";
 
 const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingSafe, setIsLoadingSafe] = useState(false);
+    const { schedule } = useSelector(state => state.schedule);
 
     const formatSafeDate = (dateString) => {
         if (!dateString) return new Date();
@@ -25,13 +28,16 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         staffName: examData.staffName || '',
         reason: examData.reason || '',
         symptom: examData.symptom || '',
-        diseaseName: examData.diseaseName || '',
+        diseaseName: examData.diseaseName || null,
         comorbidities: examData.comorbidities ? examData.comorbidities.split(',') : [],
         treatmentResult: examData.treatmentResult || '',
         admissionDate: formatSafeDate(examData.admissionDate),
         dischargeDate: formatSafeDate(examData.dischargeDate),
         price: examData.price || 0,
-        special: examData.special || '0'
+        special: examData.special || '0',
+        reExaminationDate: examData.reExaminationDate ? examData.reExaminationDate : null,
+        dischargeStatus: examData.dischargeStatus || null,
+        time: examData.time || null,
     });
 
     const [initialFormData, setInitialFormData] = useState(formData);
@@ -45,13 +51,20 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         { value: '1', label: 'Khám bệnh' },
         { value: '2', label: 'Điều trị ngoại trú' }
     ];
+    
+    const dischargeOptions = [
+        { value: 1, label: 'Ra viện' },
+        { value: 2, label: 'Trốn viện' },
+        { value: 3, label: 'Xin ra viện' },
+        { value: 4, label: 'Hẹn tái khám' },
+    ];
 
     const specialOptions = [
-        { value: '0', label: 'Không' },
-        { value: '1', label: 'Trẻ em' },
-        { value: '2', label: 'Người già' },
-        { value: '3', label: 'Phụ nữ mang thai' },
-        { value: '4', label: 'Người khuyết tật' }
+        { value: 'normal', label: 'Không' },
+        { value: 'children', label: 'Trẻ em' },
+        { value: 'old', label: 'Người già' },
+        { value: 'pregnant', label: 'Phụ nữ mang thai' },
+        { value: 'disabled', label: 'Người khuyết tật' }
     ];
 
     // Check for changes
@@ -82,6 +95,20 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         }));
     };
 
+    const handleSelectChange = (field) => (value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+
+        if (field === 'dischargeStatus' && value !== 4) {
+            setFormData(prev => ({
+                ...prev,
+                reExaminationDate: null
+            }));
+        }
+    };
+
     const constHandleDiseaseChange = (value) => {
 
         const selectedOption = comorbiditiesOptions.find(option => option.value === value);
@@ -93,16 +120,19 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         }));
     }
 
-    const openNotification = (message, type = 'info') => {
-        api[type]({
-            message: message,
-            placement: 'bottomRight',
-        });
-    };
-
     const handleSaveButton = async () => {
-        if (!formData.reason || !formData.symptom) {
-            openNotification('Vui lòng điền đầy đủ tất cả các trường!', 'error');
+        if (!formData.reason || !formData.symptom || !formData.medicalTreatmentTier) {
+            message.error('Vui lòng điền đầy đủ tất cả các trường!');
+            return;
+        }
+
+        if(formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+            message.error('Vui lòng chọn ngày tái khám!');
+            return;
+        }
+
+        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate <= new Date()) {
+            message.error('Ngày tái khám phải sau ngày hôm nay!');
             return;
         }
 
@@ -123,6 +153,8 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             paymentDoctorStatus: 1,
             insuranceCoverage: 1,
             status: 6,
+            dischargeStatus: formData.dischargeStatus,
+            reExaminationDate: formData.reExaminationDate ? convertDateTime(formData.reExaminationDate) : null,
         };
 
         setIsLoading(true);
@@ -130,17 +162,79 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         try {
             const response = await updateExamination(data);
             if (response && response.DT.includes(1)) {
-                openNotification('Lưu thông tin khám bệnh thành công!', 'success');
+                message.success('Lưu thông tin khám bệnh thành công!');
                 setInitialFormData(formData);
                 refresh();
             } else {
-                openNotification(response.EM, 'error');
+                message.error(response.EM);
             }
         } catch (error) {
             console.error("Error creating examination:", error.response || error.message);
-            openNotification('Lưu thông tin khám bệnh thất bại.', 'error');
+            message.error('Lưu thông tin khám bệnh thất bại.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleSafeButton = async () => {
+        if (!formData.reason || !formData.symptom || !formData.medicalTreatmentTier) {
+            message.error('Vui lòng điền đầy đủ tất cả các trường!');
+            return;
+        }
+
+        if(formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+            message.error('Vui lòng chọn ngày tái khám!');
+            return;
+        }
+
+        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate.getTime() < new Date().getTime()) {
+            message.error('Ngày tái khám phải sau ngày hôm nay!');
+            return;
+        }
+
+        if(formData.dischargeStatus === 4 && !formData.time) {
+            message.error('Vui lòng chọn khung giờ!');
+            return;
+        }
+
+        const data = {
+            id: examData.id,
+            userId: examData.userId,
+            staffId: examData.staffId,
+            symptom: formData.symptom,
+            diseaseName: formData.diseaseName,
+            treatmentResult: formData.treatmentResult,
+            comorbidities: formData.comorbidities.join(','),
+            admissionDate: convertDateTime(formData.admissionDate),
+            dischargeDate: convertDateTime(formData.dischargeDate),
+            reason: formData.reason,
+            medicalTreatmentTier: formData.medicalTreatmentTier,
+            price: formData.price,
+            special: formData.special,
+            paymentDoctorStatus: 1,
+            insuranceCoverage: 1,
+            status: 6,
+            dischargeStatus: formData.dischargeStatus,
+            reExaminationDate: formData.reExaminationDate ? convertDateTime(formData.reExaminationDate) : null,
+            createReExamination: true,
+        };
+
+        setIsLoadingSafe(true);
+
+        try {
+            const response = await updateExamination(data);
+            if (response && response.DT.includes(1)) {
+                message.success('Lưu thông tin khám bệnh thành công!');
+                setInitialFormData(formData);
+                refresh();
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error("Error creating examination:", error.response || error.message);
+            message.error('Lưu thông tin khám bệnh thất bại.');
+        } finally {
+            setIsLoadingSafe(false);
         }
     };
 
@@ -180,10 +274,10 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     </div>
                     <div className="col-8 mt-3 col-lg-4">
                         <SelectBox2
+                            placeholder="Nhập tên bệnh"
                             className="select-box2"
                             options={comorbiditiesOptions}
                             value={formData.diseaseName}
-                            placeholder="Nhập tên bệnh"
                             onChange={constHandleDiseaseChange}
                             disabled={!isEditMode}
                         />
@@ -206,12 +300,14 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                         <p>Loại KCB:</p>
                     </div>
                     <div className="col-8 mt-3 col-lg-4">
-                        <SelectBox
-                            className="select-box"
+                        <SelectBox2
+                            placeholder="Chọn loại KCB"
+                            className="select-box2"
                             options={options}
                             value={formData.medicalTreatmentTier}
+                            onChange={handleSelectChange('medicalTreatmentTier')}
                             disabled={!isEditMode}
-                            onChange={handleInputChange('medicalTreatmentTier')} />
+                        />
                     </div>
                     <div className="col-4 mt-3 col-lg-2">
                         <p>Kết quả điều trị:</p>
@@ -256,20 +352,67 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                         <p className="info">{formData.price.toLocaleString()} VND</p>
                     </div>
                     <div className="col-4 mt-3 col-lg-2">
-                        <p>Đặc biệt:</p>
+                        <p>Ưu tiên:</p>
                     </div>
                     <div className="col-8 mt-3 col-lg-4">
-                        <SelectBox
-                            className="select-box"
+                        <SelectBox2
+                            placeholder="Chọn loại ưu tiên"
+                            className="select-box2"
                             options={specialOptions}
                             value={formData.special}
-                            disabled={!isEditMode}
-                            onChange={handleInputChange('special')} />
+                            onChange={handleSelectChange('special')}
+                            disabled={true}
+                        />
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col-4 mt-3 col-lg-2">
+                        <p>Tình trạng ra viện:</p>
+                    </div>
+                    <div className="col-8 mt-3 col-lg-4">
+                        <SelectBox2
+                            placeholder="Chọn tình trạng ra viện"
+                            className="select-box2"
+                            options={dischargeOptions}
+                            value={formData.dischargeStatus}
+                            onChange={handleSelectChange('dischargeStatus')}
+                            disabled={!isEditMode}
+                        />
+                    </div>
+                    {formData.dischargeStatus === 4 && (
+                        <>
+                            <div className="col-4 mt-3 col-lg-2">
+                                <p>Ngày tái khám:</p>
+                            </div>
+                            <div className="col-8 mt-3 col-lg-4">
+                                <CustomDatePickerWithHighlights
+                                    className="date-picker"
+                                    selectedDate={formData.reExaminationDate}
+                                    onDateChange={handleDateChange('reExaminationDate')}
+                                    disabled={!(isEditMode && formData.dischargeStatus === 4 ? true : false)}
+                                    placeholder="Chọn ngày..."
+                                    highlightDates={schedule}
+                                />
+                            </div>
+                            <div className="col-4 mt-3 col-lg-6"/>
+                            <div className="col-4 mt-3 col-lg-2">
+                                <p>Khung giờ:</p>
+                            </div>
+                            <div className="col-8 mt-3 col-lg-4">
+                                <SelectBox2
+                                    placeholder="Chọn khung giờ"
+                                    className="select-box2"
+                                    options={TIMESLOTS}
+                                    value={formData.time}
+                                    onChange={handleSelectChange('time')}
+                                    disabled={!isEditMode}
+                                />
+                            </div>
+                        </>
+                    )}
+                </div>
                 <div className="row mt-4">
-                    <div className="col-4 col-lg-9"></div>
-                    <div className="col-8 col-lg-3 text-end">
+                    <div className="col-8 col-lg-12 text-end">
                         <button
                             className={`restore-button ${!isChanged ? 'disabled' : ''}`}
                             onClick={handleRestoreButton}
@@ -285,8 +428,21 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                                     <i className="fa-solid fa-spinner fa-spin me-2"></i>
                                     Đang xử lý...
                                 </>
-                            ) : 'Lưu'}
+                            ) : 'Cập nhật'}
                         </button>
+                        {formData.dischargeStatus === 4 && (
+                            <button
+                                className={`safe-button ${!isChanged ? 'disabled' : ''}`}
+                                onClick={handleSafeButton}
+                                disabled={!isChanged}>
+                                {isLoadingSafe ? (
+                                    <>
+                                        <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                        Đang xử lý...
+                                    </>
+                                ) : 'Lưu cùng lịch hẹn'}
+                            </button> 
+                        )}
                     </div>
                 </div>
             </div>

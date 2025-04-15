@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 import "./VitalSign.scss";
-import { notification } from 'antd';
+import { message, notification } from 'antd';
 import { createOrUpdateVitalSign } from "@/services/doctorService";
 
 const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
@@ -38,18 +38,11 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
     //notification
     const [api, contextHolder] = notification.useNotification();
 
-    const openNotification = (message, type = 'info') => {
-        api[type]({
-            message: message,
-            placement: 'bottomRight',
-        });
-    };
-
     //save button
     const handleSaveButton = async () => {
         if (!formData.height || !formData.weight || !formData.pulse || !formData.hightBloodPressure ||
             !formData.lowBloodPressure || !formData.temperature || !formData.breathingRate) {
-            openNotification('Vui lòng điền đầy đủ tất cả các trường!', 'error');
+            message.error('Vui lòng điền đầy đủ tất cả các trường!');
             return;
         }
 
@@ -71,15 +64,15 @@ const VitalSign = ({ vitalSignData, examId, refresh, isEditMode }) => {
         try {
             const response = await createOrUpdateVitalSign(data);
             if (response && response.DT) {
-                openNotification('Lưu sinh hiệu thành công!', 'success');
+                message.success('Lưu sinh hiệu thành công!');
                 setInitialVitalSign(data);
                 refresh();
             } else {
-                openNotification('Có lỗi trong quá trình lưu sinh hiệu.', 'error');
+                message.error('Có lỗi trong quá trình lưu sinh hiệu.');
             }
         } catch (error) {
             console.error("Error creating examination:", error.response || error.message);
-            openNotification('Lưu sinh hiệu thất bại.', 'error');
+            message.error('Lưu sinh hiệu thất bại.');
         } finally {
             setIsLoading(false);
         }

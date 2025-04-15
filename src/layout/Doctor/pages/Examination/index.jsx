@@ -95,7 +95,7 @@ const Examination = () => {
                 "id", "userId", "staffId", "symptom", "diseaseName", "comorbidities",
                 "treatmentResult", "admissionDate", "dischargeDate", "status",
                 "reason", "medicalTreatmentTier", "paymentDoctorStatus",
-                "price", "special", "insuranceCoverage", "oldParaclinical"
+                "price", "special", "insuranceCoverage", "oldParaclinical", "dischargeStatus", "reExaminationDate", "time"
             ];
 
             const disease = dataExamination.DT?.diseaseName?.split(" - ") || "";

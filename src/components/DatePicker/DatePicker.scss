@@ -25,6 +25,11 @@
 }
 
 .react-datepicker__day--selected {
-    background-color: $primary-color-admin;
-    color: white;
+    background-color: $primary-color-admin !important;
+    color: white !important;
+}
+
+.highlighted-date {
+    background-color: #7bc4a2; 
+    position: relative;
 }

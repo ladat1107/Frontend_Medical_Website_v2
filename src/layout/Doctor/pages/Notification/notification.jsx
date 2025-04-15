@@ -141,7 +141,7 @@ const Notification = () => {
                         <button
                             className='button'
                             onClick={handleMarkAllAsRead}
-                            disabled={(unreadCount === 0) && (socketUnreadCount === 0)}
+                            disabled={(unreadCount === 0) && (socketUnreadCount === 0) && (notiData?.count === 0)} 
                         >
                             <i className="fa-solid fa-check" ></i>
                             Đánh dấu tất cả đã đọc

@@ -211,4 +211,7 @@ export const deleteAssistantForCustomer = async () => {
     return axios.delete(`/api/deleteAssistantForCustomer`);
 }
 
+export const getScheduleByStaffIdFromToday = async () => {
+    return axios.get(`/api/getScheduleByStaffIdFromToday`);
+}
 

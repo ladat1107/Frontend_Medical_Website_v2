@@ -1,5 +1,3 @@
-
-
 import PropTypes from 'prop-types';
 import './HistoryModal.scss';
 import HistoryItem from '../HistoryItem/HistoryItem';
@@ -10,7 +8,7 @@ import { getMedicalHistories } from '@/services/doctorService';
 import { convertDateTime } from '@/utils/formatDate';
 import { convertGender } from '@/utils/convertGender';
 
-const HistoryModal = ({ isModalOpen, handleCancel, userId = '' }) => {
+const HistoryModal = ({ isModalOpen, handleCancel, userId = '', onCopyPrescription }) => {
 
     const [historyData, setHistoryData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +32,14 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '' }) => {
             setIsLoading(false);
         }
     }, [dataHistory, loadingHistory, errorHistory]);
+
+    const handleCopyPrescription = (prescriptionData) => {
+        if (onCopyPrescription) {
+            onCopyPrescription(prescriptionData);
+            message.success('Đơn thuốc đã được sao chép thành công!');
+            handleCancel(); // Close the modal after copying
+        }
+    };
 
     if (!isModalOpen) return null;
 
@@ -151,7 +157,12 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '' }) => {
                             <p style={{ fontWeight: '600', fontSize: '17px' }}>Hồ sơ bệnh án</p>
                             <div className="col-12 mt-3 row">
                                 {historyData?.userExaminationData && historyData?.userExaminationData.map((item, index) => (
-                                    <HistoryItem key={index} id={index} data={item} />
+                                    <HistoryItem 
+                                        key={index} 
+                                        id={index} 
+                                        data={item} 
+                                        onCopyPrescription={handleCopyPrescription}
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -165,6 +176,8 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '' }) => {
 HistoryModal.propTypes = {
     isModalOpen: PropTypes.bool.isRequired,
     handleCancel: PropTypes.func.isRequired,
+    userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onCopyPrescription: PropTypes.func
 };
 
 export default HistoryModal;

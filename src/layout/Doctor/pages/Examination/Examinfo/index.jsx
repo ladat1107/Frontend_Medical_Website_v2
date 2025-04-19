@@ -24,7 +24,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
     };
 
     const [formData, setFormData] = useState({
-        medicalTreatmentTier: examData.medicalTreatmentTier?.toString() || '1',
+        medicalTreatmentTier: examData.medicalTreatmentTier?.toString() || '2',
         staffName: examData.staffName || '',
         reason: examData.reason || '',
         symptom: examData.symptom || '',
@@ -37,7 +37,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         special: examData.special || '0',
         reExaminationDate: examData.reExaminationDate ? examData.reExaminationDate : null,
         dischargeStatus: examData.dischargeStatus || null,
-        time: examData.time || null,
+        time: examData.reExaminationTime || null,
     });
 
     const [initialFormData, setInitialFormData] = useState(formData);
@@ -187,7 +187,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             return;
         }
 
-        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate.getTime() < new Date().getTime()) {
+        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate < new Date()) {
             message.error('Ngày tái khám phải sau ngày hôm nay!');
             return;
         }
@@ -214,8 +214,10 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             paymentDoctorStatus: 1,
             insuranceCoverage: 1,
             status: 6,
+
             dischargeStatus: formData.dischargeStatus,
-            reExaminationDate: formData.reExaminationDate ? convertDateTime(formData.reExaminationDate) : null,
+            reExaminationDate: formData.reExaminationDate ? formData.reExaminationDate : null,
+            time: formData.time,
             createReExamination: true,
         };
 
@@ -376,7 +378,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             options={dischargeOptions}
                             value={formData.dischargeStatus}
                             onChange={handleSelectChange('dischargeStatus')}
-                            disabled={!isEditMode}
+                            disabled={!(isEditMode && formData.treatmentResult)}
                         />
                     </div>
                     {formData.dischargeStatus === 4 && (
@@ -387,7 +389,11 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             <div className="col-8 mt-3 col-lg-4">
                                 <CustomDatePickerWithHighlights
                                     className="date-picker"
-                                    selectedDate={formData.reExaminationDate}
+                                    selectedDate={
+                                        formData.reExaminationDate 
+                                            ? new Date(formData.reExaminationDate) 
+                                            : null
+                                        }
                                     onDateChange={handleDateChange('reExaminationDate')}
                                     disabled={!(isEditMode && formData.dischargeStatus === 4 ? true : false)}
                                     placeholder="Chọn ngày..."

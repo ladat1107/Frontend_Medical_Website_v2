@@ -12,8 +12,15 @@ import { PATHS } from '@/constant/path';
 import SelectBox2 from '@/layout/Doctor/components/Selectbox';
 import EnhancedSelectBox from '@/components/EnhancedSelectBox/EnhancedSelectBox.jsx';
 
-const Prescription = ({ examinationId, isEditMode, prescriptionData, refresh }) => {
-    
+// Update the props to include copiedPrescriptionData and clearCopiedData
+const Prescription = ({ 
+    examinationId, 
+    isEditMode, 
+    prescriptionData, 
+    refresh,
+    copiedPrescriptionData,
+    clearCopiedData
+}) => {
     
     const [presDetails, setPresDetails] = useState([]);
     const [medicineOptions, setMedicineOptions] = useState([]);
@@ -104,6 +111,40 @@ const Prescription = ({ examinationId, isEditMode, prescriptionData, refresh }) 
             }
         }
     }, []);
+
+    // Add this useEffect to handle the copied prescription data
+    useEffect(() => {
+        if (copiedPrescriptionData && isEditMode) {
+            try {
+                // Check if there are prescription details to copy
+                if (copiedPrescriptionData.prescriptionDetails && copiedPrescriptionData.prescriptionDetails.length > 0) {
+                    const details = copiedPrescriptionData.prescriptionDetails.map((detail, index) => ({
+                        id: nextId + index,
+                        medicineId: detail.id,
+                        name: detail.name,
+                        quantity: detail.PrescriptionDetail.quantity,
+                        unit: detail.PrescriptionDetail.unit,
+                        price: detail.PrescriptionDetail.price,
+                        dosage: detail.PrescriptionDetail.dosage,
+                        session: detail.PrescriptionDetail.session 
+                            ? detail.PrescriptionDetail.session.split(',') 
+                            : [],
+                        dose: detail.PrescriptionDetail.dose
+                    }));
+                    
+                    setPresDetails(details);
+                    setNote(copiedPrescriptionData.note || "");
+                    setPrescriptionPrice(copiedPrescriptionData.totalMoney || 0);
+                    setNextId(nextId + details.length);
+                }
+                // Clear the copied data to avoid duplicate applications
+                if (clearCopiedData) clearCopiedData();
+            } catch (error) {
+                console.error("Error applying copied prescription:", error);
+                message.error("Không thể áp dụng đơn thuốc đã sao chép");
+            }
+        }
+    }, [copiedPrescriptionData]);
 
     const selectedMedicine = useMemo(() => {
         return medicineOptions.find(option => option.value === medicineId);
@@ -328,6 +369,8 @@ Prescription.propTypes = {
     prescriptionData: PropTypes.array.isRequired,
     refresh: PropTypes.func.isRequired,
     isEditMode: PropTypes.bool,
+    copiedPrescriptionData: PropTypes.object,
+    clearCopiedData: PropTypes.func
 };
 
 export default Prescription;

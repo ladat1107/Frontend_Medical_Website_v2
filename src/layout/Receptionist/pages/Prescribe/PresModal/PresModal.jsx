@@ -5,7 +5,7 @@ import { getThirdDigitFromLeft } from '@/utils/numberSeries';
 import { message } from 'antd';
 import { checkOutPrescription, updatePrescription } from '@/services/doctorService';
 import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';
-import { insuranceCovered } from '@/utils/coveredPrice';
+import { medicineCovered } from '@/utils/coveredPrice';
 
 const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
     const [special, setSpecial] = useState('normal');
@@ -86,8 +86,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
             totalAmount += itemTotal;
             
             // Only apply insurance coverage if the item is covered (isCovered is not 0 and not null)
-            if (item.isCovered === 0 || item.isCovered === null) {
-                totalInsuranceCovered += insuranceCovered(itemTotal, +insuranceCoverageValue);
+            if (item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0) {
+                totalInsuranceCovered += medicineCovered(itemTotal, +insuranceCoverageValue, Number(item.insuranceCovered));
             }
         });
         
@@ -98,8 +98,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
         setIsLoading(true);
         try {
             const presDetail = data.infoPres.prescriptionDetails.map((item) => {
-                let insuranceCoveredValue = (item.isCovered === 0 || item.isCovered === null)
-                    ? insuranceCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage)
+                let insuranceCoveredValue = (item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0)
+                    ? medicineCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage, Number(item.insuranceCovered))
                     : 0;
             
                 return {
@@ -197,8 +197,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
             const itemTotal = item.PrescriptionDetail.quantity * item.price;
             
             // Only apply insurance coverage if the item is covered (isCovered is not 0 and not null)
-            if (item.isCovered === 0 || item.isCovered === null) {
-                totalInsuranceCovered += insuranceCovered(itemTotal, +insuranceCoverage);
+            if (item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0) {
+                totalInsuranceCovered += medicineCovered(itemTotal, +insuranceCoverage, Number(item.insuranceCovered));
             }
         });
         
@@ -277,7 +277,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                                         <p>Tổng giá: {formatCurrency(item.PrescriptionDetail.quantity * item?.price)}</p>
                                     </div>
                                     <div className='col-4 d-flex align-items-center'>
-                                        <p>BHYT chi trả: {item.isCovered === 0 || item.isCovered === null ? formatCurrency(insuranceCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage)) 
+                                        <p>BHYT chi trả: {item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0
+                                                                ? formatCurrency(medicineCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage, Number(item.insuranceCovered))) 
                                                                 : formatCurrency(0)}</p>
                                     </div>
                                 </div>

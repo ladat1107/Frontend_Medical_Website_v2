@@ -9,7 +9,7 @@ import { useMutation } from "@/hooks/useMutation";
 import { convertDateTime } from "@/utils/formatDate";
 import { convertGender } from "@/utils/convertGender";
 import { useParams } from "react-router-dom";
-import { Modal, Spin } from "antd";
+import { Modal, Spin, message } from "antd";
 import HistoryModal from "../../components/HistoryModal/HistoryModal";
 import OldParaclinacalModal from "@/components/Modals/OldParaclinicalModal";
 
@@ -27,6 +27,7 @@ const Examination = () => {
     const [comorbiditiesOptions, setComorbiditiesOptions] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(true);
+    const [copiedPrescriptionData, setCopiedPrescriptionData] = useState(null);
 
 
     useEffect(() => {
@@ -94,7 +95,7 @@ const Examination = () => {
             const fields = [
                 "id", "userId", "staffId", "symptom", "diseaseName", "comorbidities",
                 "treatmentResult", "admissionDate", "dischargeDate", "status",
-                "reason", "medicalTreatmentTier", "paymentDoctorStatus",
+                "reason", "medicalTreatmentTier", "paymentDoctorStatus", "reExaminationTime",
                 "price", "special", "insuranceCoverage", "oldParaclinical", "dischargeStatus", "reExaminationDate", "time"
             ];
 
@@ -129,6 +130,14 @@ const Examination = () => {
     const handleRadioChange = (e) => {
         setSelectedRadio(e.target.value);
     };
+
+    const handleCopyPrescription = (prescriptionData) => {
+        setCopiedPrescriptionData(prescriptionData);
+        // Auto-select prescription tab when data is copied
+        setSelectedRadio('prescription');
+        //message.success('Đơn thuốc đã được sao chép. Chuyển đến tab đơn thuốc.');
+    };
+
     return (
         <>
             <div className="container">
@@ -288,6 +297,8 @@ const Examination = () => {
                                             paraclinicalPrice={totalParaclinical}
                                             prescriptionData={prescriptionData}
                                             isEditMode={isEditMode}
+                                            copiedPrescriptionData={copiedPrescriptionData}
+                                            clearCopiedData={() => setCopiedPrescriptionData(null)}
                                         />
                                     )}
                                 </div>
@@ -306,6 +317,7 @@ const Examination = () => {
                             isModalOpen={isModalOpen}
                             handleCancel={handleCancel}
                             userId={patientData.id}
+                            onCopyPrescription={handleCopyPrescription}
                         />
                     </div>
                 )}

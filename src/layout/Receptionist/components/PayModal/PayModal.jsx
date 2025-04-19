@@ -2,7 +2,6 @@ import { message } from 'antd';
 import { PropTypes } from 'prop-types';
 import { useEffect, useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
-import { getThirdDigitFromLeft } from '@/utils/numberSeries';
 import { checkOutExamination, checkOutParaclinical, updateExamination, updateListPayParaclinicals } from '@/services/doctorService';
 import './PayModal.scss';
 import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';

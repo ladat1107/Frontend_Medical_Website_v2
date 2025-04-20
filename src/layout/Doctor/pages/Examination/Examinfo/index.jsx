@@ -5,17 +5,20 @@ import CustomDatePicker from "@/components/DatePicker";
 import { updateExamination } from "@/services/doctorService";
 import MultiSelect from "@/layout/Doctor/components/MultiSelect";
 import { convertDateTime } from "@/utils/convertToTimestamp";
-import { message, notification } from 'antd';
+import { message } from 'antd';
 import SelectBox2 from "@/layout/Doctor/components/Selectbox";
 import CustomDatePickerWithHighlights from "@/components/DatePicker/CustomDatePickerWithHighlights";
 import { useSelector } from "react-redux";
 import { TIMESLOTS } from "@/constant/value";
+import RoomSelectionModal from "@/layout/Doctor/components/RoomOptionModal/RoomSelectionModal";
 
 const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
 
+    const { schedule } = useSelector(state => state.schedule);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSafe, setIsLoadingSafe] = useState(false);
-    const { schedule } = useSelector(state => state.schedule);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState(examData.selectedRoom || null);    
 
     const formatSafeDate = (dateString) => {
         if (!dateString) return new Date();
@@ -31,8 +34,8 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         diseaseName: examData.diseaseName || null,
         comorbidities: examData.comorbidities ? examData.comorbidities.split(',') : [],
         treatmentResult: examData.treatmentResult || '',
-        admissionDate: formatSafeDate(examData.admissionDate),
-        dischargeDate: formatSafeDate(examData.dischargeDate),
+        admissionDate: formatSafeDate(examData.admissionDate) || null,
+        dischargeDate: examData.dischargeDate || null,
         price: examData.price || 0,
         special: examData.special || '0',
         reExaminationDate: examData.reExaminationDate ? examData.reExaminationDate : null,
@@ -42,10 +45,6 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
 
     const [initialFormData, setInitialFormData] = useState(formData);
     const [isChanged, setIsChanged] = useState(false);
-    // const [comorbiditiesOptions, setComorbiditiesOptions] = useState([]);
-
-    // Notification
-    const [api, contextHolder] = notification.useNotification();
 
     const options = [
         { value: '1', label: 'Khám bệnh' },
@@ -107,6 +106,18 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                 reExaminationDate: null
             }));
         }
+
+        if (field === 'medicalTreatmentTier' && value !== '1') {
+            setSelectedRoom(null);
+        }
+
+        if (field === 'dischargeDate' && value === null) {
+            setFormData(prev => ({
+                ...prev,
+                dischargeStatus: null,
+                reExaminationDate: null,
+            }));
+        }
     };
 
     const constHandleDiseaseChange = (value) => {
@@ -121,6 +132,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
     }
 
     const handleSaveButton = async () => {
+
         if (!formData.reason || !formData.symptom || !formData.medicalTreatmentTier) {
             message.error('Vui lòng điền đầy đủ tất cả các trường!');
             return;
@@ -145,7 +157,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             treatmentResult: formData.treatmentResult,
             comorbidities: formData.comorbidities.join(','),
             admissionDate: convertDateTime(formData.admissionDate),
-            dischargeDate: convertDateTime(formData.dischargeDate),
+            dischargeDate: formData.dischargeDate,
             reason: formData.reason,
             medicalTreatmentTier: formData.medicalTreatmentTier,
             price: formData.price,
@@ -155,6 +167,8 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             status: 6,
             dischargeStatus: formData.dischargeStatus,
             reExaminationDate: formData.reExaminationDate ? convertDateTime(formData.reExaminationDate) : null,
+            roomId: selectedRoom ? selectedRoom.id : null,
+            roomName: selectedRoom ? selectedRoom.name : null,
         };
 
         setIsLoading(true);
@@ -206,7 +220,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             treatmentResult: formData.treatmentResult,
             comorbidities: formData.comorbidities.join(','),
             admissionDate: convertDateTime(formData.admissionDate),
-            dischargeDate: convertDateTime(formData.dischargeDate),
+            dischargeDate: formData.dischargeDate,
             reason: formData.reason,
             medicalTreatmentTier: formData.medicalTreatmentTier,
             price: formData.price,
@@ -244,9 +258,85 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         setFormData(initialFormData);
     };
 
+    const showModal = () => {
+        if (!formData.reason || !formData.symptom || !formData.medicalTreatmentTier) {
+            message.error('Vui lòng điền đầy đủ tất cả các trường!');
+            return;
+        }
+
+        if(formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+            message.error('Vui lòng chọn ngày tái khám!');
+            return;
+        }
+
+        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate <= new Date()) {
+            message.error('Ngày tái khám phải sau ngày hôm nay!');
+            return;
+        }
+        setIsModalVisible(true);
+    };
+    
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+    };
+    
+    const handleRoomSelect = (room) => {
+        // Lưu giá trị room vào biến
+        const selectedRoomData = room;
+        
+        // Cập nhật state
+        setSelectedRoom(selectedRoomData);
+        setIsModalVisible(false);
+        
+        // Gọi handleSaveButton với dữ liệu room đã chọn
+        // thay vì dựa vào state selectedRoom mới được cập nhật
+        const data = {
+            id: examData.id,
+            userId: examData.userId,
+            staffId: examData.staffId,
+            symptom: formData.symptom,
+            diseaseName: formData.diseaseName,
+            treatmentResult: formData.treatmentResult,
+            comorbidities: formData.comorbidities.join(','),
+            admissionDate: convertDateTime(formData.admissionDate),
+            dischargeDate: formData.dischargeDate,
+            reason: formData.reason,
+            medicalTreatmentTier: formData.medicalTreatmentTier,
+            price: formData.price,
+            special: formData.special,
+            paymentDoctorStatus: 1,
+            insuranceCoverage: 1,
+            status: 6,
+            dischargeStatus: formData.dischargeStatus,
+            reExaminationDate: formData.reExaminationDate ? convertDateTime(formData.reExaminationDate) : null,
+            roomId: selectedRoomData ? selectedRoomData.id : null,
+            roomName: selectedRoomData ? selectedRoomData.name : null,
+        };
+        
+        // Gọi API trực tiếp tại đây thay vì qua handleSaveButton
+        setIsLoading(true);
+        
+        updateExamination(data)
+            .then(response => {
+                if (response && response.DT.includes(1)) {
+                    message.success('Lưu thông tin khám bệnh thành công!');
+                    setInitialFormData(formData);
+                    refresh();
+                } else {
+                    message.error(response.EM);
+                }
+            })
+            .catch(error => {
+                console.error("Error creating examination:", error.response || error.message);
+                message.error('Lưu thông tin khám bệnh thất bại.');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
     return (
         <>
-            {contextHolder}
             <div className="exam-container">
                 <div className="row">
                     <div className="col-4 mt-3 col-lg-2">
@@ -331,10 +421,11 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             className="date-picker"
                             selectedDate={formData.admissionDate}
                             onDateChange={handleDateChange('admissionDate')}
-                            disabled={!isEditMode}
+                            disabled={!isEditMode}  
+                            isClearable={false}
                             placeholder="Chọn ngày..." />
                     </div>
-                    <div className="col-4 mt-3 col-lg-2">
+                    <div className="col-4 mt-3 col-lg-2">   
                         <p>Ngày xuất viện:</p>
                     </div>
                     <div className="col-8 mt-3 col-lg-4">
@@ -368,19 +459,23 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-4 mt-3 col-lg-2">
-                        <p>Tình trạng ra viện:</p>
-                    </div>
-                    <div className="col-8 mt-3 col-lg-4">
-                        <SelectBox2
-                            placeholder="Chọn tình trạng ra viện"
-                            className="select-box2"
-                            options={dischargeOptions}
-                            value={formData.dischargeStatus}
-                            onChange={handleSelectChange('dischargeStatus')}
-                            disabled={!(isEditMode && formData.treatmentResult)}
-                        />
-                    </div>
+                    {formData.dischargeDate && (
+                        <>
+                            <div className="col-4 mt-3 col-lg-2">
+                                <p>Tình trạng ra viện:</p>
+                            </div>
+                            <div className="col-8 mt-3 col-lg-4">
+                                <SelectBox2
+                                    placeholder="Chọn tình trạng ra viện"
+                                    className="select-box2"
+                                    options={dischargeOptions}
+                                    value={formData.dischargeStatus}
+                                    onChange={handleSelectChange('dischargeStatus')}
+                                    disabled={!(isEditMode && formData.treatmentResult)}
+                                />
+                            </div>
+                        </>
+                    )}
                     {formData.dischargeStatus === 4 && (
                         <>
                             <div className="col-4 mt-3 col-lg-2">
@@ -417,6 +512,17 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                         </>
                     )}
                 </div>
+                <div className="row">
+                    {selectedRoom && (
+                        <div className="selected-room">
+                            <h3 style={{fontSize: '16px'}}><strong>Phòng đã chọn:</strong></h3>
+                            <p className="mt-1"><strong>Tên phòng:</strong> {selectedRoom.name} - <strong>Khoa:</strong> {selectedRoom.roomDepartmentData?.name}</p>
+                            <p></p>
+                            <p><strong>Giá:</strong> {selectedRoom.serviceData[0]?.price.toLocaleString('vi-VN')} VNĐ</p>
+                        </div>
+                    )}
+                </div>
+
                 <div className="row mt-4">
                     <div className="col-8 col-lg-12 text-end">
                         <button
@@ -427,7 +533,9 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                         </button>
                         <button
                             className={`save-button ${!isChanged ? 'disabled' : ''}`}
-                            onClick={handleSaveButton}
+                            onClick={
+                                formData.medicalTreatmentTier === '1' ? showModal : handleSaveButton
+                            }
                             disabled={!isChanged}>
                             {isLoading ? (
                                 <>
@@ -452,6 +560,14 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     </div>
                 </div>
             </div>
+            {isModalVisible && (
+                <RoomSelectionModal
+                    isVisible={isModalVisible}
+                    onClose={handleModalClose}
+                    onRoomSelect={handleRoomSelect}
+                    selected={selectedRoom}
+                />
+            )}
         </>
     );
 };

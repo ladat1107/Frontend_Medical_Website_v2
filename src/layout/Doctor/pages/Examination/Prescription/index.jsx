@@ -2,14 +2,13 @@ import './Prescription.scss';
 import Presdetail from '../Presdetail';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation } from '@/hooks/useMutation';
-import { getAllMedicinesForExam, getPrescriptionByExaminationId, upsertPrescription } from '@/services/doctorService';
+import { getAllMedicinesForExam, upsertPrescription } from '@/services/doctorService';
 import PropTypes from 'prop-types';
 import { message, notification, Spin } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPrint } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '@/constant/path';
-import SelectBox2 from '@/layout/Doctor/components/Selectbox';
 import EnhancedSelectBox from '@/components/EnhancedSelectBox/EnhancedSelectBox.jsx';
 
 // Update the props to include copiedPrescriptionData and clearCopiedData
@@ -75,13 +74,6 @@ const Prescription = ({
         }
     }, [dataMedicines]);
     //#endregion
-
-    let {
-        data: dataPrescription,
-        loading: prescriptionLoading,
-        error: prescriptionError,
-        execute: fetchPrescription,
-    } = useMutation(() => getPrescriptionByExaminationId(examinationId));
 
     useEffect(() => {
       

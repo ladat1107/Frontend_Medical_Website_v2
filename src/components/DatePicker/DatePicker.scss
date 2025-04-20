@@ -33,3 +33,15 @@
     background-color: #7bc4a2; 
     position: relative;
 }
+
+.react-datepicker__close-icon {
+    &::after {
+      background-color: #cdcdcd !important; /* Màu xám */
+      padding-bottom: 0.1rem;
+      padding-top: 0rem;
+    }
+    
+    &:hover::after {
+      background-color: #808080 !important; /* Màu xám đậm hơn khi hover */
+    }
+}

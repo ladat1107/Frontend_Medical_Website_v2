@@ -96,7 +96,8 @@ const Examination = () => {
                 "id", "userId", "staffId", "symptom", "diseaseName", "comorbidities",
                 "treatmentResult", "admissionDate", "dischargeDate", "status",
                 "reason", "medicalTreatmentTier", "paymentDoctorStatus", "reExaminationTime",
-                "price", "special", "insuranceCoverage", "oldParaclinical", "dischargeStatus", "reExaminationDate", "time"
+                "price", "special", "insuranceCoverage", "oldParaclinical", "dischargeStatus", "reExaminationDate", "time",
+                "selectedRoom"
             ];
 
             const disease = dataExamination.DT?.diseaseName?.split(" - ") || "";
@@ -107,7 +108,15 @@ const Examination = () => {
                 dischargeDate: dataExamination.DT.dischargeDate,
                 diseaseName: disease[0],
                 staffName: dataExamination.DT.examinationStaffData?.staffUserData?.lastName + " " +
-                    dataExamination.DT.examinationStaffData?.staffUserData?.firstName || ""
+                    dataExamination.DT.examinationStaffData?.staffUserData?.firstName || "",
+                selectedRoom: dataExamination.DT?.examinationRoomData?.id ? {
+                    id: dataExamination.DT.examinationRoomData?.id || null,
+                    name: dataExamination.DT.examinationRoomData?.name || "",
+                    roomDepartmentData: {
+                        name: dataExamination.DT.examinationRoomData?.roomDepartmentData?.name || "",
+                    },
+                    serviceData: dataExamination.DT.examinationRoomData?.serviceData || [],
+                } : null,
             };
             const totalParaclinicalPrice = (dataExamination.DT.examinationResultParaclincalData || []).reduce(
                 (sum, item) => sum + (item.price || 0),

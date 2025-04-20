@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import './Presdetail.scss';
 import SelectBox2 from '@/layout/Doctor/components/Selectbox';
 import PropTypes from 'prop-types';
-import QuantityInput from '@/layout/Doctor/components/QuantityInput';
 import MultiSelect from '@/layout/Doctor/components/MultiSelect';
-import { padding } from '@mui/system';
+import SelectBoxCustom from '@/layout/Doctor/components/Selectbox/CustomSelectbox';
+import FreeTextInputWithSuggestions from '@/layout/Doctor/components/Selectbox/CustomSelectbox';
 
 const Presdetail = ({ id, presdetailData, onDelete, isEditMode, onChange }) => {
     const [medicineId, setMedicineId] = useState(presdetailData.medicineId || 0);
@@ -19,15 +19,15 @@ const Presdetail = ({ id, presdetailData, onDelete, isEditMode, onChange }) => {
     const SessionOptions = [{ value: '1', label: 'Sáng' }, { value: '2', label: 'Trưa' }, { value: '3', label: 'Chiều' }, { value: '4', label: 'Tối' }];
 
     const DoseOptions = [
-        { value: 1, label: `1 lần 1 ${medicineUnit}` }, 
-        { value: 2, label: `1 lần 2 ${medicineUnit}` },
-        { value: 3, label: `1 lần 3 ${medicineUnit}` },
-        { value: 4, label: `1 lần 4 ${medicineUnit}` },
-        { value: 5, label: `1 lần 5 ${medicineUnit}` },
-        { value: 6, label: `1 lần 6 ${medicineUnit}` },
-        { value: 7, label: `1 lần 7 ${medicineUnit}` },
-        { value: 8, label: `1 lần 8 ${medicineUnit}` },
-        { value: 9, label: `1 lần 9 ${medicineUnit}` }
+        `1 lần 1 ${medicineUnit}`, 
+        `1 lần 2 ${medicineUnit}`,
+        `1 lần 3 ${medicineUnit}`,
+        `1 lần 4 ${medicineUnit}`,
+        `1 lần 5 ${medicineUnit}`,
+        `1 lần 6 ${medicineUnit}`,
+        `1 lần 7 ${medicineUnit}`,
+        `1 lần 8 ${medicineUnit}`,
+        `1 lần 9 ${medicineUnit}`
     ];
     
     const handleSessionChange = (value) => {
@@ -47,13 +47,9 @@ const Presdetail = ({ id, presdetailData, onDelete, isEditMode, onChange }) => {
             .filter(option => session.includes(option.value))
             .map(option => option.label)
             .join(', ');
-        
-        const doseLabel = DoseOptions
-            .find(option => dose === option.value)?.label || '';
 
-        setDosage(`${selectedLabels} - ${doseLabel}`);
+        setDosage(`${selectedLabels} - ${dose}`);
     }
-
 
     const handleQuantityChange = (newQuantity) => {
         setQuantity(newQuantity);
@@ -62,6 +58,10 @@ const Presdetail = ({ id, presdetailData, onDelete, isEditMode, onChange }) => {
     useEffect(() => {
         onChange(id, medicineId, quantity, medicineUnit, selectedPrice, dosage, session, dose);
     }, [id, medicineId, quantity, medicineUnit, selectedPrice, dosage, onChange]);
+
+  const handleDosageChange = (value) => {
+    setDosage(value);
+  };
 
     return (
         <div className="presdetail-container">
@@ -129,13 +129,13 @@ const Presdetail = ({ id, presdetailData, onDelete, isEditMode, onChange }) => {
             />
         </div>
         <div className="medicine-dosage">    
-            <SelectBox2
-                className="select-box2"
+            <FreeTextInputWithSuggestions
                 options={DoseOptions}
                 value={dose}
-                placeholder="Chọn liều dùng"
                 onChange={handleDoseChange}
+                placeholder="Nhập liều dùng..."
                 disabled={!isEditMode}
+                maxSuggestions={5}
             />
         </div>
         {isEditMode && (

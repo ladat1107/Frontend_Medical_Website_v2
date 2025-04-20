@@ -215,3 +215,6 @@ export const getScheduleByStaffIdFromToday = async () => {
     return axios.get(`/api/getScheduleByStaffIdFromToday`);
 }
 
+export const getAvailableRooms = async () => {
+    return axios.get(`/api/getAvailableRooms`);
+}

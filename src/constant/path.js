@@ -14,7 +14,7 @@ export const PATHS = {
         SCHEDULE_MANAGE: "/adminSchedule",
         NOTIFICATION: "/adminNotification",
         MEDICINE_MANAGE: "/adminMedicineManage",
-        //EXAMINATION_MANAGE: "/adminExamination",
+        EXAMINATION_MANAGE: "/adminExaminationManage",
     },
     STAFF: {
         DASHBOARD: "/doctor",
@@ -24,8 +24,8 @@ export const PATHS = {
         HANDBOOK: "/doctorHandbook",
         SCHEDULE: "/doctorSchedule",
         PROFILE: "/doctorProfile",
-        CONSULTANT:"/consultant",
-        NOTIFICATION: "/staffNotification", 
+        CONSULTANT: "/consultant",
+        NOTIFICATION: "/staffNotification",
     },
     RECEPTIONIST: {
         DASHBOARD: "/receptionist",

@@ -53,6 +53,7 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@ta
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { deleteAssistantForCustomer } from "./services/doctorService";
 import MedicineManage from "./layout/Admin/pages/MedicineManage/MedicineMange";
+import ExaminationManage from "./layout/Admin/pages/ExaminationManage/ExaminationManage";
 
 function App() {
   const location = useLocation();
@@ -100,63 +101,64 @@ function App() {
     await deleteAssistantForCustomer();
   }
   return (
-   
-      <NotificationProvider>
-        <QueryClientProvider client={queryClient}>
-          <Routes>
-            <Route path={PATHS.HOME.LOGIN} element={<Login />} />
-            <Route element={<MainLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path={`${PATHS.HOME.DOCTOR_DETAIL}/:id`} element={<DoctorDetail />} />
-              <Route path={PATHS.HOME.DOCTOR_LIST} element={<DoctorList />} />
-              <Route path={PATHS.HOME.DEPARTMENT_LIST} element={<DepartmentList />} />
-              <Route path={PATHS.HOME.BOOKING} element={<Booking />} />
-              <Route path={`${PATHS.HOME.HANDBOOK_LIST}/:id`} element={<BlogList />} />
-              <Route path={PATHS.HOME.PROFILE} element={<ProfileUser />} />
-              <Route path={PATHS.HOME.APPOINTMENT_LIST} element={<AppointmentList />} />
-              <Route path={`${PATHS.HOME.HANDBOOK_DETAIL}/:id`} element={<BlogDetail />} />
-              <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
-              <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
-              <Route path={`${PATHS.HOME.NOTIFICATION}`} element={<NotificationUser />} />
+
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path={PATHS.HOME.LOGIN} element={<Login />} />
+          <Route element={<MainLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path={`${PATHS.HOME.DOCTOR_DETAIL}/:id`} element={<DoctorDetail />} />
+            <Route path={PATHS.HOME.DOCTOR_LIST} element={<DoctorList />} />
+            <Route path={PATHS.HOME.DEPARTMENT_LIST} element={<DepartmentList />} />
+            <Route path={PATHS.HOME.BOOKING} element={<Booking />} />
+            <Route path={`${PATHS.HOME.HANDBOOK_LIST}/:id`} element={<BlogList />} />
+            <Route path={PATHS.HOME.PROFILE} element={<ProfileUser />} />
+            <Route path={PATHS.HOME.APPOINTMENT_LIST} element={<AppointmentList />} />
+            <Route path={`${PATHS.HOME.HANDBOOK_DETAIL}/:id`} element={<BlogDetail />} />
+            <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
+            <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
+            <Route path={`${PATHS.HOME.NOTIFICATION}`} element={<NotificationUser />} />
+          </Route>
+          <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
+          <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />
+          <Route path={PATHS.STAFF.CONSULTANT} element={<MessengerReceptionist />} />
+          <Route element={<PrivateRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route path={PATHS.ADMIN.DASHBOARD} element={<AdminDashboard />} />
+              <Route path={PATHS.ADMIN.PATIENT_MANAGE} element={<PatientManage />} />
+              <Route path={PATHS.ADMIN.STAFF_MANAGE} element={<StaffManage />} />
+              <Route path={PATHS.ADMIN.DEPARTMENT_MANAGE} element={<DepartmentManage />} />
+              <Route path={PATHS.ADMIN.SERVICE_MANAGE} element={<ServiceOfRoom />} />
+              <Route path={PATHS.ADMIN.ROOM_MANAGE} element={<Room />} />
+              <Route path={PATHS.ADMIN.SPECIALTY_MANAGE} element={<Specialty />} />
+              <Route path={PATHS.ADMIN.PROFILE} element={<ProfileAdmin />} />
+              <Route path={PATHS.ADMIN.HANDBOOK_MANAGE} element={<HandbookAdmin />} />
+              <Route path={`${PATHS.ADMIN.HANDBOOK_DETAIL}/:id`} element={<HandbookAdminDetail />} />
+              <Route path={PATHS.ADMIN.SCHEDULE_MANAGE} element={<ScheduleManage />} />
+              <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
+              <Route path={PATHS.ADMIN.MEDICINE_MANAGE} element={<MedicineManage />} />
+              <Route path={PATHS.ADMIN.EXAMINATION_MANAGE} element={<ExaminationManage />} />
             </Route>
-            <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
-            <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />
-            <Route path={PATHS.STAFF.CONSULTANT} element={<MessengerReceptionist />} />
-            <Route element={<PrivateRoute />}>
-              <Route element={<AdminLayout />}>
-                <Route path={PATHS.ADMIN.DASHBOARD} element={<AdminDashboard />} />
-                <Route path={PATHS.ADMIN.PATIENT_MANAGE} element={<PatientManage />} />
-                <Route path={PATHS.ADMIN.STAFF_MANAGE} element={<StaffManage />} />
-                <Route path={PATHS.ADMIN.DEPARTMENT_MANAGE} element={<DepartmentManage />} />
-                <Route path={PATHS.ADMIN.SERVICE_MANAGE} element={<ServiceOfRoom />} />
-                <Route path={PATHS.ADMIN.ROOM_MANAGE} element={<Room />} />
-                <Route path={PATHS.ADMIN.SPECIALTY_MANAGE} element={<Specialty />} />
-                <Route path={PATHS.ADMIN.PROFILE} element={<ProfileAdmin />} />
-                <Route path={PATHS.ADMIN.HANDBOOK_MANAGE} element={<HandbookAdmin />} />
-                <Route path={`${PATHS.ADMIN.HANDBOOK_DETAIL}/:id`} element={<HandbookAdminDetail />} />
-                <Route path={PATHS.ADMIN.SCHEDULE_MANAGE} element={<ScheduleManage />} />
-                <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
-                <Route path={PATHS.ADMIN.MEDICINE_MANAGE} element={<MedicineManage />} />
-              </Route>
-              <Route element={<DoctorLayout />}>
-                <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />
-                <Route path={PATHS.STAFF.EXAMINATION} element={<Examination />} />
-                <Route path={PATHS.STAFF.HANDBOOK} element={<Handbook />} />
-                <Route path={`${PATHS.STAFF.HANDBOOK}/:id`} element={<HandbookDetail />} />
-                <Route path={PATHS.STAFF.SCHEDULE} element={<Schedule />} />
-                <Route path={PATHS.STAFF.PROFILE} element={<ProfileStaff />} />
-                <Route path={PATHS.RECEPTIONIST.DASHBOARD} element={<ReceptionistDashboard />} />
-                <Route path={PATHS.STAFF.DASHBOARD} element={<DoctorHomePage />} />
-                <Route path={PATHS.RECEPTIONIST.CASHIER} element={<Cashier />} />
-                <Route path={PATHS.STAFF.PARACLINICAL} element={<ParaclinicalList />} />
-                <Route path={PATHS.RECEPTIONIST.PRESCRIBE} element={<Prescribe />} />
-                <Route path={PATHS.STAFF.NOTIFICATION} element={<Notification />} />
-              </Route>
+            <Route element={<DoctorLayout />}>
+              <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />
+              <Route path={PATHS.STAFF.EXAMINATION} element={<Examination />} />
+              <Route path={PATHS.STAFF.HANDBOOK} element={<Handbook />} />
+              <Route path={`${PATHS.STAFF.HANDBOOK}/:id`} element={<HandbookDetail />} />
+              <Route path={PATHS.STAFF.SCHEDULE} element={<Schedule />} />
+              <Route path={PATHS.STAFF.PROFILE} element={<ProfileStaff />} />
+              <Route path={PATHS.RECEPTIONIST.DASHBOARD} element={<ReceptionistDashboard />} />
+              <Route path={PATHS.STAFF.DASHBOARD} element={<DoctorHomePage />} />
+              <Route path={PATHS.RECEPTIONIST.CASHIER} element={<Cashier />} />
+              <Route path={PATHS.STAFF.PARACLINICAL} element={<ParaclinicalList />} />
+              <Route path={PATHS.RECEPTIONIST.PRESCRIBE} element={<Prescribe />} />
+              <Route path={PATHS.STAFF.NOTIFICATION} element={<Notification />} />
             </Route>
-          </Routes>
-          {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
-        </QueryClientProvider>
-      </NotificationProvider>
+          </Route>
+        </Routes>
+        {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
+      </QueryClientProvider>
+    </NotificationProvider>
   );
 }
 

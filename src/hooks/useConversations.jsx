@@ -31,7 +31,6 @@ export const useCreateMessage = () => {
 }
 
 export const useGetNumberMessageUnread = (enabled = true) => {
-    console.log(enabled);
     return useQuery({
         queryKey: ['numberMessageUnread'],
         queryFn: () => userService.getNumberMessageUnread(),

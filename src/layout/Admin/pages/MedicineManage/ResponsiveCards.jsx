@@ -20,7 +20,7 @@ const ResponsiveCards = ({
                     className="h-full bg-white rounded-2xl !shadow-table-admin hover:scale-105 transition-all [&_.ant-card-body]:px-4 [&_.ant-card-body]:py-4"
                 >
                     <div className="flex items-center gap-4 min-w-0">
-                        <div className="p-3 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="p-3 bg-primary-tw rounded-full flex items-center justify-center flex-shrink-0">
                             <Package className="w-7 h-7 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -83,7 +83,7 @@ const ResponsiveCards = ({
                     className="h-full bg-white rounded-2xl !shadow-table-admin hover:scale-105 transition-all [&_.ant-card-body]:px-4 [&_.ant-card-body]:py-4"
                 >
                     <div className="flex items-center gap-4 min-w-0">
-                        <div className="p-3 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="p-3 bg-[#00C48C] rounded-full flex items-center justify-center flex-shrink-0">
                             <Package className="w-7 h-7 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">

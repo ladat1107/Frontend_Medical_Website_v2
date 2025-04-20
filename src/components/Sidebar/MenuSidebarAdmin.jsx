@@ -107,6 +107,11 @@ const MenuSidebar = () => {
             icon: <FontAwesomeIcon icon={faPills} />,
         },
         {
+            key: 'examinationAdmin',
+            label: (<NavLink to={PATHS.ADMIN.EXAMINATION_MANAGE}>Quản lý hồ sơ khám</NavLink>),
+            icon: <FontAwesomeIcon icon={faStethoscope} />,
+        },
+        {
             key: 'notiAdmin',
             label: (<NavLink to={PATHS.ADMIN.NOTIFICATION}>Thông báo</NavLink>),
             icon: <i className="fa-solid fa-bell"></i>,

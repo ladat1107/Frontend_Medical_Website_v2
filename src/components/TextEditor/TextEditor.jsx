@@ -30,13 +30,14 @@ export default function TextEditor({ value, onChange, placeholder, style }) {
                 if (imageUrl && quillRef.current) {
                     const quill = quillRef.current.getEditor(); // Lấy instance Quill từ ref
                     const range = quill.getSelection(); // Lấy vị trí con trỏ hiện tại
-                    // quill.insertText(range?.index || 0, `[🖼 Hình ảnh](${imageUrl})`);
+                    quill.insertEmbed(range?.index || 0, 'image', imageUrl);
                 }
             } catch (error) {
                 console.error('Upload failed:', error);
             }
         };
     };
+
     const handleFileUpload = () => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
@@ -139,7 +140,7 @@ export default function TextEditor({ value, onChange, placeholder, style }) {
 }
 
 
-             
+
 TextEditor.propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func,

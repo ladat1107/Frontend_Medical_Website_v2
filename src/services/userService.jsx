@@ -72,6 +72,9 @@ const userService = {
   },
   getNumberMessageUnread(query = "") {
     return axiosInstance.get(`/api/getNumberMessageUnread`, { params: query });
+  },
+  getUserByQRCode(query = "") {
+    return axiosInstance.get(`/api/getUserByQrCode`, { params: query });
   }
 };
 

@@ -22,6 +22,8 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
     const [cid, setCid] = useState('');
     const [symptom, setSymptom] = useState('');
     const [insurance, setInsurance] = useState('');
+    const [isWrongTreatment, setIsWrongTreatment] = useState(0);
+    const [medicalTreatmentTier, setMedicalTreatmentTier] = useState(2);
 
     const comorbidityContainerRef = useRef(null);
     const inputRef = useRef(null);
@@ -53,6 +55,8 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             setSelectedComorbidities(comorbidityObjects);
             setSymptom(patientData.symptom || '');
             setInsurance(patientData.insuranceCode || '');
+            setIsWrongTreatment(patientData.isWrongTreatment || 0);
+            setMedicalTreatmentTier(patientData.medicalTreatmentTier || 2);
 
             // Tìm và set specialty
             const matchedSpecialty = specialtyOptions.find(
@@ -118,6 +122,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
         setUserInfo({});
         setSelectedComorbidities([]);
         setInputComorbidity('');
+        setIsWrongTreatment(0);
         setPrioritize('normal');
     }
 
@@ -237,6 +242,11 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             return;
         }
 
+        if(insurance.length < 10 || insurance.length > 10) {
+            message.error('Số BHYT không hợp lệ!');
+            return;
+        }
+
         let insuranceCoverage = getThirdDigitFromLeft(insurance);
 
         const data = {
@@ -251,7 +261,9 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
             time: timeSlot ? timeSlot : null,
             is_appointment: timeSlot ? 1 : 0,
-            status: timeSlot ? 2 : 4
+            status: timeSlot ? 2 : 4,
+            isWrongTreatment: isWrongTreatment,
+            medicalTreatmentTier: medicalTreatmentTier,
         }
 
         setLoadingAddExam(true);
@@ -282,6 +294,11 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             return;
         }
 
+        if(insurance.length < 10 || insurance.length > 10) {
+            message.error('Số BHYT không hợp lệ!');
+            return;
+        }
+
         let insuranceCoverage = getThirdDigitFromLeft(insurance);
 
         const data = {
@@ -295,8 +312,10 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             roomName: specialtySelected.label,
             price: specialtySelected.staffPrice,
             comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
-            status: patientData?.paymentId ? STATUS_BE.PAID : STATUS_BE.WAITING
+            status: patientData?.paymentId ? STATUS_BE.PAID : STATUS_BE.WAITING,
             // is_appointment: 0, -->bỏ nhe. để thống kê
+            isWrongTreatment: isWrongTreatment,
+            medicalTreatmentTier: medicalTreatmentTier,
         }
 
         setLoadingAddExam(true);
@@ -379,7 +398,11 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                                 </div>
                                                 <div className='col-5'>
                                                     <input className='input-add-exam' style={{ width: "93%" }} maxLength={10}
-                                                        type='text' value={insurance} onChange={(e) => setInsurance(e.target.value)}
+                                                        type='text' value={insurance}
+                                                        onChange={(e) => {
+                                                            const onlyNums = e.target.value.replace(/\D/g, ""); // chỉ lấy số
+                                                            setInsurance(onlyNums);
+                                                        }}
                                                         placeholder='Nhập số BHYT...' />
                                                 </div>
                                             </div>
@@ -396,7 +419,11 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                 <p>Thông tin bệnh nhân:</p>
                                 <div className='info-action'>
                                     <input className='input-add-exam' maxLength={12} onBlur={handleFindUser}
-                                        type='text' value={cid} onChange={(e) => setCid(e.target.value)}
+                                        type='text' value={cid}
+                                        onChange={(e) => {
+                                            const onlyNums = e.target.value.replace(/\D/g, ""); // chỉ lấy số
+                                            setCid(onlyNums);
+                                        }}
                                         placeholder='Nhập số CCCD để tìm kiếm...' />
                                     <button className='find-patient' onClick={handleAddUser}>
                                         <i className="fa-solid fa-plus"></i>
@@ -413,22 +440,20 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                             </div>
                                         ) : userInfo?.lastName && userInfo?.firstName ? (
                                             <div className='row'>
-                                                <div className='col-12 d-flex flex-row'>
-                                                    <div className='col-2'>
+                                                <div className='col-12 d-flex flex-row mb-2'>
+                                                    <div className='col-2 d-flex align-items-center'>
                                                         <p>Bệnh nhân:</p>
                                                     </div>
-                                                    <div className='col-8'>
+                                                    <div className='col-4 d-flex align-items-center'>
                                                         <p style={{ color: "black", fontWeight: "400" }}>{userInfo.lastName} {userInfo.firstName}</p>
                                                     </div>
-                                                </div>
-                                                <div className='col-12 d-flex flex-row mt-3 mb-2'>
                                                     <div className='col-2 d-flex align-items-center'>
                                                         <p>Số BHYT:</p>
                                                     </div>
-                                                    <div className='col-5'>
+                                                    <div className='col-4'>
                                                         <input
-                                                            className='input-add-exam'
-                                                            style={{ width: "93%" }}
+                                                            className='input-add-exam me-0'
+                                                            style={{ width: "86%" }}
                                                             maxLength={10}
                                                             type='text'
                                                             value={insurance}
@@ -439,11 +464,6 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                                             placeholder='Nhập số BHYT...'
                                                         />
                                                     </div>
-                                                    <div className='col-5 d-flex align-items-center'>
-                                                        {insurance.length > 0 && insurance.length < 10 && (
-                                                            <p style={{ fontWeight: '400' }} className='text-danger mb-0'>Số BHYT không hợp lệ</p>
-                                                        )}
-                                                    </div>
                                                 </div>
                                             </div>
                                         ) : 'Không tìm thấy bệnh nhân...'
@@ -453,7 +473,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                         )}
 
                     </div>
-                    <div className='pation-info row mb-4'>
+                    <div className='pation-info row mb-3'>
                         <div className='col-7'>
                             <p>Phòng khám:</p>
                             <div className='info-action'>
@@ -491,7 +511,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                             type='text' value={symptom} onChange={(e) => setSymptom(e.target.value)}
                             placeholder='Nhập triệu chứng...' />
                     </div>
-                    <div className='exam-info'>
+                    <div className='exam-info mb-2'>
                         <p>Bệnh đi kèm:</p>
                         <div
                             ref={comorbidityContainerRef}
@@ -540,6 +560,48 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                 </div>
                             )}
                         </div>
+                    </div>  
+                    <div className='pation-info row mb-4'>
+                        <div className='col-12 flex'>
+                            <p className='col-3 flex items-center'>Loại KCB:</p>
+                            <div className='info-action col-5'>
+                                <Select
+                                    placeholder="Chọn loại KCB"
+                                    optionFilterProp="label"
+                                    options={[
+                                        { label: 'Khám bệnh', value: 1 },
+                                        { label: 'Khám bệnh ngoại trú', value: 2 },
+                                    ]}
+                                    style={{ width: '100%' }}
+                                    value={medicalTreatmentTier}
+                                    className='select-add-exam'
+                                    onChange={(value) => setMedicalTreatmentTier(value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className='exam-info flex'>
+                        <p className='col-3'>Tuyến chữa bệnh:</p>
+                        <label className='me-5 flex'>
+                            <input
+                                className='radio-treatment me-2 justify-center'
+                                type="radio"
+                                value={0}
+                                checked={isWrongTreatment === 0}
+                                onChange={() => setIsWrongTreatment(0)}
+                            />
+                            Đúng tuyến
+                        </label>
+                        <label className='ms-4 flex' >
+                            <input
+                                className='radio-treatment me-2 justify-center'
+                                type="radio"
+                                value={1}
+                                checked={isWrongTreatment === 1}
+                                onChange={() => setIsWrongTreatment(1)}
+                            />
+                            Sai tuyến
+                        </label>
                     </div>
                 </div>
                 <div className='add-exam-footer'>

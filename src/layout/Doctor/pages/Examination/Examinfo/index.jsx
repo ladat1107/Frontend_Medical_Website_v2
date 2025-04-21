@@ -109,6 +109,10 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
 
         if (field === 'medicalTreatmentTier' && value !== '1') {
             setSelectedRoom(null);
+            setFormData(prev => ({
+                ...prev,
+                dischargeDate: new Date(),
+            }));
         }
 
         if (field === 'dischargeDate' && value === null) {
@@ -476,7 +480,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             </div>
                         </>
                     )}
-                    {formData.dischargeStatus === 4 && (
+                    {formData.dischargeStatus === 4 && formData.dischargeDate && (
                         <>
                             <div className="col-4 mt-3 col-lg-2">
                                 <p>Ngày tái khám:</p>
@@ -515,7 +519,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                 <div className="row">
                     {selectedRoom && (
                         <div className="selected-room">
-                            <h3 style={{fontSize: '16px'}}><strong>Phòng đã chọn:</strong></h3>
+                            <h3 style={{fontSize: '16px'}}><strong>Phòng đã chọn</strong></h3>
                             <p className="mt-1"><strong>Tên phòng:</strong> {selectedRoom.name} - <strong>Khoa:</strong> {selectedRoom.roomDepartmentData?.name}</p>
                             <p></p>
                             <p><strong>Giá:</strong> {selectedRoom.serviceData[0]?.price.toLocaleString('vi-VN')} VNĐ</p>
@@ -544,7 +548,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                                 </>
                             ) : 'Cập nhật'}
                         </button>
-                        {formData.dischargeStatus === 4 && (
+                        {formData.dischargeStatus === 4 && formData.dischargeDate && (
                             <button
                                 className={`safe-button ${!isChanged ? 'disabled' : ''}`}
                                 onClick={handleSafeButton}

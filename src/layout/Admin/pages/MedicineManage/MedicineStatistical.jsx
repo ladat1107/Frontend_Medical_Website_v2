@@ -25,8 +25,14 @@ import ResponsiveCards from "./ResponsiveCards"
 
 dayjs.locale("vi")
 
-// Định nghĩa các màu sắc cho biểu đồ
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"]
+const COLORS = [
+    "#00B5F1", // Màu chính - xanh dương tươi
+    "#00C48C", // Xanh ngọc lá – dịu mắt, đồng bộ
+    "#FFC75F", // Vàng pastel – nổi bật nhưng nhẹ nhàng
+    "#FFA07A", // Cam san hô – tươi sáng
+    "#22C55E", // Xanh lá hiện đại – giữ lại
+    "#F87171"  // Đỏ hồng nhạt – giữ lại
+];
 
 const MedicineStatistical = ({ medicineData, refetch, isRefetchingMedicineData, isLoadingMedicineData }) => {
     const [expiringMedicines, setExpiringMedicines] = useState([])
@@ -227,7 +233,7 @@ const MedicineStatistical = ({ medicineData, refetch, isRefetchingMedicineData, 
                                         cy="50%"
                                         labelLine={false}
                                         outerRadius={90}
-                                        fill="#8884d8"
+                                        fill={COLORS[1]}
                                         dataKey="value"
                                         nameKey="name"
                                         label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
@@ -258,28 +264,37 @@ const MedicineStatistical = ({ medicineData, refetch, isRefetchingMedicineData, 
                         <div className="h-[300px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <ComposedChart
-                                    data={[]}
+                                    data={expiringMedicines}
                                     margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="name" />
-                                    <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
-                                    <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                                    <YAxis yAxisId="left" orientation="left" stroke={COLORS[1]} />
+                                    <YAxis yAxisId="right" orientation="right" stroke={COLORS[0]} />
                                     <RechartsTooltip
-                                        formatter={(value, name) => {
-                                            if (name === "Số lượng")
-                                                return [`${value} thuốc`, name]
+                                        formatter={(value, name, props) => {
+                                            if (name === "Số lượng") {
+                                                const unit = props.payload.unit || ''
+                                                return [`${value} ${unit}`, name]
+                                            }
                                             return [`${value} ngày`, name]
                                         }}
                                     />
                                     <Legend />
-                                    <Bar yAxisId="left" dataKey="value" name="Số lượng" fill="#8884d8" />
+                                    <Bar yAxisId="left" dataKey="inventory" name="Số lượng" fill={COLORS[1]} barSize={25} />
                                     <Line
                                         yAxisId="right"
                                         type="monotone"
-                                        dataKey="avgDaysRemaining"
+                                        dataKey={(record) => {
+                                            const expDate = new Date(record.exp)
+                                            const now = new Date()
+                                            const diffTime = expDate.getTime() - now.getTime()
+                                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                                            return diffDays
+                                        }}
                                         name="Hạn sử dụng (ngày)"
-                                        stroke="#82ca9d"
+                                        stroke={COLORS[0]}
+                                        strokeWidth={3}
                                         activeDot={{ r: 8 }}
                                     />
                                 </ComposedChart>

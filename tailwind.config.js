@@ -3,6 +3,9 @@ export default {
   content: [
     "./src/layout/Receptionist/pages/Messenger/**/*.{js,jsx,ts,tsx}",
     "./src/layout/Admin/pages/MedicineManage/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/Admin/pages/ExaminationManage/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/Receptionist/pages/Dashboard/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/Receptionist/components/AddUserModal/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

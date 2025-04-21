@@ -81,12 +81,17 @@ const MedicineTable = ({ medicines, refetch, isRefetchingMedicineData, isLoading
         // Áp dụng sắp xếp
         if (sortConfig.key) {
             filteredMedicines.sort((a, b) => {
+                if (sortConfig.key.includes('name')) {
+                    return sortConfig.direction === 'ascending' ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+                }
+
                 if (a?.[sortConfig.key] < b?.[sortConfig.key]) {
                     return sortConfig.direction === 'ascending' ? -1 : 1;
                 }
                 if (a?.[sortConfig.key] > b?.[sortConfig.key]) {
                     return sortConfig.direction === 'ascending' ? 1 : -1;
                 }
+
                 return 0;
             });
         }
@@ -319,7 +324,7 @@ const MedicineTable = ({ medicines, refetch, isRefetchingMedicineData, isLoading
                                             <span>{medicine?.batchNumber || "_"}</span>
                                         </td>
                                         <td className="text-center py-2 px-2 whitespace-nowrap">{formatInsuranceCovered(medicine.insuranceCovered)}</td>
-                                        <td className={`text-center py-2 px-2 whitespace-nowrap ${new Date(medicine.exp) < new Date(new Date().setMonth(new Date().getMonth() + 2)) ? "text-pink-600" : ""}`}>{convertDateTime(medicine.exp)}</td>
+                                        <td className={`text-center py-2 px-2 whitespace-nowrap ${new Date(medicine.exp) < new Date(new Date().setMonth(new Date().getMonth() + 2)) ? "text-blue-300" : ""}`}>{convertDateTime(medicine.exp)}</td>
                                         <td className="text-left py-2 px-2 whitespace-nowrap">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-right w-[70%]">{medicine.inventory}</span>

@@ -106,6 +106,7 @@ const OldParaclinacalModal = ({ visible, onCancel, oldParaclinical, onSave }) =>
                             listType="picture-card"
                             showUploadList={false}
                             multiple={true}
+                            accept="image/*"
                             beforeUpload={(file, fileList) => {
                                 if (file === fileList[0]) {
                                     // Filter valid files

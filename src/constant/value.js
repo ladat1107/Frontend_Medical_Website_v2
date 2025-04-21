@@ -296,6 +296,7 @@ export const SPECIAL_EXAMINATION = {
         // description: "Người khuyết tật",
     }
 }
+
 export const STATUS_BE = {
     DONE: 7, // đã khám xong
     EXAMINING: 6, // đang khám
@@ -306,15 +307,18 @@ export const STATUS_BE = {
     ACTIVE: 1,
     INACTIVE: 0
 }
+
 export const PAYMENT_METHOD = {
     MOMO: 1,
     VN_PAY: 2,
     CASH: 3
 }
+
 export const TYPE_NUMBER = {
     PRIORITY: "priorityNumber",
     NORMAL: "normalNumber",
 }
+
 export const COVERED = {
     1: 1,
     2: 0.95,

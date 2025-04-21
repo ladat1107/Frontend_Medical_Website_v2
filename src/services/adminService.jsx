@@ -184,4 +184,12 @@ export const blockMedicine = (data) => {
     return axios.put(`/api/admin/blockMedicine`, data)
 }
 
+// EXAMINATION MANAGEMENT
+export const getAllExaminationsAdmin = () => {
+    return axios.get(`/api/admin/getAllExaminationsAdmin`)
+}
+
+export const getExaminationByIdAdmin = (id) => {
+    return axios.get(`/api/admin/getExaminationByIdAdmin?id=${id}`)
+}
 

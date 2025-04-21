@@ -39,6 +39,7 @@
     "dompurify": "^3.2.4",
     "dotenv": "^16.4.5",
     "emoji-picker-react": "^4.12.2",
+    "encoding-japanese": "^2.2.0",
     "events": "^3.3.0",
     "file-saver": "^2.0.5",
     "flowbite": "^2.5.1",

@@ -8,7 +8,8 @@ import './AddExamModal.scss';
 import AddUserModal from '../AddUserModal/AddUserModal';
 import { STATUS_BE } from '@/constant/value';
 
-const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditMode, examId, patientData, comorbiditiesOptions, specialtyOptions }) => {
+const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditMode, examId, patientData, comorbiditiesOptions, specialtyOptions, dataQRCode }) => {
+
     const [selectedComorbidities, setSelectedComorbidities] = useState([]);
     const [inputComorbidity, setInputComorbidity] = useState('');
     const [shakeId, setShakeId] = useState(null);
@@ -33,14 +34,6 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
 
     const insuarance = async () => {
         try {
-            // const response = await getUserInsuarance(patientData.userId);
-
-            // let insuranceData = null;
-
-            // if (response.EC === 0 && response.DT) {
-            //     insuranceData = response.DT;
-            // }
-
             const comorbidityObjects = patientData.comorbidities
                 ? patientData.comorbidities.split(',').map(comorbidityId => {
                     const matchedComorbidity = comorbiditiesOptions.find(
@@ -88,6 +81,17 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
         };
     }, [isOpen]);
 
+    useEffect(() => {
+        if (dataQRCode?.EC === 0) {
+            setCid(dataQRCode.DT.cid);
+            setIsSearched(true);
+            setUserInfo(dataQRCode.DT);
+            setInsurance(dataQRCode.DT.userInsuranceData?.insuranceCode || '');
+            setIsUserModalOpen(false);
+        } else if (dataQRCode?.EC === 1) {
+            setIsUserModalOpen(true);
+        }
+    }, [dataQRCode]);
 
     useEffect(() => {
         if (isEditMode) {
@@ -257,6 +261,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             if (response.EC === 0 && response.DT && response.DT.id) {
                 message.success('Thêm khám bệnh thành công!');
                 handleAddExamSuscess();
+                dataQRCode = null;
                 resetForm();
                 onClose();
             } else {
@@ -397,6 +402,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                         <i className="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
+
                                 <div className={`patient-name row mt-3 ${loading ? '' :
                                     userInfo?.lastName && userInfo?.firstName ? 'text-loading' : 'text-danger ms-1 mb-2'
                                     }`}>
@@ -435,7 +441,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                                     </div>
                                                     <div className='col-5 d-flex align-items-center'>
                                                         {insurance.length > 0 && insurance.length < 10 && (
-                                                            <p style={{fontWeight: '400'}} className='text-danger mb-0'>Số BHYT không hợp lệ</p>
+                                                            <p style={{ fontWeight: '400' }} className='text-danger mb-0'>Số BHYT không hợp lệ</p>
                                                         )}
                                                     </div>
                                                 </div>
@@ -570,6 +576,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                 isOpen={isUserModalOpen}
                 onClose={closeAddUser}
                 handleAddUserSuscess={handleAddUserSuscess}
+                dataQRCode={dataQRCode}
             />
         </div>
     );

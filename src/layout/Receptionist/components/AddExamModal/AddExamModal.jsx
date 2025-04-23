@@ -654,6 +654,7 @@ AddExamModal.propTypes = {
     patientData: PropTypes.object,
     comorbiditiesOptions: PropTypes.array,
     specialtyOptions: PropTypes.array,
+    dataQRCode: PropTypes.object, // Added prop validation for dataQRCode
 }
 
 export default AddExamModal;

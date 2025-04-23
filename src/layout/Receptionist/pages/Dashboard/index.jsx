@@ -309,6 +309,7 @@ const ReceptionistDashboard = () => {
 
     const handleClickItem = (id) => {
         const selectedPatient = listExam.find(item => item.id === id);
+        console.log("Selected Patient:", selectedPatient);
         if (selectedPatient) {
             setExamId(id);
             setIsEditMode(true);

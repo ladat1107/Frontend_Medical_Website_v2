@@ -43,6 +43,7 @@
     "events": "^3.3.0",
     "file-saver": "^2.0.5",
     "flowbite": "^2.5.1",
+    "framer-motion": "^12.7.4",
     "html-truncate": "^1.2.2",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",

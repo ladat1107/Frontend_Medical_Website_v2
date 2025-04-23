@@ -4,6 +4,7 @@ import { useMutation } from "@/hooks/useMutation";
 import { message, Pagination, Select, Spin } from "antd";
 import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientItem";
 import PayModal from "../../components/PayModal/PayModal";
+import AdvanceModal from "../../components/PayModal/AdvanceModal";
 
 const Cashier = () => {
     const today = new Date().toISOString();
@@ -24,24 +25,43 @@ const Cashier = () => {
     const isAppointment = 0;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAdvanceModalOpen, setIsAdvanceModalOpen] = useState(false);
 
     const handlePay = (index) => {
-        const selectedPatient = listExam[index];
+        if(medicalTreatmentTier === 2) {
+            const selectedPatient = listExam[index];
 
-        if (selectedPatient) {
-            setExamId(selectedPatient.data.id);
-            setType(selectedPatient.type);
-            setPatientData(selectedPatient.data);
-            setIsModalOpen(true);
+            if (selectedPatient) {
+                setExamId(selectedPatient.data.id);
+                setType(selectedPatient.type);
+                setPatientData(selectedPatient.data);
+                setIsModalOpen(true);
+            } else {
+                // Xử lý trường hợp không tìm thấy bệnh nhân
+                message.error('Không tìm thấy thông tin bệnh nhân');
+            }
         } else {
-            // Xử lý trường hợp không tìm thấy bệnh nhân
-            message.error('Không tìm thấy thông tin bệnh nhân');
+            const selectedPatient = listAdvance[index];
+
+            if (selectedPatient) {
+                setPatientData(selectedPatient);
+                setIsAdvanceModalOpen(true);
+            } else {
+                // Xử lý trường hợp không tìm thấy bệnh nhân
+                message.error('Không tìm thấy thông tin bệnh nhân');
+            }
         }
     }
     const closePay = () => setIsModalOpen(false);
 
+    const closeAdvancePay = () => setIsAdvanceModalOpen(false);
+
     const onPaySusscess = (data) => {
         fetchExaminations();
+    }
+
+    const onAdvanceSusscess = (data) => {
+        fetchAdvanceMoney();
     }
 
     const handlePageChange = (page, pageSize) => {
@@ -70,7 +90,7 @@ const Cashier = () => {
         loading: loadingAdvanceMoney,
         error: errorAdvanceMoney,
         execute: fetchAdvanceMoney,
-    } = useMutation(() => getListAdvanceMoney(currentPage, pageSize, search))
+    } = useMutation(() => getListAdvanceMoney(currentPage, pageSize, search, statusPay))
 
     useEffect(() => {
         if(+medicalTreatmentTier === 2) 
@@ -98,7 +118,7 @@ const Cashier = () => {
     }
 
     const handelTreatmentTierChange = (value) => {
-        setMedicalTreatmentTier(value);
+        setMedicalTreatmentTier(+value);
     }
 
     // #endregion
@@ -235,6 +255,15 @@ const Cashier = () => {
                         patientData={patientData}
                         type={type}
                         examId={examId}
+                    />
+                }
+                {+medicalTreatmentTier === 1 && listAdvance.length > 0 &&
+                    <AdvanceModal
+                        key={patientData ? patientData.id + " " + Date.now() : "modal-closed"}
+                        isOpen={isAdvanceModalOpen}
+                        onClose={closeAdvancePay}
+                        onPaySusscess={onAdvanceSusscess}
+                        patientData={patientData}
                     />
                 }
             </div>

@@ -219,7 +219,7 @@ export const getAvailableRooms = async () => {
     return axios.get(`/api/getAvailableRooms`);
 }
 
-export const getListAdvanceMoney = async (page = 1, limit = 20, search ='') => {
-    return axios.get(`/api/getListAdvanceMoney?page=${page}&limit=${limit}&search=${search}`);
+export const getListAdvanceMoney = async (page = 1, limit = 20, search ='', statusPay = 4) => {
+    return axios.get(`/api/getListAdvanceMoney?page=${page}&limit=${limit}&search=${search}&statusPay=${statusPay}`);
 }
 

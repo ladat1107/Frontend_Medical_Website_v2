@@ -18,7 +18,8 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
         infostaff: { firstName: '', lastName: '', position: '' },
         price: 0,
         description: '',
-        paraclinicalItems: []
+        paraclinicalItems: [],
+        isWrongTreatment: 0,
     });
 
     // Use useEffect to set initial data when component mounts or patientData changes
@@ -43,6 +44,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 },
                 price: patientData?.examinationStaffData?.price,
                 description: 'Khám bệnh',
+                isWrongTreatment: patientData?.isWrongTreatment,
             };
 
             setInsurance(patientData?.insuranceCode || '');
@@ -62,6 +64,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 // },
                 price: patientData?.totalParaclinicalPrice,
                 paraclinicalItems: patientData?.paraclinicalItems,
+                isWrongTreatment: patientData?.isWrongTreatment,
             };
 
             setInsurance(patientData?.insuranceCode || '');
@@ -207,23 +210,28 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         <div className='col-3'>
                             <p style={{ fontWeight: "400" }}>Bệnh nhân:</p>
                         </div>
-                        <div className='col-8'>
+                        <div className='col-4'>
                             <p>{data.infouser.lastName + ' ' + data.infouser.firstName}</p>
+                        </div>
+                        <div className='col-2 d-flex align-items-center'>
+                            <p style={{ fontWeight: "400" }}>Ưu tiên:</p>
+                        </div>
+                        <div className='col-3'>
+                            {SpecialText({ special })}
                         </div>
                     </div>
                     <div className='col-12 d-flex flex-row mt-3'>
                         <div className='col-3 d-flex align-items-center'>
                             <p style={{ fontWeight: "400" }}>CCCD/CMND:</p>
                         </div>
-                        <div className='col-3'>
+                        <div className='col-4'>
                             <p>{data.infouser.cid}</p>
                         </div>
-                        <div className='col-1' />
                         <div className='col-2 d-flex align-items-center'>
-                            <p style={{ fontWeight: "400" }}>Ưu tiên:</p>
+                            <p style={{ fontWeight: "400" }}>Tuyến KCB:</p>
                         </div>
                         <div className='col-3'>
-                            {SpecialText({ special })}
+                            <p>{data?.isWrongTreatment === 0 ? 'Đúng tuyến' : 'Sai tuyến'}</p>
                         </div>
                     </div>
                     <hr className='mt-4' />
@@ -250,7 +258,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                     ) : (
                         <>
                             {data?.paraclinicalItems.length > 0 && data.paraclinicalItems.map((item, index) => (
-                                <div className='col-12 d-flex flex-column mb-3 pres-item' key={index}>
+                                <div className='col-12 d-flex flex-column mt-2 pres-item' key={index}>
                                     <div className='col-12 d-flex align-items-center'>
                                         <p style={{ fontWeight: "500", color: "#007BFF" }}>Cận lâm sàng: {item?.paracName}</p>
                                     </div>

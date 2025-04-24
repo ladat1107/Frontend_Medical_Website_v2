@@ -54,6 +54,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { deleteAssistantForCustomer } from "./services/doctorService";
 import MedicineManage from "./layout/Admin/pages/MedicineManage/MedicineMange";
 import ExaminationManage from "./layout/Admin/pages/ExaminationManage/ExaminationManage";
+import InpationList from "./layout/Doctor/pages/Inpations/InpationList";
 
 function App() {
   const location = useLocation();
@@ -153,6 +154,7 @@ function App() {
               <Route path={PATHS.STAFF.PARACLINICAL} element={<ParaclinicalList />} />
               <Route path={PATHS.RECEPTIONIST.PRESCRIBE} element={<Prescribe />} />
               <Route path={PATHS.STAFF.NOTIFICATION} element={<Notification />} />
+              <Route path={PATHS.STAFF.INPATIENT} element={<InpationList />} />
             </Route>
           </Route>
         </Routes>

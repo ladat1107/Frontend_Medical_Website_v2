@@ -248,7 +248,7 @@ const Cashier = () => {
                 </div>
                 {listExam.length > 0 &&
                     <PayModal
-                        key={patientData ? patientData.id + " " + Date.now() : "modal-closed"}
+                        key={patientData ? `pay-${patientData.id}` : "pay-modal-closed"}
                         isOpen={isModalOpen}
                         onClose={closePay}
                         onPaySusscess={onPaySusscess}
@@ -259,7 +259,7 @@ const Cashier = () => {
                 }
                 {+medicalTreatmentTier === 1 && listAdvance.length > 0 &&
                     <AdvanceModal
-                        key={patientData ? patientData.id + " " + Date.now() : "modal-closed"}
+                        key={patientData ? `advance-${patientData.id}` : "advance-modal-closed"}
                         isOpen={isAdvanceModalOpen}
                         onClose={closeAdvancePay}
                         onPaySusscess={onAdvanceSusscess}

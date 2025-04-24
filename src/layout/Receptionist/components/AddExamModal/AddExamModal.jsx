@@ -393,7 +393,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
         setIsModalVisible(false);
 
         let insuranceCoverage = getThirdDigitFromLeft(insurance);
-
+        
         setLoadingAddExam(true);
         try {
             if(isEditMode) {

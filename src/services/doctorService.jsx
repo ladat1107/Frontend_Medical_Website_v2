@@ -223,3 +223,7 @@ export const getListAdvanceMoney = async (page = 1, limit = 20, search ='', stat
     return axios.get(`/api/getListAdvanceMoney?page=${page}&limit=${limit}&search=${search}&statusPay=${statusPay}`);
 }
 
+export const getListInpations = async (currentDate, toDate, status = 5, currentPage = 1, pageSize = 20, search = '') => {
+    return axios.get(`/api/getListInpations?currentDate=${currentDate}&toDate=${toDate}&status=${status}&page=${+currentPage}&limit=${+pageSize}&search=${search}`);
+}
+

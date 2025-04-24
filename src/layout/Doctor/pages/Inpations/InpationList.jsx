@@ -1,50 +1,40 @@
-import { getExaminations, getScheduleByStaffIdFromToday } from "@/services/doctorService";
-import React, { useEffect, useState } from 'react'
-import "./Appointment.scss";
-import { useMutation } from "@/hooks/useMutation";
-import { useNavigate } from "react-router-dom";
+
+import { getListInpations } from "@/services/doctorService";
 import { DatePicker, Pagination, Select, Spin } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientItem";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { setSchedule } from "@/redux/scheduleSlice";
+import { useMutation } from "@/hooks/useMutation";
+import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientItem";
 
-const Appointment = () => {
-    const navigate = useNavigate();
-    let { user } = useSelector((state) => state.authen);
-
+const InpationList = () => {
+    const [status, setStatus] = useState(5);
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [toDate, setToDate] = useState(dayjs());
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(50);
+    const [pageSize, setPageSize] = useState(20);
     const [total, setTotal] = useState(0);
-    const [time, setTime] = useState(null);
     const [search, setSearch] = useState('');
-    const [listExam, setListExam] = useState([]);
-    const [status, setStatus] = useState(5);
-    const dispatch = useDispatch();
-    const isAppointment = 0;
+    const [listInpation, setListInpation] = useState([]);
 
+    // #region Fetch data 
     const {
-        data: dataSchedules,
-        loading: loadingSchedules,
-        error: errorSchedules,
-        execute: fetchSchedules,
-    } = useMutation(() => getScheduleByStaffIdFromToday())
+        data: dataInpations,
+        loading: loadingInpations,
+        error: errorInpations,
+        execute: fetchInpations,
+    } = useMutation(() => getListInpations(currentDate, toDate, +status, currentPage, pageSize, search))
 
     useEffect(() => {
-        fetchSchedules();
-    }, [user.staff]);
+        fetchInpations();
+    }, [status, search, currentPage, pageSize, currentDate, toDate]);
 
     useEffect(() => {
-        if (dataSchedules?.DT.length > 0) {
-            dispatch(setSchedule(dataSchedules.DT));
+        if (dataInpations) {
+            setTotal(dataInpations.DT.totalItems);
+            setListInpation(dataInpations.DT.examinations);
+            console.log(dataInpations);
         }
-    }, [dataSchedules]);
-
-    const handleClickRow = (examinationId) => {
-        navigate(`/doctorExamination/${examinationId}`);
-    }
+    }, [dataInpations]);
 
     const handlePageChange = (page, pageSize) => {
         setCurrentPage(page);
@@ -52,48 +42,19 @@ const Appointment = () => {
     };
 
     const downItem = () => {
-        fetchExaminations();
+        fetchInpations();
     }
-
-    const handleSearch = (e) => {
-        setSearch(e.target.value);
-    }
-
-    const handelSelectChange = (value) => {
-        setStatus(value);
-    }
-
-    // #region Fetch data 
-    const {
-        data: dataExaminations,
-        loading: loadingExaminations,
-        error: errorExaminations,
-        execute: fetchExaminations,
-    } = useMutation(() => getExaminations(currentDate, toDate, +status, user.staff, isAppointment, currentPage, pageSize, search, time))
-
-    useEffect(() => {
-        fetchExaminations();
-    }, [isAppointment, status, search, time, currentPage, pageSize, currentDate]);
-
-    useEffect(() => {
-        if (dataExaminations) {
-            setTotal(dataExaminations.DT.totalItems);
-            setListExam(dataExaminations.DT.examinations);
-        }
-    }, [dataExaminations]);
-
-    // #endregion
 
     return (
         <>
-            <div className="appointment-content">
+            <div className="inpations-content">
                 <div className="search-container row">
                     <div className="col-2">
                         <p className="search-title">Trạng thái</p>
-                        <Select className="select-box" defaultValue="5" onChange={handelSelectChange}>
-                            <Select.Option value="5">Khám mới</Select.Option>
-                            <Select.Option value="6">Đang khám</Select.Option>
-                            <Select.Option value="7">Đã xong</Select.Option>
+                        <Select className="select-box" defaultValue="5" onChange={(value) => setStatus(+value)}>
+                            <Select.Option value="5">Chưa khám hôm nay</Select.Option>
+                            <Select.Option value="6">Đã khám hôm nay</Select.Option>
+                            <Select.Option value="7">Đã xong</Select.Option> 
                         </Select>
                     </div>
                     {status == 7 && (
@@ -115,9 +76,9 @@ const Appointment = () => {
                     <div className="col-6">
                         <p className="search-title">Tìm kiếm đơn khám</p>
                         <input type="text" className="search-box" 
-                                placeholder="Nhập tên bệnh nhân để tìm kiếm..." 
-                                value={search}
-                                onChange={handleSearch}/>
+                            placeholder="Nhập tên bệnh nhân để tìm kiếm..." 
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}/>
                     </div>
                 </div>
                 <div className="appointment-container mt-3 row">
@@ -125,11 +86,11 @@ const Appointment = () => {
                         <p className="title">Danh sách đơn khám</p>
                     </div>
                     <div className="schedule-content text-center">
-                        {loadingExaminations ? (
+                        {loadingInpations ? (
                             <div className="loading">
                                 <Spin />
                             </div>
-                        ) : ( listExam && listExam.length > 0 ? listExam.map((item, index) => (
+                        ) : ( listInpation && listInpation.length > 0 ? listInpation.map((item, index) => (
                                 <PatientItem
                                     key={item.id}
                                     index={index + 1}
@@ -138,8 +99,6 @@ const Appointment = () => {
                                     symptom={'Triệu chứng: ' + item.symptom}
                                     special={item.special}
                                     room={item.roomName}
-                                    doctor={`${item.examinationStaffData.staffUserData.lastName} ${item.examinationStaffData.staffUserData.firstName}`}
-                                    downItem={downItem}
                                     visit_status={item.visit_status}
                                     onClickItem={()=>handleClickRow(item.id)}
                                     sort={false}
@@ -151,8 +110,8 @@ const Appointment = () => {
                             )
                         )}
                     </div>
-                    <div className='row'>
-                        {!loadingExaminations && isAppointment !== 1 && listExam.length > 0 && (
+                    <div className='row mt-4'>
+                        {!loadingInpations && listInpation.length > 0 && (
                             <Pagination
                                 align="center"
                                 current={currentPage}
@@ -168,4 +127,4 @@ const Appointment = () => {
     )
 }
 
-export default Appointment
+export default InpationList;

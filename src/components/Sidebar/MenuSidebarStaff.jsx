@@ -22,8 +22,6 @@ const MenuSidebar = () => {
     
     // Trong MenuSidebar.js
     useEffect(() => {
-        // Log for debugging
-        console.log('MenuSidebar: totalUnreadCount =', totalUnreadCount);
         
         // Subscribe to events
         const handleMarkAllRead = () => {
@@ -94,8 +92,13 @@ const MenuSidebar = () => {
                 children: [
                     {
                         key: '9',
-                        label: (<NavLink to={PATHS.STAFF.APPOINTMENT}>Khám bệnh</NavLink>),
+                        label: (<NavLink to={PATHS.STAFF.APPOINTMENT}>Khám Ngoại trú</NavLink>),
                         icon: <i className="fa-solid fa-stethoscope"></i>,
+                    },
+                    {
+                        key: '11',
+                        label: (<NavLink to={PATHS.STAFF.INPATIENT}>Khám Nội trú</NavLink>),
+                        icon: <i className="fa-solid fa-bed-pulse"></i>
                     },
                     {
                         key: '10',

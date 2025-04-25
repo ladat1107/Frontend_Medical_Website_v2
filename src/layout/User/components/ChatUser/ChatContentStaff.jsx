@@ -21,7 +21,7 @@ import EmojiPicker from 'emoji-picker-react';
 const { TextArea } = Input;
 const ChatContentStaff = () => {
     const { user, isLogin } = useSelector(state => state.authen);
-    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData } = useConversation({ enabled: isLogin })
+    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData } = useConversation({ enabled: isLogin ? true : false })
     const { mutate: createMessage, isPending: isCreatingMessage } = useCreateMessage();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);

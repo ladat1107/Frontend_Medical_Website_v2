@@ -51,40 +51,40 @@ const Notification = () => {
 
     const isDeanById = (id) => {
         const numId = Number(id);
-        return userData?.userGroups.some(group => 
-            group.users.some(user => 
+        return userData?.userGroups.some(group =>
+            group.users.some(user =>
                 Number(user?.id) === numId && user?.isDean === true
             )
         );
     };
 
 
-const handleMarkAllAsRead = async () => {
-    try {
-        // Sử dụng hàm từ context để đảm bảo cập nhật tất cả các component
-        await markAllNotificationsAsRead();
-        
-        // Cập nhật local state của component này
-        setNotiData(prev => ({
-            ...prev,
-            rows: prev.rows?.map((noti) => ({ ...noti, status: 2 })) || []
-        }));
-        
-        setUnreadCount(0);
-        setSocketUnreadCount(0);
+    const handleMarkAllAsRead = async () => {
+        try {
+            // Sử dụng hàm từ context để đảm bảo cập nhật tất cả các component
+            await markAllNotificationsAsRead();
 
-    } catch (error) {
-        console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
-        message.error("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
-    }
-};
+            // Cập nhật local state của component này
+            setNotiData(prev => ({
+                ...prev,
+                rows: prev?.rows?.map((noti) => ({ ...noti, status: 2 })) || []
+            }));
+
+            setUnreadCount(0);
+            setSocketUnreadCount(0);
+
+        } catch (error) {
+            console.error("Lỗi khi đánh dấu tất cả thông báo đã đọc", error);
+            message.error("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+        }
+    };
 
     let {
         data: dataUser,
         loading: listUserLoading,
         execute: fetchAllUser,
     } = useMutation((query) => getAllUserToNotify())
-    
+
     useEffect(() => {
         if (dataUser && dataUser.DT !== undefined) {
             setUserData(dataUser.DT);
@@ -127,34 +127,34 @@ const handleMarkAllAsRead = async () => {
             return (
                 <div className='view-noti-container'>
                     <div className='d-flex align-items-center justify-content-between gap-2'>
-                    <div className='noti-search'>
-                        <input type="text" placeholder="Nhập để tìm kiếm..." onChange={handleSearchChange}/>
-                        {searchLoading ? (
-                            <i className="fa-solid fa-spinner fa-spin"></i>
-                        ) : (
-                            <i className="fa-solid fa-magnifying-glass" 
-                            style={{ color: searchValue ? "#003D80" : "" }}
-                            onClick={handleSeach}
-                            />
-                        )}
-                    </div>
-                        <button 
-                            className='button' 
+                        <div className='noti-search'>
+                            <input type="text" placeholder="Nhập để tìm kiếm..." onChange={handleSearchChange} />
+                            {searchLoading ? (
+                                <i className="fa-solid fa-spinner fa-spin"></i>
+                            ) : (
+                                <i className="fa-solid fa-magnifying-glass"
+                                    style={{ color: searchValue ? "#003D80" : "" }}
+                                    onClick={handleSeach}
+                                />
+                            )}
+                        </div>
+                        <button
+                            className='button'
                             onClick={handleMarkAllAsRead}
-                            disabled={(unreadCount === 0) && (socketUnreadCount === 0)} 
+                            disabled={(unreadCount === 0) && (socketUnreadCount === 0)}
                         >
                             <i className="fa-solid fa-check" ></i>
                             Đánh dấu tất cả đã đọc
                         </button>
                     </div>
-                    
-                    <ViewNoti 
+
+                    <ViewNoti
                         initialNotifications={notiData}
                         onUnreadCountChange={(count) => setSocketUnreadCount(count)}
                     />
-                    
+
                     <div className='row mt-3'>
-                        {notiData.count > 0 && (
+                        {notiData?.count > 0 && (
                             <Pagination
                                 align="center"
                                 current={currentPage}
@@ -192,16 +192,16 @@ const handleMarkAllAsRead = async () => {
                     <div>
                         Không có biết nữa...
                     </div>
-                ):(
-                    <>                        
+                ) : (
+                    <>
                         {unreadCount === 0 ? (
                             <div>
                                 Không có thông báo mới nào!
                             </div>
-                        ):(
+                        ) : (
                             <div>
                                 Bạn có {unreadCount} thông báo chưa đọc!
-                            </div>  
+                            </div>
                         )}
                     </>
                 )}
@@ -224,7 +224,7 @@ const handleMarkAllAsRead = async () => {
                                 <span className="name">Thông báo</span>
                             </label>
                         </div>
-                        {(isDeanById(user.id) || user.role === 1) && 
+                        {(isDeanById(user.id) || user.role === 1) &&
                             <div className="col-6 col-lg-2 d-flex justify-content-center">
                                 <label className="radio-noti">
                                     <input type="radio" name="radio-noti"

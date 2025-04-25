@@ -1,5 +1,4 @@
 import Container from "@/components/Container";
-import "./DepartmentDetail.scss";
 import DepartmentRelated from "./section/DepartmentRelated";
 import DepartmentDetailHeader from "./section/DepartmentDetailHeader";
 import userService from "@/services/userService";
@@ -34,7 +33,7 @@ const DepartmentDetail = () => {
     }, [departmentData]);
 
     return (
-        <div className={'bg'} >
+        <div className="bg-bgHomePage py-10" >
             <Container>
                 <div className="department-detail-user">
                     <DepartmentDetailHeader departmentLoading={departmentLoading} departmentDetail={department} />

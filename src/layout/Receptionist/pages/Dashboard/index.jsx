@@ -181,7 +181,7 @@ const ReceptionistDashboard = () => {
             return () => clearTimeout(timeout);
         }
     }, [scannedQR, refetchUserByQRCode]);
-    
+
     // Process user data from QR code
     useEffect(() => {
         if (dataUserByQRCode) {
@@ -383,7 +383,7 @@ const ReceptionistDashboard = () => {
                                 symptom={'Triệu chứng: ' + item.symptom}
                                 special={item.special}
                                 room={item.roomName}
-                                doctor={`${item.examinationStaffData.staffUserData.lastName} ${item.examinationStaffData.staffUserData.firstName}`}
+                                doctor={`${item?.examinationStaffData?.staffUserData?.lastName} ${item?.examinationStaffData?.staffUserData?.firstName}`}
                                 downItem={downItem}
                                 visit_status={item.visit_status}
                                 onClickItem={() => handleClickItem(item.id)}
@@ -422,7 +422,7 @@ const ReceptionistDashboard = () => {
                                 symptom={'Triệu chứng: ' + item.symptom}
                                 special={item.special}
                                 room={item.roomName}
-                                doctor={`${item.examinationStaffData.staffUserData.lastName} ${item.examinationStaffData.staffUserData.firstName}`}
+                                doctor={`${item?.examinationStaffData?.staffUserData?.lastName} ${item?.examinationStaffData?.staffUserData?.firstName}`}
                                 downItem={downItem}
                                 visit_status={item.visit_status}
                                 onClickItem={() => handleClickItem(item.id)}

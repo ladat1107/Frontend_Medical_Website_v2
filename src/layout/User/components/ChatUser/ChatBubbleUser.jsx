@@ -13,22 +13,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { MessageCirclePlus } from "lucide-react";
 import { useGetNumberMessageUnread } from "@/hooks";
 import { backgroundColorAdmin, primaryColorAdmin, secondaryColorAdmin } from "@/styles/variables";
+import { useMobile } from "@/hooks/useMobile";
 
 const ChatBubbleUser = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector(state => state.authen)
+  const { user, isLogin } = useSelector(state => state.authen)
   const [typeMessage, setTypeMessage] = useState(2);
   const [visible, setVisible] = useState(false);
-  const { isLogin } = useSelector(state => state.authen)
-  const { data: numberMessageUnread } = useGetNumberMessageUnread(isLogin);
+  const { data: numberMessageUnread } = useGetNumberMessageUnread(isLogin ? true : false);
   const count = numberMessageUnread?.DT || 0;
-
+  const isMobile = useMobile();
   useEffect(() => {
     if (count > 0) { setTypeMessage(1) }
   }, [numberMessageUnread])
 
   return (
-    <div className="chat-bubble-container">
+    <div className={`chat-bubble-container ${isMobile ? 'mobile' : ''}`}>
       <div className="chat-toggle" onClick={() => setVisible(!visible)}>
         {visible ? <CloseOutlined /> :
           <Badge count={count} offset={[6, -8]}>< MessageCirclePlus size={25} color="white" /> </Badge>}

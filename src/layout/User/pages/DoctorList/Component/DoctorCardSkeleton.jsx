@@ -1,20 +1,63 @@
 import { Skeleton } from 'antd';
 
-const DoctorCardSkelethon = () => {
+const DoctorCardSkeleton = () => {
     return (
-        <div className="doctor-card doctor-card--skeleton w-100">
-            <Skeleton.Avatar active size={80} style={{ width: "150px", height: "150px" }} shape="circle" />
-            <Skeleton.Input active size="small" className="doctor-card__name" style={{ width: '60%' }} />
-            <div className="doctor-card__info w-100">
-                <Skeleton.Input active size="small" className="doctor-card__specialty" style={{ width: '100%' }} />
-                <div className="doctor-card__details w-100">
-                    <Skeleton.Input active size="small" className="doctor-card__price" style={{ width: '100%' }} />
-                    <Skeleton.Input active size="small" className="doctor-card__visits" style={{ width: '100%' }} />
-                    <Skeleton.Input active size="small" className="doctor-card__rating" style={{ width: '100%' }} />
-                </div>
+        <div className="flex flex-col items-center justify-center h-[450px] w-[270px] rounded-2xl shadow-md overflow-hidden transition-all duration-300 bg-white">
+            {/* Avatar Skeleton */}
+            <Skeleton.Avatar
+                active
+                shape="circle"
+                size={170}
+                className="m-4"
+                style={{ width: 170, height: 170 }}
+            />
+
+            {/* Name */}
+            <Skeleton.Input
+                active
+                size="small"
+                style={{ width: '60%', height: 20, marginBottom: 12 }}
+            />
+
+            {/* Info container */}
+            <div className="pt-3 px-3 pb-2 w-[80%] space-y-2">
+                {/* Specialty */}
+                <Skeleton.Input
+                    active
+                    size="small"
+                    style={{ width: '100%', height: 18 }}
+                />
+
+                {/* Price */}
+                <Skeleton.Input
+                    active
+                    size="small"
+                    style={{ width: '100%', height: 18 }}
+                />
+
+                {/* Visits */}
+                <Skeleton.Input
+                    active
+                    size="small"
+                    style={{ width: '100%', height: 18 }}
+                />
+
+                {/* Rating */}
+                <Skeleton.Input
+                    active
+                    size="small"
+                    style={{ width: '100%', height: 18 }}
+                />
             </div>
-            <Skeleton.Button active size="small" style={{ width: '100%' }} />
+
+            {/* Button */}
+            <Skeleton.Button
+                active
+                shape="round"
+                style={{ width: '200%', height: 40, borderRadius: 8, marginTop: 12 }}
+            />
         </div>
     );
-}
-export default DoctorCardSkelethon;
+};
+
+export default DoctorCardSkeleton;

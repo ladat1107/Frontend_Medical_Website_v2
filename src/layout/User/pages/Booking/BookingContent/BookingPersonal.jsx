@@ -307,7 +307,7 @@ const BookingPersonal = (props) => {
                                 </Form.Item>
                             </Col>
                             <Col className="mt-2" xs={24}>
-                                <div className="d-flex justify-content-end w-100 gap-2">
+                                <div className="d-flex flex-wrap justify-content-end w-100 gap-2">
                                     <Button onClick={() => setShowOldParaclinicalModal(true)} className="btn-old-paraclinical">Thêm phiếu xét nghiệm</Button>
                                     <Button type="primary" htmlType="submit" className="register-button" >
                                         Tiếp theo

@@ -7,7 +7,7 @@ const SelectBox2 = ({ placeholder, options, value, onChange, disabled }) => (
   <Select
     showSearch
     style={{
-      width: 200,
+      width: '100%',
     }}
     placeholder={placeholder}
     optionFilterProp="label"

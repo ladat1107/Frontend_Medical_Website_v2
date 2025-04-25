@@ -398,7 +398,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     <div className="col-8 mt-3 col-lg-4">
                         <SelectBox2
                             placeholder="Chọn loại KCB"
-                            className="select-box2"
+                            //className="select-box2"
                             options={options}
                             value={formData.medicalTreatmentTier}
                             onChange={handleSelectChange('medicalTreatmentTier')}

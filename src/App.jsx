@@ -156,7 +156,7 @@ function App() {
               <Route path={PATHS.RECEPTIONIST.PRESCRIBE} element={<Prescribe />} />
               <Route path={PATHS.STAFF.NOTIFICATION} element={<Notification />} />
               <Route path={PATHS.STAFF.INPATIENT} element={<InpatientList />} />
-              <Route path={`${PATHS.STAFF.INPATIENT}/:id`} element={<InpatientDetail />} />
+              <Route path={`${PATHS.STAFF.INPATIENT}/:examId`} element={<InpatientDetail />} />
             </Route>
           </Route>
         </Routes>

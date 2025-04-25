@@ -38,6 +38,9 @@
             font-weight: 500;
         }
 
+        
+
+
         .inpatient-vitals-content{
 
             .inpatient-vitals-detail{
@@ -53,7 +56,6 @@
                 background: white;
                 border-radius: 6px;
                 border: 1.5px dashed #c9cccc;
-                margin: 10px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -63,6 +65,53 @@
                     cursor: pointer;
                     font-weight: 600;
                     box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+                }
+            }
+
+            .inpatient-pres-date{
+                padding: 15px 20px;
+                background: #F7F7F7;
+                border-radius: 8px;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
+            .inpatient-pres-detail{
+                padding: 15px 15px;
+                background: white;
+                border-radius: 8px;
+                border: 1.5px solid #e3e3e3;
+                box-shadow: 1px 1px 2px #e6eaeb, -1px -1px 2px #e6eaeb;
+                margin-left: 10px;
+                margin-right: 10px;
+                min-height: 80px;
+                display: flex;   
+
+                &.medicine-sess{
+                    flex-direction: column;
+                    width: 25%;
+                }
+
+                .medicine-session{
+                    border-radius: 8px;
+                    height: 0%;
+                    width: 100%;
+
+                    &.morning{
+                        border: 3px solid #83BDF4;
+                    }
+
+                    &.lunch{
+                        border: 3px solid #eee30c;
+                    }
+
+                    &.afternoon{
+                        border: 3px solid #eb4112;
+                    }
+
+                    &.night{
+                        border: 3px solid #a138f8;
+                    }
                 }
             }
         }
@@ -75,6 +124,21 @@
         padding: 5px 10px;
         box-shadow: 2px 2px 4px #e6eaeb;
         margin-right: 10px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+        }
+    }
+
+    .save-button {
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 5px 15px;
+        box-shadow: 2px 2px 4px #e6eaeb;
+        min-width: 80px;
         cursor: pointer;
 
         &:hover {
@@ -144,5 +208,10 @@
         gap: 10px;
         width: 100%;
         padding-top: 0;
+        min-height: 500px;
     }
+    
 }
+
+
+

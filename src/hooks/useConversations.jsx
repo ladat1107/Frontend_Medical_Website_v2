@@ -2,7 +2,7 @@ import { getConversationsForStaff } from "@/services/doctorService"
 import userService from "@/services/userService"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 
-export const useConversation = ({ receiverId = null, enabled = true }) => {
+export const useConversation = ({ receiverId = null, enabled }) => {
     return useQuery({
         queryKey: ['conversation', receiverId],
         queryFn: () => userService.getConversation({ receiverId: receiverId }),
@@ -12,7 +12,7 @@ export const useConversation = ({ receiverId = null, enabled = true }) => {
     })
 }
 
-export const useConversationForStaff = ({ enabled = true }) => {
+export const useConversationForStaff = ({ enabled }) => {
     return useQuery({
         queryKey: ['conversationForStaff'],
         queryFn: () => getConversationsForStaff(),
@@ -30,7 +30,7 @@ export const useCreateMessage = () => {
     })
 }
 
-export const useGetNumberMessageUnread = (enabled = true) => {
+export const useGetNumberMessageUnread = (enabled) => {
     return useQuery({
         queryKey: ['numberMessageUnread'],
         queryFn: () => userService.getNumberMessageUnread(),

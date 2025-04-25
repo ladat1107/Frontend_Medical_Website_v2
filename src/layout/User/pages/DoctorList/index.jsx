@@ -1,6 +1,4 @@
-
 import React from "react";
-import "./doctorList.scss";
 import Container from "@/components/Container";
 import Banner from "./Banner";
 import DoctorInfo from "./DoctorInfo";
@@ -9,7 +7,7 @@ const DoctorList = () => {
   return (
     <div>
       <Banner />
-      <div className="bg">
+      <div className="bg-bgHomePage py-8">
         <Container>
           <DoctorInfo />
         </Container>

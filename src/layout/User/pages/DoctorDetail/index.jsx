@@ -1,8 +1,4 @@
 import React, { useEffect } from "react";
-import classNames from "classnames/bind";
-import styles from "./doctorDetail.module.scss";
-// Tạo instance của classnames với bind styles
-const cx = classNames.bind(styles);
 import Container from "@/components/Container";
 import DoctorDetailHeader from "./DoctorDetailHeader";
 import DoctorDetailBody from "./DoctorDetailBody";
@@ -46,14 +42,15 @@ const DoctorDetail = () => {
   const handbook = handbookData?.DT?.length > 0 ? handbookData.DT : [{}];
   const doctorList = doctorListData?.DT?.length > 0 ? doctorListData.DT : [{}];
   return (
-    <div className={cx('bg')} >
+    <div className="bg-bgHomePage py-10" >
       {doctorLoading || !doctor ? <DoctorDetailSkeleton /> :
         doctor && handbook.length > 0 && doctorList.length > 0 &&
         <Container>
           <DoctorDetailHeader data={doctor} />
           <DoctorDetailBody data={doctor} handbook={handbook} />
           <div className="mt-5"></div>
-          {doctorList.length > 0 && <DoctorRelated doctorList={doctorList} />}
+          {doctorList.length > 0 &&
+            <DoctorRelated doctorList={doctorList} />}
         </Container>
       }
     </div>

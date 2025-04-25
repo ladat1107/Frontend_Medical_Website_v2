@@ -186,8 +186,8 @@ export const sendNotification = (title, htmlDescription, firstName, lastName, da
         htmlDescription,
         firstName,
         lastName,
-        date, 
-        attachedFiles, 
+        date,
+        attachedFiles,
         notiCode,
         receiverIds
     });

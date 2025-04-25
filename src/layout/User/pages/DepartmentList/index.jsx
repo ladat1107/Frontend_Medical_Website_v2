@@ -1,8 +1,4 @@
 import React from "react";
-import classNames from "classnames/bind";
-import styles from "./departmentList.module.scss";
-// Tạo instance của classnames với bind styles
-const cx = classNames.bind(styles);
 import Container from "@/components/Container";
 import Banner from "./Banner";
 import DepartmentInfo from "./DepartmentInfo";
@@ -18,7 +14,7 @@ const DepartmentList = () => {
   return (
     <div>
       <Banner />
-      <div className={cx('bg')} >
+      <div className="bg-bgHomePage" >
         <Container>
           <DepartmentInfo departmentLoading={departmentLoading} departmentList={departmentList} />
         </Container>

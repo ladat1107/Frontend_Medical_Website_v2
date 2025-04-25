@@ -44,9 +44,9 @@ import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescri
 import MessengerReceptionist from "./layout/Receptionist/pages/Messenger/MessengerReceptionist";
 import { useEffect, useRef } from "react";
 import { connectSocket, disconnectSocket } from "./Socket/socket";
-import Notification from "./layout/Doctor/pages/Notification/notification";
+import Notification from "./layout/Doctor/pages/Notification/Notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
-import NotificationUser from "./layout/User/pages/Notification/notification";
+import NotificationUser from "./layout/User/pages/Notification/Notification";
 import { NotificationProvider } from './contexts/NotificationContext.jsx';
 import { useSelector } from "react-redux";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'

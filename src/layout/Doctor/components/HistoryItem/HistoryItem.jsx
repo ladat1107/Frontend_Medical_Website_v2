@@ -121,7 +121,8 @@ const HistoryItem = ({ id, data, onCopyPrescription }) => {
                                                             <span 
                                                                 onClick={() => zoomImage(item.image)} 
                                                                 style={{ fontStyle: 'italic', textDecoration: 'underline', color: '#007BFF', cursor: 'pointer' }}>Nhấn để xem
-                                                            </span>}
+                                                            </span>
+                                                        }
                                                         </p>
                                                     </div>
                                                     <div className="col-12 col-lg-12">

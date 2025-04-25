@@ -1,12 +1,12 @@
 
-import { getListInpations } from "@/services/doctorService";
+import { getListInpatients } from "@/services/doctorService";
 import { DatePicker, Pagination, Select, Spin } from "antd";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useMutation } from "@/hooks/useMutation";
 import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientItem";
 
-const InpationList = () => {
+const InpatientList = () => {
     const [status, setStatus] = useState(5);
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [toDate, setToDate] = useState(dayjs());
@@ -14,27 +14,27 @@ const InpationList = () => {
     const [pageSize, setPageSize] = useState(20);
     const [total, setTotal] = useState(0);
     const [search, setSearch] = useState('');
-    const [listInpation, setListInpation] = useState([]);
+    const [listInpatient, setListInpatient] = useState([]);
 
     // #region Fetch data 
     const {
-        data: dataInpations,
-        loading: loadingInpations,
-        error: errorInpations,
-        execute: fetchInpations,
-    } = useMutation(() => getListInpations(currentDate, toDate, +status, currentPage, pageSize, search))
+        data: dataInpatients,
+        loading: loadingInpatients,
+        error: errorInpatients,
+        execute: fetchInpatients,
+    } = useMutation(() => getListInpatients(currentDate, toDate, +status, currentPage, pageSize, search))
 
     useEffect(() => {
-        fetchInpations();
+        fetchInpatients();
     }, [status, search, currentPage, pageSize, currentDate, toDate]);
 
     useEffect(() => {
-        if (dataInpations) {
-            setTotal(dataInpations.DT.totalItems);
-            setListInpation(dataInpations.DT.examinations);
-            console.log(dataInpations);
+        if (dataInpatients) {
+            setTotal(dataInpatients.DT.totalItems);
+            setListInpatient(dataInpatients.DT.examinations);
+            console.log(dataInpatients);
         }
-    }, [dataInpations]);
+    }, [dataInpatients]);
 
     const handlePageChange = (page, pageSize) => {
         setCurrentPage(page);
@@ -42,12 +42,12 @@ const InpationList = () => {
     };
 
     const downItem = () => {
-        fetchInpations();
+        fetchInpatients();
     }
 
     return (
         <>
-            <div className="inpations-content">
+            <div className="inpatients-content">
                 <div className="search-container row">
                     <div className="col-2">
                         <p className="search-title">Trạng thái</p>
@@ -86,11 +86,11 @@ const InpationList = () => {
                         <p className="title">Danh sách đơn khám</p>
                     </div>
                     <div className="schedule-content text-center">
-                        {loadingInpations ? (
+                        {loadingInpatients ? (
                             <div className="loading">
                                 <Spin />
                             </div>
-                        ) : ( listInpation && listInpation.length > 0 ? listInpation.map((item, index) => (
+                        ) : ( listInpatient && listInpatient.length > 0 ? listInpatient.map((item, index) => (
                                 <PatientItem
                                     key={item.id}
                                     index={index + 1}
@@ -111,7 +111,7 @@ const InpationList = () => {
                         )}
                     </div>
                     <div className='row mt-4'>
-                        {!loadingInpations && listInpation.length > 0 && (
+                        {!loadingInpatients && listInpatient.length > 0 && (
                             <Pagination
                                 align="center"
                                 current={currentPage}
@@ -127,4 +127,4 @@ const InpationList = () => {
     )
 }
 
-export default InpationList;
+export default InpatientList;

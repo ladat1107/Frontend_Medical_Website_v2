@@ -26,8 +26,8 @@ export const PATHS = {
         PROFILE: "/doctorProfile",
         CONSULTANT: "/consultant",
         NOTIFICATION: "/staffNotification",
-        INPATIENT: "/inpation",
-        INPATIENT_DETAIL: "/inpation/:id",
+        INPATIENT: "/inpatient",
+        INPATIENT_DETAIL: "/inpatient/:id",
     },
     RECEPTIONIST: {
         DASHBOARD: "/receptionist",

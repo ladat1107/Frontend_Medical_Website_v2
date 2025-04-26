@@ -91,6 +91,20 @@ const InpatientDetail = () => {
             [field]: value
         }));
 
+        if (field === 'dischargeStatus' && value !== null) {
+            setFormData(prev => ({
+                ...prev,
+                dischargeDate: new Date(),
+            }));
+        }
+
+        if (field === 'dischargeStatus' && value == null) {
+            setFormData(prev => ({
+                ...prev,
+                dischargeDate: null,
+            }));
+        }
+
         // if (field === 'dischargeStatus' && value !== 4) {
         //     setFormData(prev => ({
         //         ...prev,
@@ -261,6 +275,25 @@ const InpatientDetail = () => {
                         <div className='col-6'>
                             <p className='title mb-2'>Thông tin xuất viện</p>
                             <div className='flex align-items-center mt-2'>
+                                <div className='col-4 gray-p'>Tình trạng xuất viện:</div>
+                                <div className='col-8' style={{width: '50%'}}>
+                                    {isEditMode ? (
+                                        <SelectBox2
+                                            placeholder="Chọn tình trạng ra viện"
+                                            className="select-box2"
+                                            options={DISCHARGE_OPTIONS}
+                                            value={formData.dischargeStatus}
+                                            onChange={handleSelectChange('dischargeStatus')}
+                                            disabled={!(isEditMode)}
+                                        />
+                                    ) : (
+                                        <div style={{fontWeight: '500'}}>
+                                            {DISCHARGE_OPTIONS[formData?.dischargeStatus]}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className='flex align-items-center mt-2'>
                                 <div className='col-4 gray-p'>Ngày xuất viện:</div>
                                 <div className='col-8' style={{width: '50%'}}>
                                     {isEditMode ? (
@@ -290,25 +323,6 @@ const InpatientDetail = () => {
                                     ) : (
                                         <div style={{fontWeight: '500'}}>
                                             {formData?.treatmentResult}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div className='flex align-items-center mt-2'>
-                                <div className='col-4 gray-p'>Tình trạng xuất viện:</div>
-                                <div className='col-8' style={{width: '50%'}}>
-                                    {isEditMode ? (
-                                        <SelectBox2
-                                            placeholder="Chọn tình trạng ra viện"
-                                            className="select-box2"
-                                            options={DISCHARGE_OPTIONS}
-                                            value={formData.dischargeStatus}
-                                            onChange={handleSelectChange('dischargeStatus')}
-                                            disabled={!(isEditMode)}
-                                        />
-                                    ) : (
-                                        <div style={{fontWeight: '500'}}>
-                                            {DISCHARGE_OPTIONS[formData?.dischargeStatus]}
                                         </div>
                                     )}
                                 </div>

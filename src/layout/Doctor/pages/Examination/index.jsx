@@ -126,7 +126,7 @@ const Examination = () => {
             setExaminationData(formattedData);
 
             setPatientData(dataExamination.DT.userExaminationData || {});
-            setVitalSignData(dataExamination.DT.examinationVitalSignData || {});
+            setVitalSignData(dataExamination.DT.examinationVitalSignData[0] || {});
             setParaclinicalData(dataExamination.DT.examinationResultParaclincalData || []);
             setPrescriptionData(dataExamination.DT.prescriptionExamData || []);
 

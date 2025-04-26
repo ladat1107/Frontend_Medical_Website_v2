@@ -9,9 +9,15 @@ import { useParams } from 'react-router-dom';
 import { useMutation } from '@/hooks/useMutation';
 import { getAllDisease, getExaminationById } from '@/services/doctorService';
 import { Spin } from 'antd';
+import { convertDateTime } from '@/utils/formatDate';
+import { DISCHARGE_OPTIONS } from '@/constant/options';
+import CustomDatePicker from '@/components/DatePicker';
+import CustomDatePickerWithHighlights from '@/components/DatePicker/CustomDatePickerWithHighlights';
+import { useSelector } from 'react-redux';
+import { TIMESLOTS } from '@/constant/value';
 
 const InpatientDetail = () => {
-    
+    const { schedule } = useSelector(state => state.schedule);
     const { examId } = useParams();
     const [selectedRadio, setSelectedRadio] = useState('vitalsign');
     const [examData, setExamData] = useState({})
@@ -26,8 +32,27 @@ const InpatientDetail = () => {
         reason: examData.reason || '',
         symptom: examData.symptom || '',
         diseaseName: examData.diseaseName || null,
-        comorbidities: examData.comorbidities ? examData.comorbidities.split(',') : []
+        comorbidities: examData.comorbidities ? examData.comorbidities.split(',') : [],
+        dischargeStatus: examData.dischargeStatus || null,
+        treatmentResult: examData.treatmentResult || '',
+        dischargeDate: examData.dischargeDate || null,
+        reExaminationDate: examData.reExaminationDate ? examData.reExaminationDate : null,
+        time: examData.reExaminationTime || null,
     });
+
+    useEffect(() => {
+        setFormData({
+            reason: examData.reason || '',
+            symptom: examData.symptom || '',
+            diseaseName: examData.diseaseName || null,
+            comorbidities: examData.comorbidities ? examData.comorbidities.split(',') : [],
+            dischargeStatus: examData.dischargeStatus || null,
+            treatmentResult: examData.treatmentResult || '',
+            dischargeDate: examData.dischargeDate || null,
+            reExaminationDate: examData.reExaminationDate ? examData.reExaminationDate : null,
+            time: examData.reExaminationTime || null,
+        });
+    }, [examData]); 
 
     const handleInputChange = (field) => (event) => {
         setFormData(prev => ({
@@ -51,6 +76,43 @@ const InpatientDetail = () => {
             ...prev,
             comorbidities: value
         }));
+    };
+
+    const handleDateChange = (field) => (date) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: date
+        }));
+    };
+
+    const handleSelectChange = (field) => (value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+
+        // if (field === 'dischargeStatus' && value !== 4) {
+        //     setFormData(prev => ({
+        //         ...prev,
+        //         reExaminationDate: null
+        //     }));
+        // }
+
+        // if (field === 'medicalTreatmentTier' && value !== '1') {
+        //     setSelectedRoom(null);
+        //     setFormData(prev => ({
+        //         ...prev,
+        //         dischargeDate: new Date(),
+        //     }));
+        // }
+
+        // if (field === 'dischargeDate' && value === null) {
+        //     setFormData(prev => ({
+        //         ...prev,
+        //         dischargeStatus: null,
+        //         reExaminationDate: null,
+        //     }));
+        // }
     };
 
     const {
@@ -96,6 +158,38 @@ const InpatientDetail = () => {
             if (dataExamination.DT.status === 7) setIsEditMode(false);
         }
     }, [dataExamination]);
+
+    const SpecialText = (special) => {
+        let specialClass = '';
+        let specialText = '';
+
+        switch (special) {
+            case 'normal':
+                specialClass = 'special';
+                specialText = '';
+                break;
+            case 'old':
+                specialClass = 'special-old';
+                specialText = 'Người già';
+                break;
+            case 'children':
+                specialClass = 'special-children';
+                specialText = 'Trẻ em';
+                break;
+            case 'disabled':
+                specialClass = 'special-disabled';
+                specialText = 'Người tàn tật';
+                break;
+            case 'pregnant':
+                specialClass = 'special-pregnant';
+                specialText = 'P.nữ mang thai';
+                break;
+            default:
+                specialClass = '';
+        }
+
+        return <p className={`special ${specialClass}`}>{specialText}</p>;
+    };
     
     return (
         <>
@@ -107,20 +201,27 @@ const InpatientDetail = () => {
                 <div className="inpatient-exam-content">
                     <div className="inpatient-exam-content__header">
                         <h1>Bệnh án</h1>
-                        <p className='mt-2' style={{fontSize: '20px', fontWeight: '500'}}>Nguyễn Văn A</p>
+                        <p className='mt-2' style={{fontSize: '20px', fontWeight: '500'}}>
+                            {examData?.userExaminationData?.lastName} {examData?.userExaminationData?.firstName}
+                        </p>
                         <div className='gray-text flex mt-2'>
-                            <p className='me-3'>#100</p>
+                            <p className='me-3'>#{examData.id}</p>
+                            <p className='me-3'>•</p>
+                            <p className='me-2'>CCCD: </p>
+                            <p className='me-3'>{examData?.userExaminationData?.cid}</p>
                             <p className='me-3'>•</p>
                             <p className='me-2'>Số điện thoại: </p>
-                            <p className='me-3'>0823425657</p>
+                            <p className='me-3'>{examData?.userExaminationData?.phoneNumber}</p>
                             <p className='me-3'>•</p>
                             <p className='me-2'>Giới tính: </p>
-                            <p className='me-3'>Nam</p>
+                            <p className='me-3'>{examData?.userExaminationData?.gender == 0 ? 'Nam'
+                                                    : examData?.userExaminationData?.gender == 1 ? 'Nữ'
+                                                    : 'Không xác định'}</p>
                             <p className='me-3'>•</p>
                             <p className='me-2'>Ngày sinh: </p>
-                            <p className='me-3'>08/06/2003</p>
+                            <p className='me-3'>{convertDateTime(examData?.userExaminationData?.dob)}</p>
                             <p className='me-3'>•</p>
-                            <p className='me-3'>25 đường số 5, Long Trường, Thủ Đức</p>
+                            <p className='me-3'>{examData?.userExaminationData?.currentResident}</p>
                         </div>
                         <hr className='mt-4'/>
                     </div>
@@ -129,48 +230,142 @@ const InpatientDetail = () => {
                             <p className='title mb-2'>Thông tin nhập viện</p>
                             <div className='flex mt-2'>
                                 <div className='col-4 gray-p'>Ngày nhập viện:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>25/04/2025</div>
+                                <div className='col-8' style={{fontWeight: '500'}}>{convertDateTime(examData?.admissionDate)}</div>
                             </div>
                             <div className='flex mt-2'>
                                 <div className='col-4 gray-p'>Khoa:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>Khoa da liễu</div>
+                                <div className='col-8' style={{fontWeight: '500'}}>{examData?.examinationRoomData?.roomDepartmentData?.name}</div>
                             </div>
                             <div className='flex mt-2'>
                                 <div className='col-4 gray-p'>Phòng:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>A5-403</div>
+                                <div className='col-8' style={{fontWeight: '500'}}>{examData?.examinationRoomData?.name}</div>
                             </div>
                             <div className='flex mt-2'>
                                 <div className='col-4 gray-p'>Bảo hiểm y tế:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>1234567890</div>
+                                <div className='col-8' style={{fontWeight: '500'}}>{examData?.insuranceCode}</div>
                             </div>
                             <div className='flex mt-2'>
-                                <div className='col-4 gray-p'>Ưu tiên:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>Người già</div>
-                            </div>
-                        </div>
-                        <div className='col-6'>
-                            <p className='title mb-2'>Thông tin xuất viện</p>
-                            <div className='flex mt-2'>
-                                <div className='col-4 gray-p'>Ngày xuất viện:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>--/--/20--</div>
-                            </div>
-                            <div className='flex mt-2'>
-                                <div className='col-4 gray-p'>Kết quả điều trị:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>Thành công?</div>
-                            </div>
-                            <div className='flex mt-2'>
-                                <div className='col-4 gray-p'>Tình trạng xuất viện:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>Khỏe hơn bình thường</div>
-                            </div>
-                            <div className='flex mt-2'>
-                                <div className='col-4 gray-p'>Thời gian tái khám:</div>
-                                <div className='col-3' style={{fontWeight: '500'}}>30/06/2025</div>
-                                <div className='col-2 gray-p'>Khung giờ:</div>
-                                <div className='col-3' style={{fontWeight: '500'}}>7:30</div>
+                                <div className='col-4 gray-p'>Đối tượng ưu tiên:</div>
+                                <div className='col-8' style={{fontWeight: '500'}}>
+                                    <div className='col-3'>
+                                        {SpecialText(examData?.special)}
+                                    </div>
+                                </div>
                             </div>
                             <div className='flex mt-3'>
                                 <div className='col-8' style={{fontWeight: '500'}}>
                                     <button className='save-button'>Báo cáo bệnh án</button>                        
+                                </div>
+                            </div>
+                        </div>
+                        <div className='col-6'>
+                            <p className='title mb-2'>Thông tin xuất viện</p>
+                            <div className='flex align-items-center mt-2'>
+                                <div className='col-4 gray-p'>Ngày xuất viện:</div>
+                                <div className='col-8' style={{width: '50%'}}>
+                                    {isEditMode ? (
+                                        <CustomDatePicker
+                                            className="date-picker"
+                                            selectedDate={formData.dischargeDate}
+                                            onDateChange={handleDateChange('dischargeDate')}
+                                            disabled={!isEditMode}
+                                            placeholder="Chọn ngày..." />
+                                    ) : (
+                                        <div 
+                                        style={{fontWeight: '500'}}>
+                                            {formData?.dischargeDate ? convertDateTime(formData?.dischargeDate) : '--/--/20--'}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className='flex align-items-center mt-2'>
+                                <div className='col-4 gray-p'>Kết quả điều trị:</div>
+                                <div className='col-8' style={{width: '50%'}}>
+                                    {isEditMode ? (
+                                        <input type="text" className="input"
+                                            value={formData.treatmentResult}
+                                            readOnly={!isEditMode} 
+                                            onChange={handleInputChange('treatmentResult')}
+                                            placeholder="Kết quả điều trị" />
+                                    ) : (
+                                        <div style={{fontWeight: '500'}}>
+                                            {formData?.treatmentResult}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className='flex align-items-center mt-2'>
+                                <div className='col-4 gray-p'>Tình trạng xuất viện:</div>
+                                <div className='col-8' style={{width: '50%'}}>
+                                    {isEditMode ? (
+                                        <SelectBox2
+                                            placeholder="Chọn tình trạng ra viện"
+                                            className="select-box2"
+                                            options={DISCHARGE_OPTIONS}
+                                            value={formData.dischargeStatus}
+                                            onChange={handleSelectChange('dischargeStatus')}
+                                            disabled={!(isEditMode)}
+                                        />
+                                    ) : (
+                                        <div style={{fontWeight: '500'}}>
+                                            {DISCHARGE_OPTIONS[formData?.dischargeStatus]}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className='flex align-items-center mt-2'>
+                                {isEditMode ? (
+                                    <>
+                                        {formData.dischargeStatus === 4 && formData.dischargeDate &&  (
+                                            <>
+                                                <div className="col-4">
+                                                    <p className='gray-p'>Ngày tái khám:</p>
+                                                </div>
+                                                <div className="col-3">
+                                                    <CustomDatePickerWithHighlights
+                                                        className="date-picker"
+                                                        selectedDate={
+                                                            formData.reExaminationDate 
+                                                                ? new Date(formData.reExaminationDate) 
+                                                                : null
+                                                            }
+                                                        onDateChange={handleDateChange('reExaminationDate')}
+                                                        disabled={!(isEditMode && formData.dischargeStatus === 4 ? true : false)}
+                                                        placeholder="Chọn ngày..."
+                                                        highlightDates={schedule}
+                                                    />
+                                                </div>
+                                                <div className="col-2 flex justify-content-center">
+                                                    <p>Khung giờ:</p>
+                                                </div>
+                                                <div className="col-3">
+                                                    <SelectBox2
+                                                        placeholder="Khung giờ"
+                                                        className="select-box2"
+                                                        options={TIMESLOTS}
+                                                        value={formData.time}
+                                                        onChange={handleSelectChange('time')}
+                                                        disabled={!isEditMode}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className='col-4 gray-p'>Thời gian tái khám:</div>
+                                        <div className='col-3' style={{fontWeight: '500'}}>30/06/2025</div>
+                                        <div className='col-2 gray-p'>Khung giờ:</div>
+                                        <div className='col-3' style={{fontWeight: '500'}}>7:30</div>
+                                    </>
+                                )}
+                            </div>
+                            <div className='flex mt-3'>
+                                <div style={{fontWeight: '500', width: '20%'}}>
+                                    <button className='restore-button'>Lưu xuất viện</button>                        
+                                </div>
+                                <div className='col-3' style={{fontWeight: '500', width: '25%'}}>
+                                    <button className='safe-button'>Lưu cùng đặt lịch</button>                        
                                 </div>
                             </div>
                         </div>
@@ -202,7 +397,7 @@ const InpatientDetail = () => {
                             </div>
                         </div>
                         <div className="flex align-items-center">
-                        <div className="mt-3" style={{width: '12%'}}>
+                            <div className="mt-3" style={{width: '12%'}}>
                                 <p>Tên bệnh chính:</p>
                             </div>
                             <div className="mt-3" style={{width: '35%'}}>
@@ -228,8 +423,13 @@ const InpatientDetail = () => {
                                 />
                             </div>
                         </div>
+                        <div className='flex mt-3'>
+                            <div style={{fontWeight: '500', marginLeft: 'auto'}}>
+                                <button className='restore-button'>Cập nhật</button>                        
+                            </div>
+                        </div>
                     </div>
-                    <div className="inpatient-exam-content__body mt-4">
+                    <div className="inpatient-exam-content__body mt-1">
                         <div className="radio-inputs row m-0" style={{}}>
                             <div className="col-6 col-lg-2 d-flex justify-content-center p-0">
                                 <label className="radio">
@@ -258,19 +458,25 @@ const InpatientDetail = () => {
                             </div>
                             <hr/>
                         </div>
-                        {selectedRadio === 'vitalsign' && (
+                        {selectedRadio === 'vitalsign' && examData.id && (
                             <div className="radio-content mt-4">
-                                    <InpatientVitals/>
+                                <InpatientVitals
+                                    vitalsData={examData?.examinationVitalSignData}
+                                />
                             </div>
                         )}
-                        {selectedRadio === 'paraclinical' && (
+                        {selectedRadio === 'paraclinical' && examData.id && (
                             <div className='radio-content mt-4'>
-                                    <InpatientParacs/>
+                                <InpatientParacs
+                                    paracsData = {examData?.examinationResultParaclincalData}
+                                />
                             </div>
                         )}
-                        {selectedRadio === 'prescription' && (
+                        {selectedRadio === 'prescription' && examData.id && (
                             <div className='radio-content mt-4'>
-                                    <InpatientPres/>
+                                <InpatientPres
+                                    prescriptionData = {examData?.prescriptionExamData}
+                                />
                             </div>
                         )}
                     </div>

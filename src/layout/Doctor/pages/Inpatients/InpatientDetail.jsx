@@ -105,28 +105,21 @@ const InpatientDetail = () => {
             }));
         }
 
-        // if (field === 'dischargeStatus' && value !== 4) {
-        //     setFormData(prev => ({
-        //         ...prev,
-        //         reExaminationDate: null
-        //     }));
-        // }
+        if (field === 'dischargeStatus' && value !== 4) {
+            setFormData(prev => ({
+                ...prev,
+                reExaminationDate: null,
+                time: null
+            }));
+        }
 
-        // if (field === 'medicalTreatmentTier' && value !== '1') {
-        //     setSelectedRoom(null);
-        //     setFormData(prev => ({
-        //         ...prev,
-        //         dischargeDate: new Date(),
-        //     }));
-        // }
-
-        // if (field === 'dischargeDate' && value === null) {
-        //     setFormData(prev => ({
-        //         ...prev,
-        //         dischargeStatus: null,
-        //         reExaminationDate: null,
-        //     }));
-        // }
+        if (field === 'dischargeDate' && value == null) {
+            setFormData(prev => ({
+                ...prev,
+                reExaminationDate: null,
+                time: null
+            }));
+        }
     };
 
     const {

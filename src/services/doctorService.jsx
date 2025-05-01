@@ -227,3 +227,19 @@ export const getListInpatients = async (currentDate, toDate, status = 5, current
     return axios.get(`/api/getListInpatients?currentDate=${currentDate}&toDate=${toDate}&status=${status}&page=${+currentPage}&limit=${+pageSize}&search=${search}`);
 }
 
+export const createVitalSign = async (data) => {
+    return axios.post(`/api/createVitalSign`, data);
+}
+
+export const updateVitalSign = async (data) => {
+    return axios.put(`/api/updateVitalSign`, data);
+}
+
+export const deleteVitalSign = async (id) => {
+    return axios.delete(`/api/deleteVitalSign`, {
+        params: {
+            id: id
+        }
+    });
+}
+

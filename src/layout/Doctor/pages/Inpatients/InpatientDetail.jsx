@@ -7,8 +7,8 @@ import MultiSelect from '../../components/MultiSelect';
 import SelectBox2 from '../../components/Selectbox';
 import { useParams } from 'react-router-dom';
 import { useMutation } from '@/hooks/useMutation';
-import { getAllDisease, getExaminationById } from '@/services/doctorService';
-import { Spin } from 'antd';
+import { getAllDisease, getExaminationById, updateExamination } from '@/services/doctorService';
+import { message, Spin } from 'antd';
 import { convertDateTime } from '@/utils/formatDate';
 import { DISCHARGE_OPTIONS } from '@/constant/options';
 import CustomDatePicker from '@/components/DatePicker';
@@ -23,6 +23,8 @@ const InpatientDetail = () => {
     const [examData, setExamData] = useState({})
     const [comorbiditiesOptions, setComorbiditiesOptions] = useState([]);
     const [isEditMode, setIsEditMode] = useState(true);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleRadioChange = (e) => {
         setSelectedRadio(e.target.value);
@@ -197,6 +199,33 @@ const InpatientDetail = () => {
 
         return <p className={`special ${specialClass}`}>{specialText}</p>;
     };
+
+    const handleUpdateInfoExamination = async () => {
+        try{
+            setIsLoading(true);
+            const data = {
+                id: examId,
+                reason: formData.reason,
+                symptom: formData.symptom,
+                diseaseName: formData.diseaseName,
+                comorbidities: formData.comorbidities.join(','),
+            }
+
+            const response = await updateExamination(data);
+            if (response && response.DT.includes(1)) {
+                message.success('Lưu thông tin khám bệnh thành công!');
+                //setInitialFormData(formData);
+                refresh();
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error('Error updating examination info:', error);
+            message.error('Cập nhật thông tin thất bại!');
+        } finally {
+            setIsLoading(false);
+        }
+    }
     
     return (
         <>
@@ -368,7 +397,7 @@ const InpatientDetail = () => {
                                 )}
                             </div>
                             <div className='flex mt-3'>
-                                <div style={{fontWeight: '500', width: '20%'}}>
+                                <div style={{fontWeight: '500', width: '22%'}}>
                                     <button className='restore-button'>Lưu xuất viện</button>                        
                                 </div>
                                 <div className='col-3' style={{fontWeight: '500', width: '25%'}}>
@@ -432,7 +461,16 @@ const InpatientDetail = () => {
                         </div>
                         <div className='flex mt-3'>
                             <div style={{fontWeight: '500', marginLeft: 'auto'}}>
-                                <button className='restore-button'>Cập nhật</button>                        
+                                <button className='restore-button'
+                                    onClick={handleUpdateInfoExamination}
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                            Đang xử lý...
+                                        </>
+                                    ) : 'Cập nhật'}
+                                </button>                        
                             </div>
                         </div>
                     </div>
@@ -469,6 +507,7 @@ const InpatientDetail = () => {
                             <div className="radio-content mt-4">
                                 <InpatientVitals
                                     vitalsData={examData?.examinationVitalSignData}
+                                    examId={+examId}
                                 />
                             </div>
                         )}
@@ -476,6 +515,7 @@ const InpatientDetail = () => {
                             <div className='radio-content mt-4'>
                                 <InpatientParacs
                                     paracsData = {examData?.examinationResultParaclincalData}
+                                    examId = {+examId}
                                 />
                             </div>
                         )}

@@ -1,9 +1,30 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
 import 'moment/locale/vi';
+import { message, Popconfirm } from 'antd';
+import { useMutation } from '@/hooks/useMutation';
+import PropTypes from 'prop-types';
+import { createRequestParaclinical, deleteParaclinical, getServiceLaboratory } from '@/services/doctorService';
 
-const InpatientParacs = ({paracsData}) => {
-    const examinationResultParaclincalData = Array.isArray(paracsData) ? paracsData : [];
+const InpatientParacs = ({ paracsData, examId}) => {
+
+    const [selectedParaclinicals, setSelectedParaclinicals] = useState([]);
+    const [inputParac, setInputParac] = useState('');
+    const [shakeId, setShakeId] = useState(null);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [paracOptions, setParacOptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [localParacData, setLocalParacData] = useState([]);
+    const [deletingId, setDeletingId] = useState(null);
+    const paraclinicalContainerRef = useRef(null);
+    const inputRef = useRef(null);
+    const searchResultsRef = useRef(null);
+
+    useEffect(() => {
+        setLocalParacData(Array.isArray(paracsData) ? [...paracsData] : []);
+    }, [paracsData]);
+
+    const examinationResultParaclincalData = localParacData;
     const today = moment().format('YYYY-MM-DD');
     moment.locale('vi');
     
@@ -35,6 +56,148 @@ const InpatientParacs = ({paracsData}) => {
     const zoomImage = (image) => {
         window.open(image, "_blank");
     }
+
+    useEffect(() => {
+        fetchParaclinical();
+    }, []);
+
+    let {
+        data: dataParaclinicals,
+        loading: comorbiditiesLoading,
+        error: comorbiditiesError,
+        execute: fetchParaclinical,
+    } = useMutation((query) =>
+        getServiceLaboratory()
+    );
+
+    useEffect(() => {
+        if (dataParaclinicals && dataParaclinicals.DT) {
+            const paracOptions = dataParaclinicals.DT.map(item => ({
+                id: item.id,
+                label: item.name,
+                price: item.price,
+            }));
+            setParacOptions(paracOptions);
+        }
+    }, [dataParaclinicals]);
+
+    const handleRemoveParaclinical = (id) => {
+        setSelectedParaclinicals(selectedParaclinicals.filter(item => item.id !== id));
+    };
+
+    const handleInputChange = (event) => {
+        setInputParac(event.target.value);
+        setShowSearchResults(true);
+    };
+
+    const handleSelectParaclinical = (paraclinical) => {
+        // Kiểm tra xem paraclinical đã tồn tại trong danh sách chưa
+        if (selectedParaclinicals.some(item => item.id === paraclinical.id)) {
+            setShakeId(paraclinical.id);
+            setTimeout(() => setShakeId(null), 1000);
+            return;
+        }
+
+        // const isDuplicate = examinationResultParaclincalData.some(detail =>
+        //     detail.paraclinical === paraclinical.id
+        // );
+
+        // if (isDuplicate) {
+        //     message.warning('Xét nghiệm đã tồn tại trong danh sách!');
+        //     return;
+        // }
+
+        setSelectedParaclinicals((prevSelected) => [
+            ...prevSelected,
+            paraclinical
+        ]);
+        setInputParac('');
+        setShowSearchResults(false);
+    };
+
+    const handleParacRequest = async () => {
+
+        if (selectedParaclinicals.length === 0) {
+            message.warning('Vui lòng chọn ít nhất một xét nghiệm!');
+            return;
+        }
+    
+        const data = {
+            examinationId: examId,
+            listParaclinicals: selectedParaclinicals,
+            isInpatient: true,
+        }
+    
+        setIsLoading(true);
+    
+        try {
+            // Gọi API tạo yêu cầu xét nghiệm
+            const response = await createRequestParaclinical(data);
+    
+            if (response.DT && response.EC === 0) {
+                message.success('Tạo yêu cầu xét nghiệm thành công!');
+                
+                // Tạo mảng các mục mới để thêm vào state hiện tại
+                const newParacItems = response.DT.map(item => ({
+                    id: item.DT.id,
+                    name: item.DT.paracName,
+                    updatedAt: item.DT.updatedAt,
+                    createdAt: item.DT.createdAt,
+                    paracName: item.DT.paracName,
+                    doctorParaclinicalData: { 
+                        staffUserData: {
+                            fullName: item.DT.staffName,
+                        }
+                    },
+                    roomParaclinicalData: {
+                        name: item.DT.roomName
+                    }
+                }));
+                
+                // Cập nhật state bằng cách thêm các mục mới
+                setLocalParacData(prevData => [...prevData, ...newParacItems]);
+                setSelectedParaclinicals([]);
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error('Error creating request:', error);
+            message.error('Đã xảy ra lỗi khi tạo yêu cầu xét nghiệm!');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const handleDeleteParac = async (paracId) => {
+        setDeletingId(paracId);
+        
+        try {
+            // Gọi API xóa paraclinical
+            const data = {
+                id: paracId,
+                examinationId: examId,
+            }
+            const response = await deleteParaclinical(data);
+            
+            if (response && response.EC === 0) {
+                message.success('Xóa yêu cầu xét nghiệm thành công!');
+                
+                // Cập nhật state bằng cách loại bỏ mục đã xóa
+                setLocalParacData(prevData => prevData.filter(item => item.id !== paracId));
+            } else {
+                message.error(response.EM || 'Xóa yêu cầu xét nghiệm thất bại!');
+            }
+        } catch (error) {
+            console.error('Error deleting paraclinical:', error);
+            message.error('Đã xảy ra lỗi khi xóa yêu cầu xét nghiệm!');
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    const filteredParaclinicals = paracOptions.filter(paraclinical =>
+        paraclinical.label.toLowerCase().includes(inputParac.toLowerCase())
+    );
     
     return (
         <div className="inpatient-vitals-content">
@@ -58,9 +221,13 @@ const InpatientParacs = ({paracsData}) => {
                                                 <div style={{width: '20%'}}>
                                                     <p className="gray-p">Bác sĩ thực hiện</p>
                                                     <p style={{fontWeight: '500'}}>
-                                                        {parac.doctorParaclinicalData?.staffUserData ? 
-                                                            `${parac.doctorParaclinicalData.staffUserData.lastName} ${parac.doctorParaclinicalData.staffUserData.firstName}` : 
-                                                            'Không có thông tin'}
+                                                    {
+                                                        parac.doctorParaclinicalData?.staffUserData
+                                                            ? (parac.doctorParaclinicalData.staffUserData.lastName && parac.doctorParaclinicalData.staffUserData.firstName)
+                                                                ? `${parac.doctorParaclinicalData.staffUserData.lastName} ${parac.doctorParaclinicalData.staffUserData.firstName}`
+                                                                : parac.doctorParaclinicalData.staffUserData.fullName || 'Không có thông tin'
+                                                            : 'Không có thông tin'
+                                                    }
                                                     </p>
                                                     <div className="flex mt-1 d-flex align-items-center gray-p" style={{width: '100%'}}>
                                                         <i className="fa-regular fa-clock me-2 align-middle text-center"></i>
@@ -69,7 +236,27 @@ const InpatientParacs = ({paracsData}) => {
                                                 </div>
                                                 <div className="flex-column" style={{width: '80%'}}>
                                                     <div className="inpatient-vitals-detail__body__item">
-                                                        <p style={{fontSize: '18px', fontWeight: '500'}}>{parac.paracName}</p>    
+                                                        <div className='flex mt-2' style={{justifyContent: 'space-between'}}>
+                                                            <p style={{fontSize: '18px', fontWeight: '500'}}>{parac.paracName}</p> 
+                                                            <Popconfirm
+                                                                title="Xác nhận xóa"
+                                                                description="Bạn có chắc chắn muốn xóa xét nghiệm này?"
+                                                                onConfirm={() => handleDeleteParac(parac.id)}
+                                                                okText="Xóa"
+                                                                cancelText="Hủy"
+                                                            >
+                                                                <button 
+                                                                    className="action-btn action-delete"
+                                                                    disabled={deletingId === parac.id}
+                                                                >
+                                                                    {deletingId === parac.id ? (
+                                                                        <i className="fa-solid fa-spinner fa-spin"></i>
+                                                                    ) : (
+                                                                        <i className="fa-solid fa-trash"></i>
+                                                                    )}
+                                                                </button>
+                                                            </Popconfirm>
+                                                        </div>  
                                                         <div className='flex mt-2'>
                                                             <div className='col-2 gray-p'>Kết quả:</div>
                                                             <div className='col-8' style={{fontWeight: '500'}}>{parac.result || 'Chưa có kết quả'}</div>
@@ -103,9 +290,71 @@ const InpatientParacs = ({paracsData}) => {
                                 </div>
                             )}
                             {date === today && (
-                                <div className="flex mt-2 add-vitals-detail" style={{width: '100%'}}>
-                                    <i className="fa-solid mr-2 fa-plus"></i> Thêm cận lâm sàng
-                                </div>
+                                <>
+                                    <div
+                                        ref={paraclinicalContainerRef}
+                                        className='paraclinicals-action'
+                                        style={groupedData[today].length > 0 ? { marginTop: '8px' } : {}}
+                                    >
+                                        <div className='paraclinicals-list'>
+                                            {selectedParaclinicals.map(comorbidity => (
+                                                <div
+                                                    key={comorbidity.id}
+                                                    className={`paraclinicals-item mb-2 ${shakeId === comorbidity.id ? 'shake' : ''}`}
+                                                >
+                                                    <p>{comorbidity.label}</p>
+                                                    <i
+                                                        className="fa-solid me-2 fa-times"
+                                                        onClick={() => handleRemoveParaclinical(comorbidity.id)}
+                                                    ></i>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        {/* Input tìm kiếm bệnh đi kèm */}
+                                        <input
+                                            ref={inputRef}
+                                            className='input-add-prac'
+                                            type='text'
+                                            placeholder='Thêm yêu cầu cận lâm sàng...'
+                                            style={{ background: '#eeeeee', border: 'none', boxShadow: 'none' }}
+                                            value={inputParac}
+                                            onChange={handleInputChange}
+                                            //readOnly={!isEditMode} 
+                                            onFocus={() => setShowSearchResults(true)}
+                                        />
+                                        {/* Hiển thị danh sách bệnh đi kèm khi có kết quả tìm kiếm */}
+                                        {showSearchResults && inputParac && (
+                                            <div
+                                                ref={searchResultsRef}
+                                                className='search-results'
+                                            >
+                                                {filteredParaclinicals.map(paraclinical => (
+                                                    <div
+                                                        key={paraclinical.id}
+                                                        className='search-item'
+                                                        onClick={() => handleSelectParaclinical(paraclinical)}
+                                                    >
+                                                        {paraclinical.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex mt-2 add-vitals-detail" style={{width: '100%'}}
+                                        onClick={handleParacRequest}>
+                                        {isLoading ? (
+                                            <>
+                                                <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                                Đang xử lý...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fa-solid mr-2 fa-plus"></i> 
+                                                Thêm cận lâm sàng
+                                            </>
+                                        )}
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>
@@ -113,6 +362,10 @@ const InpatientParacs = ({paracsData}) => {
             )}
         </div>
     );
+};
+InpatientParacs.propTypes = {
+    paracsData: PropTypes.array,
+    examId: PropTypes.number,
 };
 
 export default InpatientParacs;

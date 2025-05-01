@@ -21,8 +21,8 @@ const CustomDatePicker = ({ selectedDate, onDateChange, placeholder, disabled, i
 };
 
 CustomDatePicker.propTypes = {
-  selectedDate: PropTypes.instanceOf(Date).isRequired, // Ngày được chọn
-  onDateChange: PropTypes.func.isRequired,              // Hàm gọi khi ngày thay đổi
+  selectedDate: PropTypes.instanceOf(Date), // Ngày được chọn
+  onDateChange: PropTypes.func,              // Hàm gọi khi ngày thay đổi
   placeholder: PropTypes.string,                          // Placeholder cho DatePicker
   disabled: PropTypes.bool,                                // Chặn chọn nếu disabled = true
   isClearable: PropTypes.bool,                             // Cho phép xóa ngày đã chọn

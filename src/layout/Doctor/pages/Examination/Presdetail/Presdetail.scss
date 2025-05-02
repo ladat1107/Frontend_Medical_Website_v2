@@ -54,14 +54,14 @@
     }
     
     .delete-btn {
-      position: absolute;
-      right: 0;
-      color: #F44343;
-      cursor: pointer;
-      
-      &:hover {
-        color: darken(#F44343, 10%);
-      }
+        position: absolute;
+        right: 0;
+        color: #F44343;
+        cursor: pointer;
+        
+        &:hover {
+          color: #dc3c3c;
+        }
     }
     
     @media (max-width: 768px) {

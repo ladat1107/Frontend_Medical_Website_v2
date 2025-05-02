@@ -15,6 +15,7 @@ import CustomDatePicker from '@/components/DatePicker';
 import CustomDatePickerWithHighlights from '@/components/DatePicker/CustomDatePickerWithHighlights';
 import { useSelector } from 'react-redux';
 import { TIMESLOTS } from '@/constant/value';
+import SummaryModal from './InpatientModals/InpatientSumary';
 
 const InpatientDetail = () => {
     const { schedule } = useSelector(state => state.schedule);
@@ -25,6 +26,10 @@ const InpatientDetail = () => {
     const [isEditMode, setIsEditMode] = useState(true);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingDischarged, setIsLoadingDischarged] = useState(false);
+    const [isLoadingReExam, setIsLoadingReExam] = useState(false);
+
+    const [open, setOpen] = useState(false);
 
     const handleRadioChange = (e) => {
         setSelectedRadio(e.target.value);
@@ -226,6 +231,161 @@ const InpatientDetail = () => {
             setIsLoading(false);
         }
     }
+
+    const handleDischargedExam = async () => {
+        if (!formData.dischargeStatus) {
+            message.error('Vui lòng chọn tình trạng xuất viện!');
+            return;
+        }
+        if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+            message.error('Vui lòng chọn ngày tái khám!');
+            return;
+        }
+        if (formData.dischargeStatus === 4 && !formData.time) {
+            message.error('Vui lòng chọn khung giờ tái khám!');
+            return;
+        }
+        if (!formData.treatmentResult) {
+            message.error('Vui lòng nhập kết quả điều trị!');
+            return;
+        }
+        if (!formData.dischargeDate) {
+            message.error('Vui lòng chọn ngày xuất viện!');
+            return;
+        }
+    
+        const dischargeDate = new Date(formData.dischargeDate);
+        const today = new Date();
+        dischargeDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+    
+        if (dischargeDate < today) {
+            message.error('Ngày xuất viện không hợp lệ!');
+            return;
+        }
+    
+        if (formData.reExaminationDate) {
+            const reExamDate = new Date(formData.reExaminationDate);
+            reExamDate.setHours(0, 0, 0, 0);
+    
+            if (reExamDate <= today || reExamDate <= dischargeDate) {
+                message.error('Ngày tái khám không hợp lệ!');
+                return;
+            }
+    
+            if (formData.time === null) {
+                message.error('Vui lòng chọn khung giờ tái khám!');
+                return;
+            }
+        }
+
+        try {
+            setIsLoadingDischarged(true);
+            const data = {
+                id: examId,
+                dischargeStatus: formData.dischargeStatus,
+                treatmentResult: formData.treatmentResult,
+                dischargeDate: formData.dischargeDate,
+                reExaminationDate: formData.reExaminationDate,
+                time: formData.time,
+            }
+
+            const response = await updateExamination(data);
+            if (response && response.DT.includes(1)) {
+                message.success('Lưu thông tin xuất viện thành công!');
+                refresh();
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error('Error updating examination info:', error);
+            message.error('Cập nhật thông tin thất bại!');
+        } finally {
+            setIsLoadingDischarged(false);
+        }
+    }
+
+    const handleReExam = async () => {
+        if (!formData.dischargeStatus) {
+            message.error('Vui lòng chọn tình trạng xuất viện!');
+            return;
+        }
+        if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+            message.error('Vui lòng chọn ngày tái khám!');
+            return;
+        }
+        if (formData.dischargeStatus === 4 && !formData.time) {
+            message.error('Vui lòng chọn khung giờ tái khám!');
+            return;
+        }
+        if (!formData.treatmentResult) {
+            message.error('Vui lòng nhập kết quả điều trị!');
+            return;
+        }
+        if (!formData.dischargeDate) {
+            message.error('Vui lòng chọn ngày xuất viện!');
+            return;
+        }
+    
+        const dischargeDate = new Date(formData.dischargeDate);
+        const today = new Date();
+        dischargeDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+    
+        if (dischargeDate < today) {
+            message.error('Ngày xuất viện không hợp lệ!');
+            return;
+        }
+    
+        if (formData.reExaminationDate) {
+            const reExamDate = new Date(formData.reExaminationDate);
+            reExamDate.setHours(0, 0, 0, 0);
+    
+            if (reExamDate <= today || reExamDate <= dischargeDate) {
+                message.error('Ngày tái khám không hợp lệ!');
+                return;
+            }
+    
+            if (formData.time === null) {
+                message.error('Vui lòng chọn khung giờ tái khám!');
+                return;
+            }
+        }
+
+        try {
+            setIsLoadingReExam(true);
+            const data = {
+                id: examId,
+                dischargeStatus: formData.dischargeStatus,
+                treatmentResult: formData.treatmentResult,
+                dischargeDate: formData.dischargeDate,
+                reExaminationDate: formData.reExaminationDate,
+                time: formData.time,
+                createReExamination: true,
+            }
+
+            const response = await updateExamination(data);
+            if (response && response.DT.includes(1)) {
+                message.success('Lưu thông tin tái khám thành công!');
+                refresh();
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error('Error updating examination info:', error);
+            message.error('Cập nhật thông tin thất bại!');
+        } finally {
+            setIsLoadingReExam(false);
+        }
+    }
+
+    const handleCloseSummaryModal = () => {
+        setOpen(false);
+    }
+
+    const handleOpenSummaryModal = () => {
+        setOpen(true);
+    }
     
     return (
         <>
@@ -252,7 +412,7 @@ const InpatientDetail = () => {
                             <p className='me-2'>Giới tính: </p>
                             <p className='me-3'>{examData?.userExaminationData?.gender == 0 ? 'Nam'
                                                     : examData?.userExaminationData?.gender == 1 ? 'Nữ'
-                                                    : 'Không xác định'}</p>
+                                                    : ''}</p>
                             <p className='me-3'>•</p>
                             <p className='me-2'>Ngày sinh: </p>
                             <p className='me-3'>{convertDateTime(examData?.userExaminationData?.dob)}</p>
@@ -290,7 +450,7 @@ const InpatientDetail = () => {
                             </div>
                             <div className='flex mt-3'>
                                 <div className='col-8' style={{fontWeight: '500'}}>
-                                    <button className='save-button'>Báo cáo bệnh án</button>                        
+                                    <button className='save-button' onClick={handleOpenSummaryModal}>Báo cáo bệnh án</button>                        
                                 </div>
                             </div>
                         </div>
@@ -397,12 +557,28 @@ const InpatientDetail = () => {
                                 )}
                             </div>
                             <div className='flex mt-3'>
-                                <div style={{fontWeight: '500', width: '22%'}}>
-                                    <button className='restore-button'>Lưu xuất viện</button>                        
+                                <div style={{fontWeight: '500'}}>
+                                    <button className='restore-button' onClick={handleDischargedExam}>
+                                        {isLoadingDischarged ? (
+                                            <>
+                                                <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                                Đang xử lý...
+                                            </>
+                                        ) : 'Lưu xuất viện'}
+                                    </button>                        
                                 </div>
-                                <div className='col-3' style={{fontWeight: '500', width: '25%'}}>
-                                    <button className='safe-button'>Lưu cùng đặt lịch</button>                        
-                                </div>
+                                { formData.dischargeStatus === 4 && formData.dischargeDate && (
+                                    <div className='col-3' style={{fontWeight: '500'}}>
+                                        <button className='safe-button' onClick={handleReExam}>
+                                            {isLoadingReExam ? (
+                                                <>
+                                                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                                    Đang xử lý...
+                                                </>
+                                            ) : 'Lưu cùng lịch hẹn'}
+                                        </button>                        
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -531,6 +707,11 @@ const InpatientDetail = () => {
                     </div>
                 </div>
             )}
+            <SummaryModal
+                open={open}
+                onCancel={handleCloseSummaryModal}
+                examinationData={examData}
+            />
         </>
     );
 }

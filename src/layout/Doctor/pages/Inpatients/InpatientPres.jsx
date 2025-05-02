@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import 'moment/locale/vi';
+import PrescriptionChangeModal from './InpatientModals/PrescriptionChangeModal';
 
-const InpatientPres = ({prescriptionData}) => {
+const InpatientPres = ({prescriptionData, examinationId, refresh}) => {
+    const [showModal, setShowModal] = useState(false);
+    
     const prescriptionExamData = Array.isArray(prescriptionData) ? prescriptionData : [];
-    const today = moment().format('YYYY-MM-DD');
     moment.locale('vi');
     
     // Hàm để hiển thị thứ trong tuần bằng tiếng Việt
@@ -17,24 +19,18 @@ const InpatientPres = ({prescriptionData}) => {
     // Hàm nhóm theo ngày
     const groupByDate = () => {
         const grouped = {};
-        grouped[today] = [];
         if (!prescriptionExamData || !prescriptionExamData.length) return {};
 
         prescriptionExamData.forEach(prescription => {
-            // Lấy ngày từ thuốc đầu tiên trong đơn
-            let date;
-            if (prescription.prescriptionDetails && prescription.prescriptionDetails.length > 0) {
-                date = moment(prescription.prescriptionDetails[0].PrescriptionDetail.createdAt).format('YYYY-MM-DD');
-            } else {
-                // Nếu không có chi tiết thuốc, dùng ngày hiện tại
-                date = today;
-            }
-            
-            if (!grouped[date]) {
-                grouped[date] = [];
-            }
+            let date = moment(prescription.createdAt).format('YYYY-MM-DD');
+            if (!grouped[date]) grouped[date] = [];
             grouped[date].push(prescription);
         });
+
+        Object.keys(grouped).forEach(date => {
+            grouped[date].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        });
+
         return grouped;
     };
 
@@ -68,11 +64,33 @@ const InpatientPres = ({prescriptionData}) => {
         return sessions;
     };
 
-    const groupedData = groupByDate();
-    const sortedDates = Object.keys(groupedData).sort((a, b) => moment(b) - moment(a));
+    // Hàm xử lý khi nhấn nút thay đổi đơn thuốc
+    const handleChangePrescription = () => {
+        setShowModal(true);
+    };
 
+    // Hàm xử lý khi lưu đơn thuốc mới
+    const handleSaveNewPrescription = () => {
+        refresh();
+        setShowModal(false);
+    };
+
+    const groupedData = groupByDate();
+    const sortedDates = Object.keys(groupedData).sort((a, b) => {
+        return moment(b, 'YYYY-MM-DD').valueOf() - moment(a, 'YYYY-MM-DD').valueOf();
+    });
+    
     return (
         <div className="inpatient-vitals-content">
+            <div className='d-flex justify-content-end align-items-center mb-3'>
+                <button 
+                    className='restore-button' 
+                    onClick={handleChangePrescription}
+                    type="primary"
+                >
+                    Thay đổi đơn thuốc
+                </button> 
+            </div>  
             {sortedDates.length === 0 ? (
                 <div className="text-center p-4">Không có dữ liệu đơn thuốc</div>
             ) : (
@@ -157,6 +175,15 @@ const InpatientPres = ({prescriptionData}) => {
                     });
                 })
             )}
+
+            {/* Modal Thay đổi đơn thuốc sử dụng component riêng */}
+            <PrescriptionChangeModal
+                visible={showModal}
+                onCancel={() => setShowModal(false)}
+                onSave={handleSaveNewPrescription}
+                prescriptionData={prescriptionExamData}
+                examinationId={examinationId}
+            />
         </div>
     );
 };

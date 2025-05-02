@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Presdetail.scss';
-import SelectBox2 from '@/layout/Doctor/components/Selectbox';
 import PropTypes from 'prop-types';
 import MultiSelect from '@/layout/Doctor/components/MultiSelect';
-import SelectBoxCustom from '@/layout/Doctor/components/Selectbox/CustomSelectbox';
 import FreeTextInputWithSuggestions from '@/layout/Doctor/components/Selectbox/CustomSelectbox';
 
 const Presdetail = ({ id, presdetailData, onDelete, isEditMode, onChange }) => {

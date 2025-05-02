@@ -520,9 +520,11 @@ const InpatientDetail = () => {
                             </div>
                         )}
                         {selectedRadio === 'prescription' && examData.id && (
-                            <div className='radio-content mt-4'>
+                            <div className='radio-content mt-3'>
                                 <InpatientPres
                                     prescriptionData = {examData?.prescriptionExamData}
+                                    examinationId = {+examId}
+                                    refresh = {refresh}
                                 />
                             </div>
                         )}

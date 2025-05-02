@@ -243,3 +243,7 @@ export const deleteVitalSign = async (id) => {
     });
 }
 
+export const createPrescription = async (data) => {
+    return axios.post(`/api/createPrescription`, data);
+}
+

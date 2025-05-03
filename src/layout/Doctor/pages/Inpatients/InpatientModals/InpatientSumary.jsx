@@ -2,6 +2,8 @@ import React from "react";
 import { Modal, Table } from "antd";
 import { COVERED } from "@/constant/value";
 import { insuranceCovered, medicineCovered } from "@/utils/coveredPrice";
+import { convertDateTime } from "@/utils/formatDate";
+import "./PrescriptionChangeModal.scss";
 
 const columns = [
     {
@@ -205,17 +207,63 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
             width="90%"
             style={{ top: 20}}
         >
-            <div style={{ padding: 24, maxHeight: '640px' }}> {/* Thêm padding tại đây */}
-                <div style={{ marginBottom: 16 }}>
-                    <strong>Tiền đã tạm ứng:</strong>
+            <div style={{ padding: 15, minHeight: '640px', maxHeight: '640px', overflow: 'auto' }}>
+                <div style={{ marginBottom: 16, color: "#000" }}>
+                    <p style={{ fontWeight: "600" }}>
+                        Tiền đã tạm ứng:&nbsp;
+                        {(examinationData?.advanceMoneyExaminationData?.reduce(
+                            (sum, item) => sum + (item.amount || 0), 
+                            0
+                        ) || 0).toLocaleString()} đ
+                    </p>
+                    {examinationData?.advanceMoneyExaminationData?.length > 0 ? (
+                        examinationData.advanceMoneyExaminationData.map((item, index) => (
+                            <div className="flex" key={index}>
+                                <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
+                                <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                            </div>
+                        ))
+                    ) : (
+                        <div>0 đ</div>
+                    )}
                 </div>
                 <Table
+                    className="custom-summary-table"
                     columns={columns}
                     dataSource={data}
                     pagination={false}
                     rowKey={(record) => `${record.stt}-${record.content}`}
-                    scroll={{ y: 550 }}
+                    scroll={{ y: 420 }}
                 />
+                <div style={{ marginTop: 16, textAlign: "right", paddingRight: 24 }}>
+                    <p style={{color: "#000"}}>
+                        <span style={{fontWeight: "600"}}>Tổng chi trả:</span>&nbsp;
+                        {data.reduce((sum, item) => sum + (item.patientPaid || 0), 0).toLocaleString()} đ
+                    </p>
+                    <p style={{ color: "#0077F9", fontWeight: "600" }}>
+                        {(() => {
+                            const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
+                                (sum, item) => sum + (item.amount || 0),
+                                0
+                            ) || 0);
+
+                            const totalPaid = (data?.reduce(
+                                (sum, item) => sum + (item.patientPaid || 0),
+                                0
+                            ) || 0);
+
+                            const difference = totalAdvance - totalPaid;
+
+                            if (difference > 0) {
+                                return `Tiền trả lại: ${difference.toLocaleString()} đ`;
+                            } else if (difference < 0) {
+                                return `Tiền còn phải đóng: ${Math.abs(difference).toLocaleString()} đ`;
+                            } else {
+                                return `Không cần đóng thêm hay trả lại`;
+                            }
+                        })()}
+                    </p>
+                </div>
             </div>
         </Modal>
     );

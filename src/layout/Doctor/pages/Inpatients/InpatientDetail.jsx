@@ -232,26 +232,26 @@ const InpatientDetail = () => {
         }
     }
 
-    const handleDischargedExam = async () => {
+    const checkValid = () => {
         if (!formData.dischargeStatus) {
             message.error('Vui lòng chọn tình trạng xuất viện!');
-            return;
+            return false;
         }
         if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
             message.error('Vui lòng chọn ngày tái khám!');
-            return;
+            return false;
         }
         if (formData.dischargeStatus === 4 && !formData.time) {
             message.error('Vui lòng chọn khung giờ tái khám!');
-            return;
+            return false;
         }
         if (!formData.treatmentResult) {
             message.error('Vui lòng nhập kết quả điều trị!');
-            return;
+            return false;
         }
         if (!formData.dischargeDate) {
             message.error('Vui lòng chọn ngày xuất viện!');
-            return;
+            return false;
         }
     
         const dischargeDate = new Date(formData.dischargeDate);
@@ -261,7 +261,7 @@ const InpatientDetail = () => {
     
         if (dischargeDate < today) {
             message.error('Ngày xuất viện không hợp lệ!');
-            return;
+            return false;
         }
     
         if (formData.reExaminationDate) {
@@ -270,19 +270,25 @@ const InpatientDetail = () => {
     
             if (reExamDate <= today || reExamDate <= dischargeDate) {
                 message.error('Ngày tái khám không hợp lệ!');
-                return;
+                return false;
             }
     
             if (formData.time === null) {
                 message.error('Vui lòng chọn khung giờ tái khám!');
-                return;
+                return false;
             }
         }
+        return true;
+    }
+
+    const handleDischargedExam = async () => {
+        if (!checkValid()) return;
 
         try {
             setIsLoadingDischarged(true);
             const data = {
                 id: examId,
+                status: 7,
                 dischargeStatus: formData.dischargeStatus,
                 treatmentResult: formData.treatmentResult,
                 dischargeDate: formData.dischargeDate,
@@ -306,56 +312,13 @@ const InpatientDetail = () => {
     }
 
     const handleReExam = async () => {
-        if (!formData.dischargeStatus) {
-            message.error('Vui lòng chọn tình trạng xuất viện!');
-            return;
-        }
-        if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
-            message.error('Vui lòng chọn ngày tái khám!');
-            return;
-        }
-        if (formData.dischargeStatus === 4 && !formData.time) {
-            message.error('Vui lòng chọn khung giờ tái khám!');
-            return;
-        }
-        if (!formData.treatmentResult) {
-            message.error('Vui lòng nhập kết quả điều trị!');
-            return;
-        }
-        if (!formData.dischargeDate) {
-            message.error('Vui lòng chọn ngày xuất viện!');
-            return;
-        }
-    
-        const dischargeDate = new Date(formData.dischargeDate);
-        const today = new Date();
-        dischargeDate.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-    
-        if (dischargeDate < today) {
-            message.error('Ngày xuất viện không hợp lệ!');
-            return;
-        }
-    
-        if (formData.reExaminationDate) {
-            const reExamDate = new Date(formData.reExaminationDate);
-            reExamDate.setHours(0, 0, 0, 0);
-    
-            if (reExamDate <= today || reExamDate <= dischargeDate) {
-                message.error('Ngày tái khám không hợp lệ!');
-                return;
-            }
-    
-            if (formData.time === null) {
-                message.error('Vui lòng chọn khung giờ tái khám!');
-                return;
-            }
-        }
+        if (!checkValid()) return;
 
         try {
             setIsLoadingReExam(true);
             const data = {
                 id: examId,
+                status: 7,
                 dischargeStatus: formData.dischargeStatus,
                 treatmentResult: formData.treatmentResult,
                 dischargeDate: formData.dischargeDate,
@@ -449,7 +412,10 @@ const InpatientDetail = () => {
                                 </div>
                             </div>
                             <div className='flex mt-3'>
-                                <div className='col-8' style={{fontWeight: '500'}}>
+                                <div className='col-8' style={{fontWeight: '500'}}> 
+                                    <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
+                                            disabled={!isEditMode} 
+                                            onClick={handleOpenSummaryModal}>Thêm tạm ứng</button>    
                                     <button className='save-button' onClick={handleOpenSummaryModal}>Báo cáo bệnh án</button>                        
                                 </div>
                             </div>
@@ -470,7 +436,7 @@ const InpatientDetail = () => {
                                         />
                                     ) : (
                                         <div style={{fontWeight: '500'}}>
-                                            {DISCHARGE_OPTIONS[formData?.dischargeStatus]}
+                                            {DISCHARGE_OPTIONS[formData?.dischargeStatus]?.label}
                                         </div>
                                     )}
                                 </div>
@@ -486,8 +452,7 @@ const InpatientDetail = () => {
                                             disabled={!isEditMode}
                                             placeholder="Chọn ngày..." />
                                     ) : (
-                                        <div 
-                                        style={{fontWeight: '500'}}>
+                                        <div style={{fontWeight: '500'}}>
                                             {formData?.dischargeDate ? convertDateTime(formData?.dischargeDate) : '--/--/20--'}
                                         </div>
                                     )}
@@ -558,7 +523,8 @@ const InpatientDetail = () => {
                             </div>
                             <div className='flex mt-3'>
                                 <div style={{fontWeight: '500'}}>
-                                    <button className='restore-button' onClick={handleDischargedExam}>
+                                    <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
+                                            disabled={!isEditMode}  onClick={handleDischargedExam}>
                                         {isLoadingDischarged ? (
                                             <>
                                                 <i className="fa-solid fa-spinner fa-spin me-2"></i>
@@ -637,7 +603,8 @@ const InpatientDetail = () => {
                         </div>
                         <div className='flex mt-3'>
                             <div style={{fontWeight: '500', marginLeft: 'auto'}}>
-                                <button className='restore-button'
+                                <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
+                                            disabled={!isEditMode} 
                                     onClick={handleUpdateInfoExamination}
                                 >
                                     {isLoading ? (

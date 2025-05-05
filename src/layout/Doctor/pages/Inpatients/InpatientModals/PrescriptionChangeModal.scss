@@ -44,8 +44,38 @@
     }
 }
 
-.custom-summary-table .ant-table-thead > tr > th {
-    background-color: #DDEFFE; /* màu vàng nhạt */
-    color: #333;
-  }
+.custom-summary-container {
+    display: flex;
+    flex-direction: column;
+    height: 640px; /* tổng chiều cao bạn muốn */
+    
+    .custom-scroll-area {
+        flex: 1;
+        overflow: auto;
+        padding: 15px;
+    
+        scrollbar-width: none;          /* Firefox */
+        -ms-overflow-style: none;       /* IE & Edge */
+    }
+
+    .custom-scroll-area::-webkit-scrollbar {
+        display: none;                  /* Chrome, Safari */
+    }
+    
+    .summary-fixed-total {
+        padding: 15px;
+        border-top: 1px solid #ddd;
+        background-color: #fff;
+        position: sticky;
+        bottom: 0;
+        text-align: right;
+    }
+    
+    .custom-summary-table .ant-table-thead > tr > th {
+        background-color: #DDEFFE; /* màu vàng nhạt */
+        color: #333;
+    }
+}
+
+  
   

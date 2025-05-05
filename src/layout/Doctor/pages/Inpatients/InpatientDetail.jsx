@@ -7,7 +7,7 @@ import MultiSelect from '../../components/MultiSelect';
 import SelectBox2 from '../../components/Selectbox';
 import { useParams } from 'react-router-dom';
 import { useMutation } from '@/hooks/useMutation';
-import { getAllDisease, getExaminationById, updateExamination } from '@/services/doctorService';
+import { createAdvanceMoney, getAllDisease, getExaminationById, updateExamination } from '@/services/doctorService';
 import { message, Spin } from 'antd';
 import { convertDateTime } from '@/utils/formatDate';
 import { DISCHARGE_OPTIONS } from '@/constant/options';
@@ -16,6 +16,8 @@ import CustomDatePickerWithHighlights from '@/components/DatePicker/CustomDatePi
 import { useSelector } from 'react-redux';
 import { TIMESLOTS } from '@/constant/value';
 import SummaryModal from './InpatientModals/InpatientSumary';
+import MoneyInput from '@/components/Input/MoneyInput';
+import FlexibleCollapsible from './Components/FlexibleCollapsible';
 
 const InpatientDetail = () => {
     const { schedule } = useSelector(state => state.schedule);
@@ -28,8 +30,14 @@ const InpatientDetail = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingDischarged, setIsLoadingDischarged] = useState(false);
     const [isLoadingReExam, setIsLoadingReExam] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     const [open, setOpen] = useState(false);
+    const [isLoadingAddAdvance, setIsLoadingAddAdvance] = useState(false);
+    const [amount, setAmount] = useState("");
+    const handleAmountChange = (value) => {
+        setAmount(value);
+    };
 
     const handleRadioChange = (e) => {
         setSelectedRadio(e.target.value);
@@ -93,41 +101,36 @@ const InpatientDetail = () => {
     };
 
     const handleSelectChange = (field) => (value) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }));
-
-        if (field === 'dischargeStatus' && value !== null) {
-            setFormData(prev => ({
+        setFormData(prev => {
+            const newFormData = {
                 ...prev,
-                dischargeDate: new Date(),
-            }));
-        }
+                [field]: value,
+            };
 
-        if (field === 'dischargeStatus' && value == null) {
-            setFormData(prev => ({
-                ...prev,
-                dischargeDate: null,
-            }));
-        }
-
-        if (field === 'dischargeStatus' && value !== 4) {
-            setFormData(prev => ({
-                ...prev,
-                reExaminationDate: null,
-                time: null
-            }));
-        }
-
-        if (field === 'dischargeDate' && value == null) {
-            setFormData(prev => ({
-                ...prev,
-                reExaminationDate: null,
-                time: null
-            }));
-        }
+            console.log('newFormData', newFormData);
+    
+            if (field === 'dischargeStatus') {
+                if (value !== null) {
+                    newFormData.dischargeDate = new Date();
+                } else {
+                    newFormData.dischargeDate = null;
+                }
+    
+                if (value !== 4) {
+                    newFormData.reExaminationDate = null;
+                    newFormData.time = null;
+                }
+            }
+    
+            if (field === 'dischargeDate' && value == null) {
+                newFormData.reExaminationDate = null;
+                newFormData.time = null;
+            }
+    
+            return newFormData;
+        });
     };
+    
 
     const {
         data: dataComorbidities,
@@ -169,7 +172,7 @@ const InpatientDetail = () => {
     useEffect(() => {
         if (dataExamination && dataExamination.DT) {
             setExamData(dataExamination.DT);
-            if (dataExamination.DT.status === 7) setIsEditMode(false);
+            //if (dataExamination.DT.status === 7) setIsEditMode(false);
         }
     }, [dataExamination]);
 
@@ -350,6 +353,46 @@ const InpatientDetail = () => {
         setOpen(true);
     }
     
+    const handleAddAdvanceMoney = async () => {
+        const hasUnpaid = examData.advanceMoneyExaminationData.some(item => item.status === 1);
+        if (hasUnpaid) {
+            message.error('Có tạm ứng chưa thanh toán, không thể tạo thêm!');
+            return;
+        }
+
+        if(amount === "" || amount === 0) {
+            message.error('Vui lòng nhập số tiền tạm ứng!');
+            return;
+        }
+
+        if(+amount < 1000) {
+            message.error('Số tiền tạm ứng tối thiểu là 1.000đ!');
+            return;
+        }
+
+        setIsLoadingAddAdvance(true);
+        try {
+            
+            const data = {
+                examId: examId,
+                amount: amount,
+            }
+
+            const response = await createAdvanceMoney(data);
+            if (response.EC === 0 && response.DT) {
+                message.success('Thêm tạm ứng thành công!');
+                refresh();
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error('Error adding advance money:', error);
+            message.error('Thêm tạm ứng thất bại!');
+        } finally {
+            setIsLoadingAddAdvance(false);
+        }
+    }
+
     return (
         <>
             {examinationLoading ? (
@@ -412,12 +455,80 @@ const InpatientDetail = () => {
                                 </div>
                             </div>
                             <div className='flex mt-3'>
-                                <div className='col-8' style={{fontWeight: '500'}}> 
-                                    <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
-                                            disabled={!isEditMode} 
-                                            onClick={handleOpenSummaryModal}>Thêm tạm ứng</button>    
-                                    <button className='save-button' onClick={handleOpenSummaryModal}>Báo cáo bệnh án</button>                        
-                                </div>
+                                <div>                  
+                                    <button className='save-button me-2' onClick={handleOpenSummaryModal}>Báo cáo bệnh án</button>         
+                                </div>   
+                                {/* <div className="collapsible-box">
+                                    <button
+                                        className="collapsible-toggle"
+                                        onClick={() => setIsOpen(!isOpen)}
+                                    >
+                                        {isOpen ? 
+                                            <>
+                                                Thu gọn
+                                                <i className="ms-2 fa-solid fa-caret-up"></i>
+                                            </>
+                                        : 
+                                            <>
+                                                Xem chi tiết tạm ứng
+                                                <i className="ms-2 fa-solid fa-caret-down"></i>
+                                            </>
+                                        }
+                                    </button>
+
+                                    <div className={`collapsible-content ${isOpen ? "open" : ""}`}>
+                                        {examData?.advanceMoneyExaminationData?.length > 0 ? (
+                                            examData.advanceMoneyExaminationData.map((item, index) => (
+                                                <div className="flex" key={index}>
+                                                    <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
+                                                    <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div>0 đ</div>
+                                        )}
+                                        <MoneyInput onChange={handleAmountChange}/>
+                                    </div>
+                                </div>                */}
+                                <FlexibleCollapsible
+                                    isOpen={isOpen}
+                                    onToggle={() => setIsOpen(!isOpen)}
+                                    expandedText="Thu gọn"
+                                    collapsedText="Xem chi tiết tạm ứng"
+                                >
+                                    {examData?.advanceMoneyExaminationData?.length > 0 ? (
+                                        examData.advanceMoneyExaminationData.map((item, index) => (
+                                            <div className="flex mb-2" key={index}>
+                                                <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
+                                                <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                                {item.status=== 1 ?
+                                                    <p className="ms-2" style={{color: '#FF8C00'}}>Chờ thanh toán</p> : 
+                                                    item.status === 2 ?
+                                                        <p className="ms-2" style={{color: '#008000'}}>Đã thanh toán</p> :
+                                                        <p className="ms-2" style={{color: '#FF0000'}}>Đã hủy</p>                                                
+                                                }
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div>0 đ</div>
+                                    )}
+                                    {isEditMode && (
+                                        <>
+                                            <MoneyInput onChange={handleAmountChange}/>
+                                            <div className="flex">
+                                                <button className="ml-auto save-button mt-2"
+                                                    onClick={handleAddAdvanceMoney}>
+                                                    {isLoadingAddAdvance ? (
+                                                        <>
+                                                            <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                                            Đang xử lý...
+                                                        </>
+                                                    ) : 'Lưu tạm ứng'}
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </FlexibleCollapsible>      
                             </div>
                         </div>
                         <div className='col-6'>
@@ -514,58 +625,65 @@ const InpatientDetail = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <div className='col-4 gray-p'>Thời gian tái khám:</div>
-                                        <div className='col-3' style={{fontWeight: '500'}}>30/06/2025</div>
-                                        <div className='col-2 gray-p'>Khung giờ:</div>
-                                        <div className='col-3' style={{fontWeight: '500'}}>7:30</div>
+                                        {formData.dischargeStatus === 4 && formData.dischargeDate &&  (
+                                                <>
+                                            <div className='col-4 gray-p'>Thời gian tái khám:</div>
+                                            <div className='col-3' style={{fontWeight: '500'}}>30/06/2025</div>
+                                            <div className='col-2 gray-p'>Khung giờ:</div>
+                                            <div className='col-3' style={{fontWeight: '500'}}>7:30</div>
+                                            </>
+                                        )}
                                     </>
                                 )}
                             </div>
                             <div className='flex mt-3'>
-                                <div style={{fontWeight: '500'}}>
-                                    <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
-                                            disabled={!isEditMode}  onClick={handleDischargedExam}>
-                                        {isLoadingDischarged ? (
-                                            <>
-                                                <i className="fa-solid fa-spinner fa-spin me-2"></i>
-                                                Đang xử lý...
-                                            </>
-                                        ) : 'Lưu xuất viện'}
-                                    </button>                        
-                                </div>
-                                { formData.dischargeStatus === 4 && formData.dischargeDate && (
-                                    <div className='col-3' style={{fontWeight: '500'}}>
-                                        <button className='safe-button' onClick={handleReExam}>
-                                            {isLoadingReExam ? (
+                                {isEditMode && 
+                                <>
+                                    <div style={{fontWeight: '500'}}>
+                                        <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
+                                                disabled={!isEditMode}  onClick={handleDischargedExam}>
+                                            {isLoadingDischarged ? (
                                                 <>
                                                     <i className="fa-solid fa-spinner fa-spin me-2"></i>
                                                     Đang xử lý...
                                                 </>
-                                            ) : 'Lưu cùng lịch hẹn'}
-                                        </button>                        
+                                            ) : 'Lưu xuất viện'}
+                                        </button>               
                                     </div>
-                                )}
+                                    { formData.dischargeStatus === 4 && formData.dischargeDate && (
+                                        <div className='col-3' style={{fontWeight: '500'}}>
+                                            <button className='safe-button' onClick={handleReExam}>
+                                                {isLoadingReExam ? (
+                                                    <>
+                                                        <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                                        Đang xử lý...
+                                                    </>
+                                                ) : 'Lưu cùng lịch hẹn'}
+                                            </button>                        
+                                        </div>
+                                    )}          
+                                </>}  
                             </div>
                         </div>
                     </div>
-                    <div className="inpatient-exam-content__body mt-4">
+                    <div className="inpatient-exam-content__body mt-2">
                         <p className='title mb-2'>Thông tin khám bệnh</p>
                         <div className="flex align-items-center">
-                            <div className="mt-3" style={{width: '12%'}}>
+                            <div className="mt-1" style={{width: '12%'}}>
                                 <p>Lý do vào viện:</p>
                             </div>
-                            <div className="mt-3" style={{width: '35%'}}>
+                            <div className="mt-1" style={{width: '35%'}}>
                                 <input type="text" className="input"
                                     readOnly={!isEditMode} 
                                     value={formData.reason}
                                     onChange={handleInputChange('reason')}
                                     placeholder="Mô tả lý do vào viện" />
                             </div>
-                            <div className="mt-3" style={{width: '6%'}}/>
-                            <div className="mt-3" style={{width: '12%'}}>
+                            <div className="mt-1" style={{width: '6%'}}/>
+                            <div className="mt-1" style={{width: '12%'}}>
                                 <p>Triệu chứng:</p>
                             </div>
-                            <div className="mt-3" style={{width: '35%'}}>
+                            <div className="mt-1" style={{width: '35%'}}>
                                 <input type="text" 
                                     className="input"
                                     value={formData.symptom}
@@ -575,10 +693,10 @@ const InpatientDetail = () => {
                             </div>
                         </div>
                         <div className="flex align-items-center">
-                            <div className="mt-3" style={{width: '12%'}}>
+                            <div className="mt-1" style={{width: '12%'}}>
                                 <p>Tên bệnh chính:</p>
                             </div>
-                            <div className="mt-3" style={{width: '35%'}}>
+                            <div className="mt-1" style={{width: '35%'}}>
                                 <SelectBox2
                                     placeholder="Nhập tên bệnh"
                                     options={comorbiditiesOptions}
@@ -587,11 +705,11 @@ const InpatientDetail = () => {
                                     disabled={!isEditMode}
                                 />
                             </div>
-                            <div className="mt-3" style={{width: '6%'}}/>
-                            <div className="mt-3" style={{width: '12%'}}>
+                            <div className="mt-1" style={{width: '6%'}}/>
+                            <div className="mt-1" style={{width: '12%'}}>
                                 <p>Bệnh đi kèm:</p>
                             </div>
-                            <div className="mt-3" style={{width: '35%'}}>
+                            <div className="mt-1" style={{width: '35%'}}>
                                 <MultiSelect
                                     options={comorbiditiesOptions}
                                     placeholder="Chọn bệnh đi kèm"
@@ -601,7 +719,8 @@ const InpatientDetail = () => {
                                 />
                             </div>
                         </div>
-                        <div className='flex mt-3'>
+                        <div className='flex mt-2'>
+                        {isEditMode && 
                             <div style={{fontWeight: '500', marginLeft: 'auto'}}>
                                 <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
                                             disabled={!isEditMode} 
@@ -615,6 +734,7 @@ const InpatientDetail = () => {
                                     ) : 'Cập nhật'}
                                 </button>                        
                             </div>
+                        }
                         </div>
                     </div>
                     <div className="inpatient-exam-content__body mt-1">
@@ -651,6 +771,7 @@ const InpatientDetail = () => {
                                 <InpatientVitals
                                     vitalsData={examData?.examinationVitalSignData}
                                     examId={+examId}
+                                    isEditMode = {isEditMode}
                                 />
                             </div>
                         )}
@@ -659,6 +780,7 @@ const InpatientDetail = () => {
                                 <InpatientParacs
                                     paracsData = {examData?.examinationResultParaclincalData}
                                     examId = {+examId}
+                                    isEditMode = {isEditMode}
                                 />
                             </div>
                         )}
@@ -668,6 +790,7 @@ const InpatientDetail = () => {
                                     prescriptionData = {examData?.prescriptionExamData}
                                     examinationId = {+examId}
                                     refresh = {refresh}
+                                    isEditMode = {isEditMode}
                                 />
                             </div>
                         )}

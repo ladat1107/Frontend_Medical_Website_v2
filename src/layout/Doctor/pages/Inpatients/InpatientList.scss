@@ -74,6 +74,35 @@
             font-size: 13px;
         }
 
+        .collapsible-box {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 2px 2px 4px #e6eaeb;
+            background: white;
+            border: 1px solid #ccc;
+        }
+        
+        .collapsible-toggle {
+            width: 100%;
+            padding: 5px 10px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 10px;
+            background: #f9f9f9;
+        }
+          
+        .collapsible-content.open {
+            max-height: 1000px; /* giả định đủ lớn cho nội dung */
+            padding: 10px;
+        }
 
         .inpatient-vitals-content{
 

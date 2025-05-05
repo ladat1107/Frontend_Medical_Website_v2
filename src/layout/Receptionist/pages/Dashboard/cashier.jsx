@@ -90,7 +90,7 @@ const Cashier = () => {
         loading: loadingAdvanceMoney,
         error: errorAdvanceMoney,
         execute: fetchAdvanceMoney,
-    } = useMutation(() => getListAdvanceMoney(currentPage, pageSize, search, statusPay))
+    } = useMutation(() => getListAdvanceMoney(currentPage, pageSize, search, statusPay == 4 ? 1 : 2 ))
 
     useEffect(() => {
         if(+medicalTreatmentTier === 2) 

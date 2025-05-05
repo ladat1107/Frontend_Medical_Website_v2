@@ -6,7 +6,7 @@ import { useMutation } from '@/hooks/useMutation';
 import PropTypes from 'prop-types';
 import { createRequestParaclinical, deleteParaclinical, getServiceLaboratory } from '@/services/doctorService';
 
-const InpatientParacs = ({ paracsData, examId}) => {
+const InpatientParacs = ({ paracsData, examId, isEditMode}) => {
 
     const [selectedParaclinicals, setSelectedParaclinicals] = useState([]);
     const [inputParac, setInputParac] = useState('');
@@ -37,7 +37,11 @@ const InpatientParacs = ({ paracsData, examId}) => {
 
     const groupByDate = () => {
         const grouped = {};
-        grouped[today] = [];
+
+        if (isEditMode) {
+            grouped[today] = [];
+        }
+
         if (!examinationResultParaclincalData || !examinationResultParaclincalData.length) return {};
 
         examinationResultParaclincalData.forEach(parac => {
@@ -238,24 +242,26 @@ const InpatientParacs = ({ paracsData, examId}) => {
                                                     <div className="inpatient-vitals-detail__body__item">
                                                         <div className='flex mt-2' style={{justifyContent: 'space-between'}}>
                                                             <p style={{fontSize: '18px', fontWeight: '500'}}>{parac.paracName}</p> 
-                                                            <Popconfirm
-                                                                title="Xác nhận xóa"
-                                                                description="Bạn có chắc chắn muốn xóa xét nghiệm này?"
-                                                                onConfirm={() => handleDeleteParac(parac.id)}
-                                                                okText="Xóa"
-                                                                cancelText="Hủy"
-                                                            >
-                                                                <button 
-                                                                    className="action-btn action-delete"
-                                                                    disabled={deletingId === parac.id}
+                                                            {isEditMode && (
+                                                                <Popconfirm
+                                                                    title="Xác nhận xóa"
+                                                                    description="Bạn có chắc chắn muốn xóa xét nghiệm này?"
+                                                                    onConfirm={() => handleDeleteParac(parac.id)}
+                                                                    okText="Xóa"
+                                                                    cancelText="Hủy"
                                                                 >
-                                                                    {deletingId === parac.id ? (
-                                                                        <i className="fa-solid fa-spinner fa-spin"></i>
-                                                                    ) : (
-                                                                        <i className="fa-solid fa-trash"></i>
-                                                                    )}
-                                                                </button>
-                                                            </Popconfirm>
+                                                                    <button 
+                                                                        className="action-btn action-delete"
+                                                                        disabled={deletingId === parac.id}
+                                                                    >
+                                                                        {deletingId === parac.id ? (
+                                                                            <i className="fa-solid fa-spinner fa-spin"></i>
+                                                                        ) : (
+                                                                            <i className="fa-solid fa-trash"></i>
+                                                                        )}
+                                                                    </button>
+                                                                </Popconfirm>
+                                                            )}
                                                         </div>  
                                                         <div className='flex mt-2'>
                                                             <div className='col-2 gray-p'>Kết quả:</div>

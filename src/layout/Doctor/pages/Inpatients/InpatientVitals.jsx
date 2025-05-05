@@ -5,7 +5,7 @@ import 'moment/locale/vi';
 import { message, Modal, Popconfirm } from 'antd';
 import { createVitalSign, deleteVitalSign, updateVitalSign } from '@/services/doctorService';
 
-const InpatientVitals = ({vitalsData, examId}) => {
+const InpatientVitals = ({vitalsData, examId, isEditMode}) => {
     const [showNewVitalForm, setShowNewVitalForm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [localVitalsData, setLocalVitalsData] = useState([]);
@@ -44,7 +44,11 @@ const InpatientVitals = ({vitalsData, examId}) => {
     
     const groupByDate = () => {
         const grouped = {};
-        grouped[today] = [];
+        
+        if (isEditMode) {
+            grouped[today] = [];
+        }
+
         if (!examinationVitalSignData || !examinationVitalSignData.length) return {};
 
         examinationVitalSignData.forEach(vital => {
@@ -358,7 +362,7 @@ const InpatientVitals = ({vitalsData, examId}) => {
                                                             <i className="fa-regular fa-clock me-2 align-middle text-center"></i>
                                                             {moment(vital.updatedAt).format('HH:mm')}
                                                         </div>
-                                                        <div className={`vital-actions me-2 ${hoveredVitalId === vital.id ? 'visible' : ''}`}>
+                                                        <div className={`vital-actions me-2 ${hoveredVitalId === vital.id && isEditMode ? 'visible' : ''}`}>
                                                             <button 
                                                                 className=" action-btn"
                                                                 title="Chỉnh sửa"
@@ -551,7 +555,7 @@ const InpatientVitals = ({vitalsData, examId}) => {
                                         </div>
                                     )}
                                     
-                                    {!showNewVitalForm && (
+                                    {!showNewVitalForm && isEditMode && (
                                         <div 
                                             className="flex mt-2 add-vitals-detail cursor-pointer" 
                                             style={{width: '100%'}}

@@ -51,7 +51,7 @@ const columns = [
         width: 140,
     },
     {
-        title: "BHYT thanh toán (đ)",
+        title: "BHYT chi trả (đ)",
         dataIndex: "insurancePaid",
         key: "insurancePaid",
         render: (text) => text.toLocaleString(),
@@ -86,7 +86,7 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
     const discharge = examinationData?.dischargeDate || new Date();
     const unitPrice = examinationData?.examinationRoomData?.serviceData[0]?.price || 0;
     const quantity = calculateDays(admission, discharge);
-    const insuranceRate = (COVERED[+examinationData?.insuranceCovered] * 100 || 0) + '%';
+    const insuranceRate = (COVERED[+examinationData?.insuranceCoverage] * 100 || 0) + '%';
 
     data.push({
         stt: stt++,
@@ -97,8 +97,8 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
         unitPrice,
         total: quantity * unitPrice,
         insuranceRate,
-        insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCovered),
-        patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCovered),
+        insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+        patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
     });
 
     // Chi phí cận lâm sàng
@@ -127,7 +127,7 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
         const quantity = group.quantity;
         const total = unitPrice * quantity;
        
-        const insuranceRate = (COVERED[+examinationData?.insuranceCovered] * 100 || 0) + '%';
+        const insuranceRate = (COVERED[+examinationData?.insuranceCoverage] * 100 || 0) + '%';
         const insurancePaid = group.totalInsurancePaid;
         const patientPaid = total - insurancePaid;
 
@@ -162,7 +162,7 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
                     unitPrice: detail.price || 0,
                     totalInsurancePaid: medicineCovered(
                                             detail.quantity * detail?.price,
-                                            +examinationData?.insuranceCovered,
+                                            +examinationData?.insuranceCoverage,
                                             Number(item.insuranceCovered),
                                             examinationData.isWrongTreatment, examinationData.medicalTreatmentTier
                                         ) * dayOfUse || 0,
@@ -182,7 +182,7 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
         const quantity = group.quantity;
         const total = unitPrice * quantity;
         const insurancePaid = group.totalInsurancePaid;
-        const insuranceRate = (COVERED[+examinationData?.insuranceCovered] * 100 || 0) + '% x ' + group.insuranceCovered * 100 + '%';
+        const insuranceRate = (COVERED[+examinationData?.insuranceCoverage] * 100 || 0) + '% x ' + group.insuranceCovered * 100 + '%';
         const patientPaid = total - insurancePaid;
 
         data.push({
@@ -205,61 +205,91 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
             onCancel={onCancel}
             footer={null}
             width="90%"
-            style={{ top: 20}}
+            style={{ top: 20 }}
+            bodyStyle={{ overflow: 'hidden', maxHeight: 'none' }}
         >
-            <div style={{ padding: 15, minHeight: '640px', maxHeight: '640px', overflow: 'auto' }}>
-                <div style={{ marginBottom: 16, color: "#000" }}>
-                    <p style={{ fontWeight: "600" }}>
-                        Tiền đã tạm ứng:&nbsp;
-                        {(examinationData?.advanceMoneyExaminationData?.reduce(
-                            (sum, item) => sum + (item.amount || 0), 
-                            0
-                        ) || 0).toLocaleString()} đ
-                    </p>
-                    {examinationData?.advanceMoneyExaminationData?.length > 0 ? (
-                        examinationData.advanceMoneyExaminationData.map((item, index) => (
-                            <div className="flex" key={index}>
-                                <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
-                                <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+            <div className="custom-summary-container">
+                <div className="custom-scroll-area">
+                    <div className="flex justify-content-between">
+                        <div style={{ color: "#000" }}>
+                            <p style={{ fontWeight: "600", color: "#0077F9" }}>
+                                Từ ngày:&nbsp;
+                                {convertDateTime(examinationData?.admissionDate)}&nbsp;-&nbsp;
+                                Đến ngày:&nbsp;
+                                {convertDateTime(examinationData?.dischargeDate || new Date())}
+                            </p>
+                            <div className="flex">
+                                <p className="me-5">
+                                    Mã thẻ BHYT:&nbsp;
+                                    {examinationData?.insuranceCode || "Chưa có"}
+                                </p>
+                                <p>
+                                    Mức hưởng:&nbsp;
+                                    {COVERED[examinationData?.insuranceCoverage] * 100 + '%' || "Chưa có"}
+                                </p>
                             </div>
-                        ))
-                    ) : (
-                        <div>0 đ</div>
-                    )}
+                        </div>
+                        <div style={{ color: "#000" }}>
+                            <p style={{ fontWeight: "600", color: "#0077F9" }}>
+                                Tiền đã tạm ứng:&nbsp;
+                                {(examinationData?.advanceMoneyExaminationData?.reduce(
+                                    (sum, item) => sum + (item.amount || 0), 
+                                    0
+                                ) || 0).toLocaleString()} đ
+                            </p>
+                            {examinationData?.advanceMoneyExaminationData?.length > 0 ? (
+                                examinationData.advanceMoneyExaminationData.map((item, index) => (
+                                    <div className="flex" key={index}>
+                                        <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
+                                        <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <div>0 đ</div>
+                            )}
+                        </div>
+                    </div>
+                    <p className="flex justify-content-center" style={{color: "#0077F9", fontSize: "20px"}}>
+                        <span style={{fontWeight: "600"}}>BẢNG KÊ CHI PHÍ KHÁM BỆNH</span>
+                    </p>
+                    <Table
+                        className="custom-summary-table mt-2"
+                        columns={columns}
+                        dataSource={data}
+                        pagination={false}
+                        rowKey={(record) => `${record.stt}-${record.content}`}
+                        scroll={{ y: 395 }}
+                    />
                 </div>
-                <Table
-                    className="custom-summary-table"
-                    columns={columns}
-                    dataSource={data}
-                    pagination={false}
-                    rowKey={(record) => `${record.stt}-${record.content}`}
-                    scroll={{ y: 420 }}
-                />
-                <div style={{ marginTop: 16, textAlign: "right", paddingRight: 24 }}>
+                <div className="summary-fixed-total">
                     <p style={{color: "#000"}}>
-                        <span style={{fontWeight: "600"}}>Tổng chi trả:</span>&nbsp;
-                        {data.reduce((sum, item) => sum + (item.patientPaid || 0), 0).toLocaleString()} đ
+                        <span style={{fontWeight: "600"}}>Tổng chi phí KCB:</span>&nbsp;
+                        {data.reduce((sum, item) => sum + (item.total || 0), 0).toLocaleString()} đ
+                    </p>
+                    <p style={{color: "#000"}}>
+                        <span style={{fontWeight: "600"}}>Tổng BHYT chi trả:</span>&nbsp;
+                        {data.reduce((sum, item) => sum + (item.insurancePaid || 0), 0).toLocaleString()} đ
+                    </p>
+                    <p style={{color: "#000"}}>
+                        <span style={{fontWeight: "600"}}>Tổng tạm ứng:</span>&nbsp;
+                        {(examinationData?.advanceMoneyExaminationData?.reduce(
+                                    (sum, item) => sum + (item.amount || 0), 
+                                    0
+                                ) || 0).toLocaleString()} đ
                     </p>
                     <p style={{ color: "#0077F9", fontWeight: "600" }}>
                         {(() => {
                             const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
-                                (sum, item) => sum + (item.amount || 0),
-                                0
-                            ) || 0);
-
-                            const totalPaid = (data?.reduce(
-                                (sum, item) => sum + (item.patientPaid || 0),
-                                0
-                            ) || 0);
-
+                            (sum, item) => sum + (item.amount || 0), 0) || 0);
+                            const totalPaid = (data?.reduce((sum, item) => sum + (item.patientPaid || 0), 0) || 0);
                             const difference = totalAdvance - totalPaid;
 
                             if (difference > 0) {
-                                return `Tiền trả lại: ${difference.toLocaleString()} đ`;
+                            return `Tiền trả lại: ${difference.toLocaleString()} đ`;
                             } else if (difference < 0) {
-                                return `Tiền còn phải đóng: ${Math.abs(difference).toLocaleString()} đ`;
+                            return `Tiền còn phải đóng: ${Math.abs(difference).toLocaleString()} đ`;
                             } else {
-                                return `Không cần đóng thêm hay trả lại`;
+                            return `Không cần đóng thêm hay trả lại`;
                             }
                         })()}
                     </p>

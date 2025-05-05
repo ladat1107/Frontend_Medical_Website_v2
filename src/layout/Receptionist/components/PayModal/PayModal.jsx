@@ -342,8 +342,10 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.status === STATUS_BE.PAID ? <div>Đã thanh toán</div> :
-                                <>
+                            {+patientData?.status >= STATUS_BE.PAID ? 
+                                <div>
+                                    Đã thanh toán
+                                </div> : <>
                                     <label className='me-5'>
                                         <input
                                             className='radio'
@@ -364,7 +366,8 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                                         />
                                         Chuyển khoản
                                     </label>
-                                </>}
+                                </>
+                            }
                         </div>
                     </div>
                 </div>

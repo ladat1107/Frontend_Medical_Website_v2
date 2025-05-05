@@ -3,7 +3,7 @@ import moment from 'moment';
 import 'moment/locale/vi';
 import PrescriptionChangeModal from './InpatientModals/PrescriptionChangeModal';
 
-const InpatientPres = ({prescriptionData, examinationId, refresh}) => {
+const InpatientPres = ({prescriptionData, examinationId, refresh, isEditMode}) => {
     const [showModal, setShowModal] = useState(false);
     
     const prescriptionExamData = Array.isArray(prescriptionData) ? prescriptionData : [];
@@ -82,15 +82,17 @@ const InpatientPres = ({prescriptionData, examinationId, refresh}) => {
     
     return (
         <div className="inpatient-vitals-content">
-            <div className='d-flex justify-content-end align-items-center mb-3'>
-                <button 
-                    className='restore-button' 
-                    onClick={handleChangePrescription}
-                    type="primary"
-                >
-                    Thay đổi đơn thuốc
-                </button> 
-            </div>  
+            {isEditMode && (
+                <div className='d-flex justify-content-end align-items-center mb-3'>
+                    <button 
+                        className='restore-button' 
+                        onClick={handleChangePrescription}
+                        type="primary"
+                    >
+                        Thay đổi đơn thuốc
+                    </button> 
+                </div> 
+            )} 
             {sortedDates.length === 0 ? (
                 <div className="text-center p-4">Không có dữ liệu đơn thuốc</div>
             ) : (
@@ -102,7 +104,7 @@ const InpatientPres = ({prescriptionData, examinationId, refresh}) => {
                             <div className="flex mb-4" key={prescription.id}>
                                 <div className="inpatient-pres-date" style={{width: '15%'}}>
                                     <p style={{fontSize: '18px', fontWeight: '500'}}>
-                                        {moment(date).format('D [Tháng] M')}
+                                        {moment(date).format('Từ D [Tháng] M')}
                                     </p>
                                     <p className="gray-p">{getDayOfWeekVi(date)}</p>
                                 </div>

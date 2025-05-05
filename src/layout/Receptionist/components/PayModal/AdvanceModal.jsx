@@ -12,7 +12,11 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
 
     const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
     const [isLoading, setIsLoading] = useState(false);
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState(
+        patientData?.advanceMoneyExaminationData?.length 
+            ?  patientData.advanceMoneyExaminationData.reduce((sum, item) => sum + item.amount, 0) 
+            : ""
+    );      
     const [selectedRoom, setSelectedRoom] = useState(patientData?.examinationRoomData || null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -60,8 +64,6 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                 id: patientData?.id,
                 insuranceCoverage: patientData?.insuranceCoverage || null,
                 insuranceCode: patientData?.insuranceCode || null,
-                insuranceCovered: null,
-                coveredPrice: null,
                 status: STATUS_BE.PAID,
                 payment: paymentMethod,
 
@@ -97,7 +99,6 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
 
     const handleAmountChange = (value) => {
         setAmount(value);
-        console.log("Số tiền: ", value);
     };
 
     const SpecialText = (special) => {
@@ -207,9 +208,12 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                             <p>{selectedRoom?.serviceData[0]?.price ? formatCurrency(selectedRoom?.serviceData[0]?.price || 0) : null}</p>
                         </div>
                         <div className='col-5 d-flex align-items-center'>
-                            <button className='change-btn' onClick={showModal}>
-                                Sửa phòng
-                            </button>
+                            {+patientData?.status >= STATUS_BE.PAID ? <></>
+                                :
+                                <button className='change-btn' onClick={showModal}>
+                                    Sửa phòng
+                                </button>
+                            }
                         </div>
                     </div>
                     <hr className='mt-2'/>
@@ -249,11 +253,11 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                             <p style={{ fontWeight: "600" }}>Tạm ứng:</p>
                         </div>
                         <div className='col-3' style={{ color: "#008EFF", fontWeight: '600', border: "none" }}>
-                            <MoneyInput onChange={handleAmountChange}/>
+                            <MoneyInput value={amount} onChange={handleAmountChange}/>
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.status === STATUS_BE.PAID ? <div>Đã thanh toán</div> :
+                            {+patientData?.status >= STATUS_BE.PAID ? <div>Đã thanh toán</div> :
                                 <>
                                     <label className='me-5'>
                                         <input
@@ -281,7 +285,7 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                 </div>
                 <div className='payment-footer mt-4'>
                     <button className="close-user-btn" onClick={onClose}>Đóng</button>
-                    {+patientData?.status === STATUS_BE.PAID ? <></>
+                    {+patientData?.status >= STATUS_BE.PAID ? <></>
                         :
                         <button className='payment-btn' onClick={handlePay}>
                         {isLoading ? (

@@ -247,3 +247,6 @@ export const createPrescription = async (data) => {
     return axios.post(`/api/createPrescription`, data);
 }
 
+export const createAdvanceMoney = async (data) => {
+    return axios.post(`/api/createAdvanceMoney`, data);
+}

@@ -437,7 +437,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
                     time: timeSlot ? timeSlot : null,
                     is_appointment: timeSlot ? 1 : 0,
-                    status: timeSlot ? 2 : 4,
+                    status: timeSlot ? STATUS_BE.PENDING : STATUS_BE.WAITING,
                     isWrongTreatment: isWrongTreatment,
                     medicalTreatmentTier: medicalTreatmentTier,
 

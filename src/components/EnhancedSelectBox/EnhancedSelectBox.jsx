@@ -11,7 +11,6 @@ const EnhancedSelectBox = memo(({
   disabled,
   className
 }) => {
-  console.log('options', options);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";

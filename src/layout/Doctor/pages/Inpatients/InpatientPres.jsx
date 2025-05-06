@@ -19,7 +19,7 @@ const InpatientPres = ({prescriptionData, examinationId, refresh, isEditMode}) =
     // Hàm nhóm theo ngày
     const groupByDate = () => {
         const grouped = {};
-        if (!prescriptionExamData || !prescriptionExamData.length) return {};
+        if (!prescriptionExamData || !prescriptionExamData.length) return grouped;
 
         prescriptionExamData.forEach(prescription => {
             let date = moment(prescription.createdAt).format('YYYY-MM-DD');

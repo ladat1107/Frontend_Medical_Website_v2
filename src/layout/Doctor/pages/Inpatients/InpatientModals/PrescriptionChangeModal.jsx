@@ -188,7 +188,7 @@ const PrescriptionChangeModal = ({ visible, onCancel, onSave, prescriptionData, 
                 session: detail.session.join(','),
                 dose: detail.dose
             })),
-            oldPresId: prescriptionData[0].id,
+            oldPresId: prescriptionData[0]?.id || null,
         };
 
         setLoading(true);

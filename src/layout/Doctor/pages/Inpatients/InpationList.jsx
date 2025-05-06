@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useMutation } from "@/hooks/useMutation";
 import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientItem";
+import { useNavigate } from "react-router-dom";
 
 const InpatientList = () => {
     const [status, setStatus] = useState(5);
@@ -15,6 +16,7 @@ const InpatientList = () => {
     const [total, setTotal] = useState(0);
     const [search, setSearch] = useState('');
     const [listInpatient, setListInpatient] = useState([]);
+    const navigate = useNavigate();
 
     // #region Fetch data 
     const {
@@ -43,6 +45,10 @@ const InpatientList = () => {
 
     const downItem = () => {
         fetchInpatients();
+    }
+
+    const handleClickRow = (examinationId) => {
+        navigate(`/inpatient/${examinationId}`);
     }
 
     return (

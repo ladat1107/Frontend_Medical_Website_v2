@@ -14,7 +14,7 @@ import { DISCHARGE_OPTIONS } from '@/constant/options';
 import CustomDatePicker from '@/components/DatePicker';
 import CustomDatePickerWithHighlights from '@/components/DatePicker/CustomDatePickerWithHighlights';
 import { useSelector } from 'react-redux';
-import { TIMESLOTS } from '@/constant/value';
+import { STATUS_BE, TIMESLOTS } from '@/constant/value';
 import SummaryModal from './InpatientModals/InpatientSumary';
 import MoneyInput from '@/components/Input/MoneyInput';
 import FlexibleCollapsible from './Components/FlexibleCollapsible';
@@ -172,7 +172,7 @@ const InpatientDetail = () => {
     useEffect(() => {
         if (dataExamination && dataExamination.DT) {
             setExamData(dataExamination.DT);
-            //if (dataExamination.DT.status === 7) setIsEditMode(false);
+            if (dataExamination.DT.status === 7) setIsEditMode(false);
         }
     }, [dataExamination]);
 
@@ -217,6 +217,7 @@ const InpatientDetail = () => {
                 symptom: formData.symptom,
                 diseaseName: formData.diseaseName,
                 comorbidities: formData.comorbidities.join(','),
+                status: STATUS_BE.EXAMINING,
             }
 
             const response = await updateExamination(data);
@@ -236,6 +237,11 @@ const InpatientDetail = () => {
     }
 
     const checkValid = () => {
+        if (!formData.diseaseName) {
+            message.error('Vui lòng nhập tên bệnh!');
+            return false;
+        }
+
         if (!formData.dischargeStatus) {
             message.error('Vui lòng chọn tình trạng xuất viện!');
             return false;
@@ -523,7 +529,7 @@ const InpatientDetail = () => {
                                                             <i className="fa-solid fa-spinner fa-spin me-2"></i>
                                                             Đang xử lý...
                                                         </>
-                                                    ) : 'Lưu tạm ứng'}
+                                                    ) : 'Thêm tạm ứng'}
                                                 </button>
                                             </div>
                                         </>
@@ -547,7 +553,7 @@ const InpatientDetail = () => {
                                         />
                                     ) : (
                                         <div style={{fontWeight: '500'}}>
-                                            {DISCHARGE_OPTIONS[formData?.dischargeStatus]?.label}
+                                            {DISCHARGE_OPTIONS.find(option => option.value === formData.dischargeStatus)?.label || ''}
                                         </div>
                                     )}
                                 </div>
@@ -628,9 +634,13 @@ const InpatientDetail = () => {
                                         {formData.dischargeStatus === 4 && formData.dischargeDate &&  (
                                                 <>
                                             <div className='col-4 gray-p'>Thời gian tái khám:</div>
-                                            <div className='col-3' style={{fontWeight: '500'}}>30/06/2025</div>
+                                            <div className='col-3' style={{fontWeight: '500'}}>
+                                                {formData?.reExaminationDate ? convertDateTime(formData?.reExaminationDate) : '--/--/20--'}
+                                            </div>
                                             <div className='col-2 gray-p'>Khung giờ:</div>
-                                            <div className='col-3' style={{fontWeight: '500'}}>7:30</div>
+                                            <div className='col-3' style={{fontWeight: '500'}}>
+                                                {TIMESLOTS.find(option => option.value === formData.time)?.label || ''}
+                                            </div>
                                             </>
                                         )}
                                     </>

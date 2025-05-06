@@ -49,7 +49,7 @@ const InpatientVitals = ({vitalsData, examId, isEditMode}) => {
             grouped[today] = [];
         }
 
-        if (!examinationVitalSignData || !examinationVitalSignData.length) return {};
+        if (!examinationVitalSignData || !examinationVitalSignData.length) return grouped;
 
         examinationVitalSignData.forEach(vital => {
             const date = moment(vital.updatedAt).format('YYYY-MM-DD');

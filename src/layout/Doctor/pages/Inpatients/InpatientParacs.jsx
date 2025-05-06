@@ -5,6 +5,7 @@ import { message, Popconfirm } from 'antd';
 import { useMutation } from '@/hooks/useMutation';
 import PropTypes from 'prop-types';
 import { createRequestParaclinical, deleteParaclinical, getServiceLaboratory } from '@/services/doctorService';
+import { STATUS_BE } from '@/constant/value';
 
 const InpatientParacs = ({ paracsData, examId, isEditMode}) => {
 
@@ -42,7 +43,7 @@ const InpatientParacs = ({ paracsData, examId, isEditMode}) => {
             grouped[today] = [];
         }
 
-        if (!examinationResultParaclincalData || !examinationResultParaclincalData.length) return {};
+        if (!examinationResultParaclincalData || !examinationResultParaclincalData.length) return grouped;
 
         examinationResultParaclincalData.forEach(parac => {
             const date = moment(parac.updatedAt).format('YYYY-MM-DD');
@@ -242,7 +243,7 @@ const InpatientParacs = ({ paracsData, examId, isEditMode}) => {
                                                     <div className="inpatient-vitals-detail__body__item">
                                                         <div className='flex mt-2' style={{justifyContent: 'space-between'}}>
                                                             <p style={{fontSize: '18px', fontWeight: '500'}}>{parac.paracName}</p> 
-                                                            {isEditMode && (
+                                                            {isEditMode && parac.status !== STATUS_BE.DONE && (
                                                                 <Popconfirm
                                                                     title="Xác nhận xóa"
                                                                     description="Bạn có chắc chắn muốn xóa xét nghiệm này?"
@@ -295,7 +296,7 @@ const InpatientParacs = ({ paracsData, examId, isEditMode}) => {
                                     </div>
                                 </div>
                             )}
-                            {date === today && (
+                            {date === today && isEditMode && (
                                 <>
                                     <div
                                         ref={paraclinicalContainerRef}

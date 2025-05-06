@@ -104,9 +104,11 @@ const InpatientPres = ({prescriptionData, examinationId, refresh, isEditMode}) =
                             <div className="flex mb-4" key={prescription.id}>
                                 <div className="inpatient-pres-date" style={{width: '15%'}}>
                                     <p style={{fontSize: '18px', fontWeight: '500'}}>
-                                        {moment(date).format('Từ D [Tháng] M')}
+                                        {prescription.status === 2 ? moment(date).format('D [Tháng] M') : "Toa mang về"}
                                     </p>
-                                    <p className="gray-p">{getDayOfWeekVi(date)}</p>
+                                    <p className="gray-p">{
+                                        prescription.status === 2 ? getDayOfWeekVi(date) : moment(date).format('Từ D [Tháng] M')
+                                    }</p>
                                 </div>
                                 <div className="d-flex flex" style={{width: '85%'}}>
                                     {/* Buổi sáng */}

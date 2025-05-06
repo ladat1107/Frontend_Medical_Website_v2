@@ -464,38 +464,6 @@ const InpatientDetail = () => {
                                 <div>                  
                                     <button className='save-button me-2' onClick={handleOpenSummaryModal}>Báo cáo bệnh án</button>         
                                 </div>   
-                                {/* <div className="collapsible-box">
-                                    <button
-                                        className="collapsible-toggle"
-                                        onClick={() => setIsOpen(!isOpen)}
-                                    >
-                                        {isOpen ? 
-                                            <>
-                                                Thu gọn
-                                                <i className="ms-2 fa-solid fa-caret-up"></i>
-                                            </>
-                                        : 
-                                            <>
-                                                Xem chi tiết tạm ứng
-                                                <i className="ms-2 fa-solid fa-caret-down"></i>
-                                            </>
-                                        }
-                                    </button>
-
-                                    <div className={`collapsible-content ${isOpen ? "open" : ""}`}>
-                                        {examData?.advanceMoneyExaminationData?.length > 0 ? (
-                                            examData.advanceMoneyExaminationData.map((item, index) => (
-                                                <div className="flex" key={index}>
-                                                    <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
-                                                    <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div>0 đ</div>
-                                        )}
-                                        <MoneyInput onChange={handleAmountChange}/>
-                                    </div>
-                                </div>                */}
                                 <FlexibleCollapsible
                                     isOpen={isOpen}
                                     onToggle={() => setIsOpen(!isOpen)}

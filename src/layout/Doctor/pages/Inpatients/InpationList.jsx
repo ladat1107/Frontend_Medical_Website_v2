@@ -79,7 +79,7 @@ const InpatientList = () => {
                             </div>
                         </>
                     )}
-                    <div className="col-6">
+                    <div className="col-3">
                         <p className="search-title">Tìm kiếm đơn khám</p>
                         <input type="text" className="search-box" 
                             placeholder="Nhập tên bệnh nhân để tìm kiếm..." 

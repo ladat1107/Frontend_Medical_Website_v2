@@ -2,7 +2,6 @@ import { message } from 'antd';
 import { PropTypes } from 'prop-types';
 import { useEffect, useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
-import { getThirdDigitFromLeft } from '@/utils/numberSeries';
 import { checkOutExamination, checkOutParaclinical, updateExamination, updateListPayParaclinicals } from '@/services/doctorService';
 import './PayModal.scss';
 import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';
@@ -19,7 +18,8 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
         infostaff: { firstName: '', lastName: '', position: '' },
         price: 0,
         description: '',
-        paraclinicalItems: []
+        paraclinicalItems: [],
+        isWrongTreatment: 0,
     });
 
     // Use useEffect to set initial data when component mounts or patientData changes
@@ -44,6 +44,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 },
                 price: patientData?.examinationStaffData?.price,
                 description: 'Khám bệnh',
+                isWrongTreatment: patientData?.isWrongTreatment,
             };
 
             setInsurance(patientData?.insuranceCode || '');
@@ -63,6 +64,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 // },
                 price: patientData?.totalParaclinicalPrice,
                 paraclinicalItems: patientData?.paraclinicalItems,
+                isWrongTreatment: patientData?.isWrongTreatment,
             };
 
             setInsurance(patientData?.insuranceCode || '');
@@ -208,18 +210,9 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         <div className='col-3'>
                             <p style={{ fontWeight: "400" }}>Bệnh nhân:</p>
                         </div>
-                        <div className='col-8'>
+                        <div className='col-4'>
                             <p>{data.infouser.lastName + ' ' + data.infouser.firstName}</p>
                         </div>
-                    </div>
-                    <div className='col-12 d-flex flex-row mt-3'>
-                        <div className='col-3 d-flex align-items-center'>
-                            <p style={{ fontWeight: "400" }}>CCCD/CMND:</p>
-                        </div>
-                        <div className='col-3'>
-                            <p>{data.infouser.cid}</p>
-                        </div>
-                        <div className='col-1' />
                         <div className='col-2 d-flex align-items-center'>
                             <p style={{ fontWeight: "400" }}>Ưu tiên:</p>
                         </div>
@@ -227,10 +220,24 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                             {SpecialText({ special })}
                         </div>
                     </div>
+                    <div className='col-12 d-flex flex-row mt-3'>
+                        <div className='col-3 d-flex align-items-center'>
+                            <p style={{ fontWeight: "400" }}>CCCD/CMND:</p>
+                        </div>
+                        <div className='col-4'>
+                            <p>{data.infouser.cid}</p>
+                        </div>
+                        <div className='col-2 d-flex align-items-center'>
+                            <p style={{ fontWeight: "400" }}>Tuyến KCB:</p>
+                        </div>
+                        <div className='col-3'>
+                            <p>{data?.isWrongTreatment === 0 ? 'Đúng tuyến' : 'Sai tuyến'}</p>
+                        </div>
+                    </div>
                     <hr className='mt-4' />
                     {type === 'examination' ? (
                         <>
-                            <div className='col-12 d-flex flex-row'>
+                            <div className='col-12 mt-4 d-flex flex-row'>
                                 <div className='col-3 d-flex align-items-center'>
                                     <p style={{ fontWeight: "400" }}>Bác sĩ:</p>
                                 </div>
@@ -251,7 +258,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                     ) : (
                         <>
                             {data?.paraclinicalItems.length > 0 && data.paraclinicalItems.map((item, index) => (
-                                <div className='col-12 d-flex flex-column mb-3 pres-item' key={index}>
+                                <div className='col-12 d-flex flex-column mt-2 pres-item' key={index}>
                                     <div className='col-12 d-flex align-items-center'>
                                         <p style={{ fontWeight: "500", color: "#007BFF" }}>Cận lâm sàng: {item?.paracName}</p>
                                     </div>
@@ -335,8 +342,10 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.status === STATUS_BE.PAID ? <div>Đã thanh toán</div> :
-                                <>
+                            {+patientData?.status >= STATUS_BE.PAID ? 
+                                <div>
+                                    Đã thanh toán
+                                </div> : <>
                                     <label className='me-5'>
                                         <input
                                             className='radio'
@@ -357,7 +366,8 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                                         />
                                         Chuyển khoản
                                     </label>
-                                </>}
+                                </>
+                            }
                         </div>
                     </div>
                 </div>
@@ -378,7 +388,6 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
             </div>
         </div>
     )
-
 }
 
 PayModal.propTypes = {

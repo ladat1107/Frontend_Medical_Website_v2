@@ -217,7 +217,7 @@ const ParacModal = ({ isOpen, onClose, onSusscess, paracId, patientData }) => {
                             <p style={{fontWeight: "400"}}>Kết quả:</p>
                         </div>
                         <div className='col-9'>
-                            <input className='input-add-exam' style={{width: "100%"}} maxLength={10}
+                            <input className='input-add-exam' style={{width: "100%"}} maxLength={50}
                                 type='text' value={result} onChange={(e) => setResult(e.target.value)}
                                 placeholder='Nhập kết quả cận lâm sàng...' />
                         </div>

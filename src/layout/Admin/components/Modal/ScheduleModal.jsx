@@ -7,6 +7,7 @@ import { ROLE } from '@/constant/role';
 import { useEffect, useState } from 'react';
 import { createSchedule } from '@/services/adminService';
 import "./Modal.scss";
+import useSendNotification from '@/hooks/useSendNotification';
 
 const ScheduleModal = (props) => {
     let date = formatDate(props?.data?.date);
@@ -16,6 +17,8 @@ const ScheduleModal = (props) => {
     let [listDoctor, setListDoctor] = useState([]);
     let [listNurse, setListNurse] = useState([]);
     let [errorText, setErrorText] = useState('');
+    let { handleSendNoti } = useSendNotification();
+
     useEffect(() => {
         let _listDoctor = [];
         let _listNurse = [];
@@ -71,6 +74,19 @@ const ScheduleModal = (props) => {
                 message.success(response.EM)
                 handleClose();
                 props.refresh();
+
+                handleSendNoti(
+                    `📆 Thông báo lịch trực`,
+                    `<p>
+                        <span style="color: rgb(234, 195, 148); font-weight: bold;">✨ Lịch trực ✨</span> 
+                        Đã có thông báo về lịch trực mới! Các bác sĩ xem thông tin và thực hiện tại  
+                        👉 <a href="http://localhost:3000/doctorSchedule" rel="noopener noreferrer" target="_blank" style="color: #007bff; font-weight: bold;">Xem lịch trực</a>
+                    </p>`,
+                    [],
+                    false,
+                    response.DT.map((item) => item?.staffScheduleData?.staffUserData?.id) // Chỉ lấy id của người nhận thông báo
+                )
+
             } else if (response.EC === 2) {
                 setErrorText(response.EM);
             } else {

@@ -180,6 +180,14 @@ export const markAllRead = async (data) => {
     return axios.put(`/api/markAllRead`, data);
 }
 
+export const getArrayUserId = async () => {
+    return axios.get(`/api/getArrayUserId`);
+}
+
+export const getArrayAdminId = async () => {
+    return axios.get(`/api/getArrayAdminId`);
+}
+
 export const sendNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, notiCode, receiverIds) => {
     const response = axios.post('/api/send-notification', {
         title,
@@ -203,4 +211,42 @@ export const deleteAssistantForCustomer = async () => {
     return axios.delete(`/api/deleteAssistantForCustomer`);
 }
 
+export const getScheduleByStaffIdFromToday = async () => {
+    return axios.get(`/api/getScheduleByStaffIdFromToday`);
+}
 
+export const getAvailableRooms = async () => {
+    return axios.get(`/api/getAvailableRooms`);
+}
+
+export const getListAdvanceMoney = async (page = 1, limit = 20, search ='', statusPay = 4) => {
+    return axios.get(`/api/getListAdvanceMoney?page=${page}&limit=${limit}&search=${search}&statusPay=${statusPay}`);
+}
+
+export const getListInpatients = async (currentDate, toDate, status = 5, currentPage = 1, pageSize = 20, search = '') => {
+    return axios.get(`/api/getListInpatients?currentDate=${currentDate}&toDate=${toDate}&status=${status}&page=${+currentPage}&limit=${+pageSize}&search=${search}`);
+}
+
+export const createVitalSign = async (data) => {
+    return axios.post(`/api/createVitalSign`, data);
+}
+
+export const updateVitalSign = async (data) => {
+    return axios.put(`/api/updateVitalSign`, data);
+}
+
+export const deleteVitalSign = async (id) => {
+    return axios.delete(`/api/deleteVitalSign`, {
+        params: {
+            id: id
+        }
+    });
+}
+
+export const createPrescription = async (data) => {
+    return axios.post(`/api/createPrescription`, data);
+}
+
+export const createAdvanceMoney = async (data) => {
+    return axios.post(`/api/createAdvanceMoney`, data);
+}

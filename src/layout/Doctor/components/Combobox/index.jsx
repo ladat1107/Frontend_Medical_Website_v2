@@ -3,15 +3,18 @@ import PropTypes from 'prop-types';
 import './SelectBox.scss'; 
 
 const SelectBox = ({ options, value, onChange, placeholder, disabled }) => {
+  // Check if value is null, undefined, or should display placeholder
+  const isPlaceholderVisible = value === null || value === undefined || value === '';
+  
   return (
     <div className="select-box">
       <select 
-        value={value} 
+        value={isPlaceholderVisible ? '' : value} 
         onChange={onChange} 
         className="select"
-        disabled={disabled} // Chặn chọn nếu disabled = true
+        disabled={disabled}
       >
-        {placeholder && <option value="">{placeholder}</option>}
+        {placeholder && <option disabled value="">{placeholder}</option>}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -24,10 +27,19 @@ const SelectBox = ({ options, value, onChange, placeholder, disabled }) => {
 
 SelectBox.propTypes = {
   options: PropTypes.array.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.oneOf([null])
+  ]),
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  disabled: PropTypes.bool, // Thêm prop disabled
+  disabled: PropTypes.bool,
+};
+
+// Default props to prevent errors when value is not provided
+SelectBox.defaultProps = {
+  disabled: false
 };
 
 export default SelectBox;

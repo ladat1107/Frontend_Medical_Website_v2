@@ -5,7 +5,7 @@ import { getThirdDigitFromLeft } from '@/utils/numberSeries';
 import { message } from 'antd';
 import { checkOutPrescription, updatePrescription } from '@/services/doctorService';
 import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';
-import { insuranceCovered } from '@/utils/coveredPrice';
+import { medicineCovered } from '@/utils/coveredPrice';
 
 const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
     const [special, setSpecial] = useState('normal');
@@ -58,6 +58,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                 prescriptionDetails: patientData?.prescriptionExamData[0]?.prescriptionDetails,
             },
             price: patientData?.prescriptionExamData[0].totalMoney,
+            isWrongTreatment: patientData?.isWrongTreatment || 0,
+            medicalTreatmentTier: patientData?.medicalTreatmentTier || 2,
             // paracName: patientData?.paraclinicalData?.name,
         };
 
@@ -86,8 +88,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
             totalAmount += itemTotal;
             
             // Only apply insurance coverage if the item is covered (isCovered is not 0 and not null)
-            if (item.isCovered === 0 || item.isCovered === null) {
-                totalInsuranceCovered += insuranceCovered(itemTotal, +insuranceCoverageValue);
+            if (item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0) {
+                totalInsuranceCovered += medicineCovered(itemTotal, +insuranceCoverageValue, Number(item.insuranceCovered), data.isWrongTreatment, data.medicalTreatmentTier);
             }
         });
         
@@ -98,8 +100,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
         setIsLoading(true);
         try {
             const presDetail = data.infoPres.prescriptionDetails.map((item) => {
-                let insuranceCoveredValue = (item.isCovered === 0 || item.isCovered === null)
-                    ? insuranceCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage)
+                let insuranceCoveredValue = (item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0)
+                    ? medicineCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage, Number(item.insuranceCovered), data.isWrongTreatment, data.medicalTreatmentTier)
                     : 0;
             
                 return {
@@ -197,8 +199,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
             const itemTotal = item.PrescriptionDetail.quantity * item.price;
             
             // Only apply insurance coverage if the item is covered (isCovered is not 0 and not null)
-            if (item.isCovered === 0 || item.isCovered === null) {
-                totalInsuranceCovered += insuranceCovered(itemTotal, +insuranceCoverage);
+            if (item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0) {
+                totalInsuranceCovered += medicineCovered(itemTotal, +insuranceCoverage, Number(item.insuranceCovered), data.isWrongTreatment, data.medicalTreatmentTier);
             }
         });
         
@@ -219,8 +221,15 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                         <div className='col-3'>
                             <p style={{ fontWeight: "400" }}>Bệnh nhân:</p>
                         </div>
-                        <div className='col-8'>
+                        <div className='col-3'>
                             <p>{data.infouser.lastName + ' ' + data.infouser.firstName}</p>
+                        </div>
+                        <div className='col-1' />
+                        <div className='col-2 d-flex align-items-center'>
+                            <p style={{ fontWeight: "400" }}>Ưu tiên:</p>
+                        </div>
+                        <div className='col-3'>
+                            {SpecialText({ special })}
                         </div>
                     </div>
                     <div className='col-12 d-flex flex-row mt-3'>
@@ -232,10 +241,14 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                         </div>
                         <div className='col-1' />
                         <div className='col-2 d-flex align-items-center'>
-                            <p style={{ fontWeight: "400" }}>Ưu tiên:</p>
+                            <p style={{ fontWeight: "400" }}>Tuyến khám:</p>
                         </div>
                         <div className='col-3'>
-                            {SpecialText({ special })}
+                            {data.isWrongTreatment === 1 ? (
+                                <p style={{ color: '#F44343' }}>Khám sai tuyến</p>
+                            ) : (
+                                <p style={{ color: '#008EFF' }}>Khám đúng tuyến</p>
+                            )}
                         </div>
                     </div>
                     <hr className='mt-4' style={{
@@ -277,7 +290,8 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                                         <p>Tổng giá: {formatCurrency(item.PrescriptionDetail.quantity * item?.price)}</p>
                                     </div>
                                     <div className='col-4 d-flex align-items-center'>
-                                        <p>BHYT chi trả: {item.isCovered === 0 || item.isCovered === null ? formatCurrency(insuranceCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage)) 
+                                        <p>BHYT chi trả: {item.isCovered === 0 || item.isCovered === null || Number(item.insuranceCovered) > 0
+                                                                ? formatCurrency(medicineCovered(item.PrescriptionDetail.quantity * item?.price, +insuranceCoverage, Number(item.insuranceCovered)), data.isWrongTreatment, data.medicalTreatmentTier) 
                                                                 : formatCurrency(0)}</p>
                                     </div>
                                 </div>

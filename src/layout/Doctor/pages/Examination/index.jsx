@@ -9,7 +9,7 @@ import { useMutation } from "@/hooks/useMutation";
 import { convertDateTime } from "@/utils/formatDate";
 import { convertGender } from "@/utils/convertGender";
 import { useParams } from "react-router-dom";
-import { Modal, Spin } from "antd";
+import { Modal, Spin, message } from "antd";
 import HistoryModal from "../../components/HistoryModal/HistoryModal";
 import OldParaclinacalModal from "@/components/Modals/OldParaclinicalModal";
 
@@ -27,6 +27,7 @@ const Examination = () => {
     const [comorbiditiesOptions, setComorbiditiesOptions] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(true);
+    const [copiedPrescriptionData, setCopiedPrescriptionData] = useState(null);
 
 
     useEffect(() => {
@@ -94,8 +95,9 @@ const Examination = () => {
             const fields = [
                 "id", "userId", "staffId", "symptom", "diseaseName", "comorbidities",
                 "treatmentResult", "admissionDate", "dischargeDate", "status",
-                "reason", "medicalTreatmentTier", "paymentDoctorStatus",
-                "price", "special", "insuranceCoverage", "oldParaclinical"
+                "reason", "medicalTreatmentTier", "paymentDoctorStatus", "reExaminationTime",
+                "price", "special", "insuranceCoverage", "oldParaclinical", "dischargeStatus", "reExaminationDate", "time",
+                "selectedRoom"
             ];
 
             const disease = dataExamination.DT?.diseaseName?.split(" - ") || "";
@@ -106,7 +108,15 @@ const Examination = () => {
                 dischargeDate: dataExamination.DT.dischargeDate,
                 diseaseName: disease[0],
                 staffName: dataExamination.DT.examinationStaffData?.staffUserData?.lastName + " " +
-                    dataExamination.DT.examinationStaffData?.staffUserData?.firstName || ""
+                    dataExamination.DT.examinationStaffData?.staffUserData?.firstName || "",
+                selectedRoom: dataExamination.DT?.examinationRoomData?.id ? {
+                    id: dataExamination.DT.examinationRoomData?.id || null,
+                    name: dataExamination.DT.examinationRoomData?.name || "",
+                    roomDepartmentData: {
+                        name: dataExamination.DT.examinationRoomData?.roomDepartmentData?.name || "",
+                    },
+                    serviceData: dataExamination.DT.examinationRoomData?.serviceData || [],
+                } : null,
             };
             const totalParaclinicalPrice = (dataExamination.DT.examinationResultParaclincalData || []).reduce(
                 (sum, item) => sum + (item.price || 0),
@@ -116,7 +126,7 @@ const Examination = () => {
             setExaminationData(formattedData);
 
             setPatientData(dataExamination.DT.userExaminationData || {});
-            setVitalSignData(dataExamination.DT.examinationVitalSignData || {});
+            setVitalSignData(dataExamination.DT.examinationVitalSignData[0] || {});
             setParaclinicalData(dataExamination.DT.examinationResultParaclincalData || []);
             setPrescriptionData(dataExamination.DT.prescriptionExamData || []);
 
@@ -129,6 +139,14 @@ const Examination = () => {
     const handleRadioChange = (e) => {
         setSelectedRadio(e.target.value);
     };
+
+    const handleCopyPrescription = (prescriptionData) => {
+        setCopiedPrescriptionData(prescriptionData);
+        // Auto-select prescription tab when data is copied
+        setSelectedRadio('prescription');
+        //message.success('Đơn thuốc đã được sao chép. Chuyển đến tab đơn thuốc.');
+    };
+
     return (
         <>
             <div className="container">
@@ -288,6 +306,8 @@ const Examination = () => {
                                             paraclinicalPrice={totalParaclinical}
                                             prescriptionData={prescriptionData}
                                             isEditMode={isEditMode}
+                                            copiedPrescriptionData={copiedPrescriptionData}
+                                            clearCopiedData={() => setCopiedPrescriptionData(null)}
                                         />
                                     )}
                                 </div>
@@ -306,6 +326,7 @@ const Examination = () => {
                             isModalOpen={isModalOpen}
                             handleCancel={handleCancel}
                             userId={patientData.id}
+                            onCopyPrescription={handleCopyPrescription}
                         />
                     </div>
                 )}

@@ -1,12 +1,14 @@
 import './CreateHandbook.scss';
 import { Form, message, Progress, Skeleton } from 'antd';
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { CloudUploadOutlined, } from '@ant-design/icons';
-import { getHandbookById, updateHandbook, createHandbook } from '@/services/doctorService';
+import { getHandbookById, updateHandbook, createHandbook, sendNotification } from '@/services/doctorService';
 import { CLOUDINARY_FOLDER } from '@/constant/value';
 import { uploadAndDeleteToCloudinary, } from '@/utils/uploadToCloudinary';
 import { useSelector } from 'react-redux';
 import TextEditor from '@/components/TextEditor/TextEditor';
+import useSendNotification from '@/hooks/useSendNotification';
 
 const CreateHandbook = (props) => {
     const [form] = Form.useForm();
@@ -18,6 +20,8 @@ const CreateHandbook = (props) => {
     const [image, setImage] = useState("");
     let [isLoadingFetch, setIsLoadingFetch] = useState(false);
     let [isLoadingAction, setIsLoadingAction] = useState(false);
+    let { handleSendNoti } = useSendNotification();
+
     useEffect(() => {
         if (handbookId) {
             fetchHandbookData(handbookId);
@@ -91,6 +95,21 @@ const CreateHandbook = (props) => {
                         message.success(response.EM);
                         form.resetFields();
                         props.refresh();
+
+                        if (!props?.handbookId) {
+                            handleSendNoti(
+                                `[Cẩm nang mới] ${response.DT?.title}` || 'Cẩm nang mới',
+                                `<p>
+                                    <span style="color: rgb(234, 195, 148); font-weight: bold;">✨ Tin mới ✨</span> 
+                                    Cẩm nang chăm sóc sức khỏe đã lên sóng! Quản trị viên xem và duyệt tại 💪  
+                                    👉 <a href="http://localhost:3000/handbookDetail/${response.DT.id}" rel="noopener noreferrer" target="_blank" style="color: #007bff; font-weight: bold;">Xem ngay</a>
+                                </p>` || response.DT?.htmlDescription,
+                                [],
+                                true,
+                                []
+                            )
+                        }
+
                     } else {
                         message.error(response.EM);
                     }
@@ -181,7 +200,7 @@ const CreateHandbook = (props) => {
                                             )}
                                         </div>
                                     </div>
-                                    <input type="file" id='input-upload' hidden={true} onChange={handleImageChange} />
+                                    <input type="file" accept="image/*" id='input-upload' hidden={true} onChange={handleImageChange} />
                                 </Form.Item>}
                         </div>
                     </div>
@@ -215,5 +234,11 @@ const CreateHandbook = (props) => {
         </>
     )
 }
+CreateHandbook.propTypes = {
+    handbookId: PropTypes.string,
+    allTags: PropTypes.array,
+    setAllTags: PropTypes.func,
+    refresh: PropTypes.func,
+};
 
 export default CreateHandbook;

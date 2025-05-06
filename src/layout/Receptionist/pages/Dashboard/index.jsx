@@ -309,6 +309,7 @@ const ReceptionistDashboard = () => {
 
     const handleClickItem = (id) => {
         const selectedPatient = listExam.find(item => item.id === id);
+        console.log("Selected Patient:", selectedPatient);
         if (selectedPatient) {
             setExamId(id);
             setIsEditMode(true);
@@ -521,7 +522,7 @@ const ReceptionistDashboard = () => {
             >
                 <div className="flex flex-wrap gap-2 justify-between">
                     <div className="flex flex-wrap gap-2">
-                        <div className="w-fit">
+                        <div className="w-fit lg:w-40">
                             <Form.Item className="m-0">
                                 <Select
                                     className="w-full"

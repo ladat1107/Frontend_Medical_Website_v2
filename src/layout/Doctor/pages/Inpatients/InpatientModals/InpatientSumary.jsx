@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Table, Spin } from "antd";
-import { COVERED } from "@/constant/value";
+import { Modal, Table, Spin, message } from "antd";
+import { COVERED, PAYMENT_METHOD, STATUS_BE } from "@/constant/value";
 import { insuranceCovered, medicineCovered } from "@/utils/coveredPrice";
 import { convertDateTime } from "@/utils/formatDate";
 import "./PrescriptionChangeModal.scss";
-import { getExaminationById } from "@/services/doctorService";
+import { getExaminationById, updateExamination } from "@/services/doctorService";
 import { useMutation } from "@tanstack/react-query";
+import { text } from "@fortawesome/fontawesome-svg-core";
 
 const columns = [
     {
@@ -69,6 +70,7 @@ const columns = [
 const SummaryModal = ({ open, onCancel, examData = null, examinationId = null }) => {
     const [examinationData, setExamData] = useState(examData || {});
     const [isLoading, setIsLoading] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
 
     let {
         data: dataExamination,
@@ -117,6 +119,33 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
         const diffDays = (end - start) / millisecondsPerDay + 1; // +1 để tính đủ cả 2 ngày
       
         return diffDays;
+    }
+
+    const [isPayLoading, setIsPayLoading] = useState(false);
+    const handleTotalPay = async () => {
+        try {
+            setIsPayLoading(true);
+            const datapay = {
+                id: examinationData?.id,
+                status: 8,
+                payment: paymentMethod,
+                amount: [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0)
+            }
+            if (paymentMethod === PAYMENT_METHOD.CASH) {
+                const response = await updateExamination(datapay)
+                if (response.EC === 0 && response.DT.includes(1)) {
+                    message.success('thành công!');
+                } else {
+                    message.error('Cập nhật bệnh nhân thất bại!');
+                }
+            } else {
+
+            }
+        } catch (error) {
+            console.error("Error handling total payment:", error);
+        } finally {
+            setIsPayLoading(false);
+        }
     }
 
     // Kiểm tra nếu đang loading hoặc không có dữ liệu, hiển thị trạng thái loading
@@ -322,6 +351,36 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
         });
     });
 
+      // Tính toán các giá trị
+  const totalCost = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.total || 0), 0);
+  const insurancePaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0);
+  const patientPaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0);
+  const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
+    (sum, item) => sum + (item.amount || 0), 0) || 0);
+  
+  const difference = totalAdvance - patientPaid;
+  
+  // Định dạng tiền tệ
+  const formatCurrency = (amount) => amount.toLocaleString() + ' đ';
+  
+  const handlePayment = () => {
+    setIsPayLoading(true);
+    handleTotalPay();
+  };
+  
+  // Xác định trạng thái thanh toán
+  const getPaymentStatus = () => {
+    if (difference > 0) {
+      return { text: `Tiền trả lại: ${formatCurrency(difference)}`, color: 'text-green-600' };
+    } else if (difference < 0) {
+      return { text: `Tiền còn phải đóng: ${formatCurrency(Math.abs(difference))}`, color: 'text-red-600' };
+    } else {
+      return { text: 'Không cần đóng thêm hay trả lại', color: 'text-blue-600' };
+    }
+  };
+  
+  const paymentStatus = getPaymentStatus();
+
     return (
         <Modal
             open={open}
@@ -330,7 +389,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
             footer={null}
             width="90%"
             style={{ top: 20 }}
-            bodyStyle={{ overflow: 'hidden', maxHeight: 'none' }}
+            styles={{ overflow: 'hidden', maxHeight: 'none' }}
         >
             <div className="custom-summary-container">
                 <div className="custom-scroll-area">
@@ -400,40 +459,89 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
                         </>
                     )}
                 </div>
-                <div className="summary-fixed-total">
-                    <p style={{color: "#000"}}>
-                        <span style={{fontWeight: "600"}}>Tổng chi phí KCB:</span>&nbsp;
-                        {[...data, ...dischargePresData].reduce((sum, item) => sum + (item.total || 0), 0).toLocaleString()} đ
-                    </p>
-                    <p style={{color: "#000"}}>
-                        <span style={{fontWeight: "600"}}>Tổng BHYT chi trả:</span>&nbsp;
-                        {[...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0).toLocaleString()} đ
-                    </p>
-                    <p style={{color: "#000"}}>
-                        <span style={{fontWeight: "600"}}>Tổng tạm ứng:</span>&nbsp;
-                        {(examinationData?.advanceMoneyExaminationData?.reduce(
-                                    (sum, item) => sum + (item.amount || 0), 
-                                    0
-                                ) || 0).toLocaleString()} đ
-                    </p>
-                    <p style={{ color: "#0077F9", fontWeight: "600" }}>
-                        {(() => {
-                            const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
-                            (sum, item) => sum + (item.amount || 0), 0) || 0);
-                            const totalPaid = ([...data, ...dischargePresData]?.reduce((sum, item) => sum + (item.patientPaid || 0), 0) || 0);
-                            const difference = totalAdvance - totalPaid;
-
-                            if (difference > 0) {
-                            return `Tiền trả lại: ${difference.toLocaleString()} đ`;
-                            } else if (difference < 0) {
-                            return `Tiền còn phải đóng: ${Math.abs(difference).toLocaleString()} đ`;
-                            } else {
-                            return `Không cần đóng thêm hay trả lại`;
-                            }
-                        })()}
-                    </p>
+                <div className="bg-white shadow-md rounded-lg border border-gray-200">
+                    <div className="p-2 bg-blue-50 rounded-t-lg border-b border-gray-200">
+                        <h3 className="font-bold text-lg text-blue-800">Thông tin thanh toán</h3>
+                    </div>
+                    
+                    <div className="p-3 space-y-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-medium text-gray-700">Tổng chi phí KCB:</span>
+                            <span className="font-semibold text-gray-900">{formatCurrency(totalCost)}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                            <span className="font-medium text-gray-700">Tổng BHYT chi trả:</span>
+                            <span className="font-semibold text-green-600">{formatCurrency(insurancePaid)}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                            <span className="font-medium text-gray-700">Người bệnh chi trả:</span>
+                            <span className="font-semibold text-indigo-600">{formatCurrency(patientPaid)}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                            <span className="font-medium text-gray-700">Tổng tạm ứng:</span>
+                            <span className="font-semibold text-gray-900">{formatCurrency(totalAdvance)}</span>
+                        </div>
+                        
+                        <div className="pt-2 border-t border-gray-200">
+                            <div className="flex justify-between items-center">
+                                <span className="font-bold text-gray-800">Thanh toán cuối cùng:</span>
+                                <span className={`font-bold text-lg ${paymentStatus.color}`}>{paymentStatus.text}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {examinationId && examinationData.status === STATUS_BE.DONE && (
+                        <div className="p-2 bg-gray-50 rounded-b-lg border-t border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <div className="space-x-4">
+                                    <label className="inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            className="form-radio h-4 w-4 text-blue-600"
+                                            value="CASH"
+                                            checked={paymentMethod === 'CASH'}
+                                            onChange={() => setPaymentMethod('CASH')}
+                                        />
+                                        <span className="ml-2 text-gray-700">Tiền mặt</span>
+                                    </label>
+                                    
+                                    <label className="inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"    
+                                            className="form-radio h-4 w-4 text-blue-600"
+                                            value="MOMO"
+                                            checked={paymentMethod === 'MOMO'}
+                                            onChange={() => setPaymentMethod('MOMO')}
+                                        />
+                                        <span className="ml-2 text-gray-700">Chuyển khoản</span>
+                                    </label>
+                                </div>
+                                
+                                <button
+                                    onClick={handlePayment}
+                                    className="save-button"
+                                    //disabled={isPayLoading}
+                                >
+                                {isPayLoading ? (
+                                    <span className="flex items-center">
+                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Đang xử lý...
+                                    </span>
+                                ) : (
+                                    'Hoàn tất viện phí'
+                                )}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    </div>
                 </div>
-            </div>
         </Modal>
     );
 };

@@ -75,6 +75,27 @@
         background-color: #DDEFFE; /* màu vàng nhạt */
         color: #333;
     }
+
+    .save-button {
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 5px 15px;
+        box-shadow: 2px 2px 4px #e6eaeb;
+        min-width: 80px;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
+        }
+    }
+
+    .save-button.disabled {
+        background-color: #ccc; /* Màu xám khi disabled */
+        cursor: not-allowed; /* Đổi con trỏ thành không thể click */
+        color: gray;
+    }
 }
 
   

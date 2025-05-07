@@ -6,7 +6,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { useSelector } from "react-redux";
 
 
-const HistoryItem = ({ id, data, onCopyPrescription }) => {
+const HistoryItem = ({ id, data, onCopyPrescription = null }) => {
     const [selectedRadio, setSelectedRadio] = useState(null);
     let { user } = useSelector((state) => state.authen);
 
@@ -163,7 +163,7 @@ const HistoryItem = ({ id, data, onCopyPrescription }) => {
                                         <div className="mt-3" style={{ textAlign: 'start' }}>Không có thông tin đơn thuốc</div>
                                     )}
                                     
-                                    {(user.role === 3 || user.role ===4) && data.prescriptionExamData && data.prescriptionExamData.length > 0 && (
+                                    {onCopyPrescription && (user.role === 3 || user.role === 4) && data.prescriptionExamData && data.prescriptionExamData.length > 0 && (
                                         <div className="mt-3 text-end">
                                             <button className="copy-prescription-btn" onClick={handleCopyPrescription}>
                                                 <i className="fa-regular fa-copy"></i> Copy đơn thuốc

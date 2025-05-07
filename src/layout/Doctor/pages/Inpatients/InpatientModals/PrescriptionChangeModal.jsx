@@ -241,9 +241,8 @@ const PrescriptionChangeModal = ({ visible, onCancel, onSave, prescriptionData, 
                     <div className="info-section mb-2">
                         <p>Đơn thuốc cũ sẽ được chốt với ngày kết thúc là {moment(yesterday).format('DD/MM/YYYY')}</p>
                         <p>Đơn thuốc mới sẽ có ngày bắt đầu là {moment(today).format('DD/MM/YYYY')}</p>
-                        <p style={{fontStyle: 'italic', color: 'black'}}>*Lưu ý: Chỉ kê đơn thuốc đủ dùng trong ngày</p>
                     </div>
-                    <div className='row padding mb-3'>
+                    <div className='row padding mb-2'>
                         <div className='col-5'>
                             <EnhancedSelectBox
                                 className="select-box2"
@@ -285,6 +284,9 @@ const PrescriptionChangeModal = ({ visible, onCancel, onSave, prescriptionData, 
                             </button>
                         </div>
                     </div>
+                    {prescriptionType === 1 && (
+                        <p style={{fontStyle: 'italic', color: 'black'}}>*Lưu ý: Chỉ kê đơn thuốc đủ dùng trong ngày</p>
+                    )}
                     <>
                         <div className="row p-2 padding gap">
                             {sortedPresDetails.length > 0 ? (

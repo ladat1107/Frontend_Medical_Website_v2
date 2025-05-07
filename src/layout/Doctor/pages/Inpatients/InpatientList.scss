@@ -220,27 +220,6 @@
                 .vital-actions.visible {
                     opacity: 1;
                 }
-
-                .action-btn {
-                    background: transparent;
-                    border: none;
-                    cursor: pointer;
-                    padding: 5px;
-                    border-radius: 4px;
-                    transition: all 0.2s;
-                }
-
-                .action-btn:hover {
-                    background-color: rgba(0, 0, 0, 0.05);
-                }
-
-                .action-btn i {
-                    color: #007bff;
-                }
-
-                .action-delete i {
-                    color: #F44343;
-                }
             }
         }
 
@@ -327,6 +306,27 @@
         &:hover {
             box-shadow: 4px 4px 8px #e6eaeb, -4px -4px 8px #e6eaeb;
         }
+    }
+
+    .action-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .action-btn i {
+        color: #007bff;
+    }
+
+    .action-delete i {
+        color: #F44343;
     }
 
     .restore-button.disabled {

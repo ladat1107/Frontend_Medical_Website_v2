@@ -1,9 +1,11 @@
-import React from "react";
-import { Modal, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Modal, Table, Spin } from "antd";
 import { COVERED } from "@/constant/value";
 import { insuranceCovered, medicineCovered } from "@/utils/coveredPrice";
 import { convertDateTime } from "@/utils/formatDate";
 import "./PrescriptionChangeModal.scss";
+import { getExaminationById } from "@/services/doctorService";
+import { useMutation } from "@tanstack/react-query";
 
 const columns = [
     {
@@ -64,9 +66,44 @@ const columns = [
     },
 ];
 
-const SummaryModal = ({ open, onCancel, examinationData }) => {
-    const data = [];
-    let stt = 1;
+const SummaryModal = ({ open, onCancel, examData = null, examinationId = null }) => {
+    const [examinationData, setExamData] = useState(examData || {});
+    const [isLoading, setIsLoading] = useState(false);
+
+    let {
+        data: dataExamination,
+        isLoading: examinationLoading,
+        error: examinationError,
+        mutate: fetchExaminationData,
+    } = useMutation({
+        mutationFn: (id) => getExaminationById(+id),
+        onMutate: () => {
+            setIsLoading(true);
+        },
+        onSuccess: (response) => {
+            if (response && response.DT) {
+                setExamData(response.DT);
+            } else {
+                console.error("Failed to fetch examination data:", response?.EM || "Unknown error");
+            }
+            setIsLoading(false);
+        },
+        onError: (error) => {
+            console.error("Error fetching examination data:", error);
+            setIsLoading(false);
+        }
+    });
+
+    useEffect(() => {
+        // Nếu có examData từ props, sử dụng nó
+        if (examData) {
+            setExamData(examData);
+        } 
+        // Nếu không có examData nhưng có examinationId, fetch dữ liệu
+        else if (examinationId && open) {
+            fetchExaminationData(examinationId);
+        }
+    }, [examinationId, examData, open]);
 
     function calculateDays(startDateStr, endDateStr) {
         const start = new Date(startDateStr);
@@ -82,44 +119,91 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
         return diffDays;
     }
 
+    // Kiểm tra nếu đang loading hoặc không có dữ liệu, hiển thị trạng thái loading
+    if (isLoading || examinationLoading) {
+        return (
+            <Modal
+                open={open}
+                title="Tổng hợp chi phí khám chữa bệnh"
+                onCancel={onCancel}
+                footer={null}
+                width="90%"
+                style={{ top: 20 }}
+            >
+                <div style={{ textAlign: 'center', padding: '50px 0' }}>
+                    <Spin size="large" />
+                    <p style={{ marginTop: 16 }}>Đang tải dữ liệu...</p>
+                </div>
+            </Modal>
+        );
+    }
+
+    // Nếu có lỗi, hiển thị thông báo
+    if (examinationError) {
+        return (
+            <Modal
+                open={open}
+                title="Tổng hợp chi phí khám chữa bệnh"
+                onCancel={onCancel}
+                footer={null}
+                width="90%"
+                style={{ top: 20 }}
+            >
+                <div style={{ textAlign: 'center', padding: '50px 0', color: 'red' }}>
+                    <p>Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</p>
+                </div>
+            </Modal>
+        );
+    }
+
+    const data = [];
+    let stt = 1;
+
+    const dischargePresData = [];
+    let discharge_stt = 1;
+
     const admission = examinationData?.admissionDate;
     const discharge = examinationData?.dischargeDate || new Date();
-    const unitPrice = examinationData?.examinationRoomData?.serviceData[0]?.price || 0;
-    const quantity = calculateDays(admission, discharge);
+    const unitPrice = examinationData?.examinationRoomData?.serviceData?.[0]?.price || 0;
+    const quantity = admission && discharge ? calculateDays(admission, discharge) : 0;
     const insuranceRate = (COVERED[+examinationData?.insuranceCoverage] * 100 || 0) + '%';
 
-    data.push({
-        stt: stt++,
-        content: "Phòng điều trị - " + examinationData?.examinationRoomData?.name 
-                + (examinationData?.examinationRoomData?.serviceData[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
-        unit: "Ngày",
-        quantity,
-        unitPrice,
-        total: quantity * unitPrice,
-        insuranceRate,
-        insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
-        patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
-    });
+    if (admission && unitPrice) {
+        data.push({
+            stt: stt++,
+            content: "Phòng điều trị - " + (examinationData?.examinationRoomData?.name || "Chưa có tên") 
+                    + (examinationData?.examinationRoomData?.serviceData?.[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
+            unit: "Ngày",
+            quantity,
+            unitPrice,
+            total: quantity * unitPrice,
+            insuranceRate,
+            insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+            patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+        });
+    }
 
     // Chi phí cận lâm sàng
     const paraclinicalGroups = {};
 
     examinationData?.examinationResultParaclincalData?.forEach((item) => {
-    const paracId = item.paraclinical;
-    
-    if (!paraclinicalGroups[paracId]) {
-        paraclinicalGroups[paracId] = {
-            paracName: item.paracName,
-            unitPrice: item?.paraclinicalData?.price || 0,
-            quantity: 1,
-            totalInsurancePaid:  item?.insuranceCovered || 0,
-            items: [item] 
-        };
-    } else {
-        paraclinicalGroups[paracId].quantity += 1;
-        paraclinicalGroups[paracId].totalInsurancePaid +=  item?.insuranceCovered || 0;
-        paraclinicalGroups[paracId].items.push(item);
-    }
+        if (!item) return;
+        
+        const paracId = item.paraclinical;
+        
+        if (!paraclinicalGroups[paracId]) {
+            paraclinicalGroups[paracId] = {
+                paracName: item.paracName,
+                unitPrice: item?.paraclinicalData?.price || 0,
+                quantity: 1,
+                totalInsurancePaid: item?.insuranceCovered || 0,
+                items: [item] 
+            };
+        } else {
+            paraclinicalGroups[paracId].quantity += 1;
+            paraclinicalGroups[paracId].totalInsurancePaid += item?.insuranceCovered || 0;
+            paraclinicalGroups[paracId].items.push(item);
+        }
     });
 
     Object.values(paraclinicalGroups).forEach((group) => {
@@ -144,39 +228,57 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
         });
     });
 
-    const medicineGroups = {};
+    // Tạo hai đối tượng riêng để lưu trữ medicineGroups cho mỗi loại
+    const medicineGroups = {}; // Cho status = 2
+    const dischargeMedicineGroups = {}; // Cho status = 3
+
     examinationData?.prescriptionExamData?.forEach((prescription) => {
-        prescription.prescriptionDetails.forEach((item) => {
+        if (!prescription) return;
+        
+        // Xác định đối tượng medicineGroups cần sử dụng dựa trên status
+        const targetGroups = prescription.status === 2 ? medicineGroups : 
+                            prescription.status === 3 ? dischargeMedicineGroups : null;
+        
+        // Nếu status không phải 2 hoặc 3, bỏ qua
+        if (!targetGroups) return;
+        
+        prescription.prescriptionDetails?.forEach((item) => {
+            if (!item) return;
+            
             const medicineId = item.id;
             const detail = item.PrescriptionDetail;
+            if (!detail) return;
+            
             const dayOfUse = calculateDays(
-                                prescription?.createdAt, 
-                                prescription?.endDate || examinationData?.dischargeDate || new Date()
-                            ) || 1; 
+                prescription?.createdAt, 
+                prescription?.endDate || examinationData?.dischargeDate || new Date()
+            ) || 1; 
                             
-            if (!medicineGroups[medicineId]) {
-                medicineGroups[medicineId] = {
+            if (!targetGroups[medicineId]) {
+                targetGroups[medicineId] = {
                     name: item.name,
                     unit: detail.unit,
                     quantity: detail.quantity * dayOfUse || 1,
                     unitPrice: detail.price || 0,
                     totalInsurancePaid: medicineCovered(
-                                            detail.quantity * detail?.price,
-                                            +examinationData?.insuranceCoverage,
-                                            Number(item.insuranceCovered),
-                                            examinationData.isWrongTreatment, examinationData.medicalTreatmentTier
-                                        ) * dayOfUse || 0,
+                        detail.quantity * detail?.price,
+                        +examinationData?.insuranceCoverage,
+                        Number(item.insuranceCovered),
+                        examinationData.isWrongTreatment, 
+                        examinationData.medicalTreatmentTier
+                    ) * dayOfUse || 0,
                     insuranceCovered: item.insuranceCovered || 0,
                     items: [{ item, detail }] 
                 };
-                } else {
-                    medicineGroups[medicineId].quantity += (detail.quantity * dayOfUse || 1);
-                    medicineGroups[medicineId].totalInsurancePaid += (detail.insuranceCovered || 0);
-                    medicineGroups[medicineId].items.push({ item, detail });
-                }
-            });
+            } else {
+                targetGroups[medicineId].quantity += (detail.quantity * dayOfUse || 1);
+                targetGroups[medicineId].totalInsurancePaid += (detail.insuranceCovered || 0);
+                targetGroups[medicineId].items.push({ item, detail });
+            }
         });
+    });
 
+    // Xử lý dữ liệu cho status = 2 và thêm vào 'data'
     Object.values(medicineGroups).forEach((group) => {
         const unitPrice = group.unitPrice;
         const quantity = group.quantity;
@@ -187,6 +289,28 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
 
         data.push({
             stt: stt++,
+            content: "Thuốc " + group.name,
+            unit: group.unit,
+            quantity,
+            unitPrice,
+            total,
+            insuranceRate: insuranceRate, 
+            insurancePaid,
+            patientPaid,
+        });
+    });
+
+    // Xử lý dữ liệu cho status = 3 và thêm vào 'dischargePresData'
+    Object.values(dischargeMedicineGroups).forEach((group) => {
+        const unitPrice = group.unitPrice;
+        const quantity = group.quantity;
+        const total = unitPrice * quantity;
+        const insurancePaid = group.totalInsurancePaid;
+        const insuranceRate = (COVERED[+examinationData?.insuranceCoverage] * 100 || 0) + '% x ' + group.insuranceCovered * 100 + '%';
+        const patientPaid = total - insurancePaid;
+
+        dischargePresData.push({
+            stt: discharge_stt++,
             content: "Thuốc " + group.name,
             unit: group.unit,
             quantity,
@@ -221,7 +345,7 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
                             <div className="flex">
                                 <p className="me-5">
                                     Mã thẻ BHYT:&nbsp;
-                                    {examinationData?.insuranceCode || "Chưa có"}
+                                    {examinationData?.userExaminationData?.userInsuranceData?.insuranceCode || "Chưa có"}
                                 </p>
                                 <p>
                                     Mức hưởng:&nbsp;
@@ -260,15 +384,30 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
                         rowKey={(record) => `${record.stt}-${record.content}`}
                         scroll={{ y: 395 }}
                     />
+                    {dischargePresData.length > 0 && (
+                        <>  
+                            <p className="flex justify-content-center mt-3" style={{color: "#0077F9", fontSize: "20px"}}>
+                                <span style={{fontWeight: "600"}}>ĐƠN THUỐC RA VIỆN</span>
+                            </p>
+                            <Table
+                                className="custom-summary-table mt-2"
+                                columns={columns}
+                                dataSource={dischargePresData}
+                                pagination={false}
+                                rowKey={(record) => `${record.stt}-${record.content}`}
+                                scroll={{ y: 395 }}
+                            />
+                        </>
+                    )}
                 </div>
                 <div className="summary-fixed-total">
                     <p style={{color: "#000"}}>
                         <span style={{fontWeight: "600"}}>Tổng chi phí KCB:</span>&nbsp;
-                        {data.reduce((sum, item) => sum + (item.total || 0), 0).toLocaleString()} đ
+                        {[...data, ...dischargePresData].reduce((sum, item) => sum + (item.total || 0), 0).toLocaleString()} đ
                     </p>
                     <p style={{color: "#000"}}>
                         <span style={{fontWeight: "600"}}>Tổng BHYT chi trả:</span>&nbsp;
-                        {data.reduce((sum, item) => sum + (item.insurancePaid || 0), 0).toLocaleString()} đ
+                        {[...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0).toLocaleString()} đ
                     </p>
                     <p style={{color: "#000"}}>
                         <span style={{fontWeight: "600"}}>Tổng tạm ứng:</span>&nbsp;
@@ -281,7 +420,7 @@ const SummaryModal = ({ open, onCancel, examinationData }) => {
                         {(() => {
                             const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
                             (sum, item) => sum + (item.amount || 0), 0) || 0);
-                            const totalPaid = (data?.reduce((sum, item) => sum + (item.patientPaid || 0), 0) || 0);
+                            const totalPaid = ([...data, ...dischargePresData]?.reduce((sum, item) => sum + (item.patientPaid || 0), 0) || 0);
                             const difference = totalAdvance - totalPaid;
 
                             if (difference > 0) {

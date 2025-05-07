@@ -34,7 +34,6 @@ const InpatientList = () => {
         if (dataInpatients) {
             setTotal(dataInpatients.DT.totalItems);
             setListInpatient(dataInpatients.DT.examinations);
-            console.log(dataInpatients);
         }
     }, [dataInpatients]);
 

@@ -18,6 +18,7 @@ import { STATUS_BE, TIMESLOTS } from '@/constant/value';
 import SummaryModal from './InpatientModals/InpatientSumary';
 import MoneyInput from '@/components/Input/MoneyInput';
 import FlexibleCollapsible from './Components/FlexibleCollapsible';
+import HistoryModal from '../../components/HistoryModal/HistoryModal';
 
 const InpatientDetail = () => {
     const { schedule } = useSelector(state => state.schedule);
@@ -33,6 +34,7 @@ const InpatientDetail = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const [open, setOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoadingAddAdvance, setIsLoadingAddAdvance] = useState(false);
     const [amount, setAmount] = useState("");
     const handleAmountChange = (value) => {
@@ -41,6 +43,14 @@ const InpatientDetail = () => {
 
     const handleRadioChange = (e) => {
         setSelectedRadio(e.target.value);
+    };
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
     };
 
     const [formData, setFormData] = useState({
@@ -56,18 +66,22 @@ const InpatientDetail = () => {
     });
 
     useEffect(() => {
-        setFormData({
-            reason: examData.reason || '',
-            symptom: examData.symptom || '',
-            diseaseName: examData.diseaseName || null,
-            comorbidities: examData.comorbidities ? examData.comorbidities.split(',') : [],
-            dischargeStatus: examData.dischargeStatus || null,
-            treatmentResult: examData.treatmentResult || '',
-            dischargeDate: examData.dischargeDate || null,
-            reExaminationDate: examData.reExaminationDate ? examData.reExaminationDate : null,
-            time: examData.reExaminationTime || null,
-        });
+        resetFormData();
     }, [examData]); 
+
+    const resetFormData = () => {
+        setFormData({
+          reason: examData.reason || '',
+          symptom: examData.symptom || '',
+          diseaseName: examData.diseaseName || null,
+          comorbidities: examData.comorbidities ? examData.comorbidities.split(',') : [],
+          dischargeStatus: examData.dischargeStatus || null,
+          treatmentResult: examData.treatmentResult || '',
+          dischargeDate: examData.dischargeDate || null,
+          reExaminationDate: examData.reExaminationDate ? examData.reExaminationDate : null,
+          time: examData.reExaminationTime || null,
+        });
+    };
 
     const handleInputChange = (field) => (event) => {
         setFormData(prev => ({
@@ -106,14 +120,13 @@ const InpatientDetail = () => {
                 ...prev,
                 [field]: value,
             };
-
-            console.log('newFormData', newFormData);
     
             if (field === 'dischargeStatus') {
-                if (value !== null) {
+                if (value !== null && value !== undefined) {
                     newFormData.dischargeDate = new Date();
                 } else {
                     newFormData.dischargeDate = null;
+                    newFormData.treatmentResult = '';
                 }
     
                 if (value !== 4) {
@@ -237,30 +250,43 @@ const InpatientDetail = () => {
     }
 
     const checkValid = () => {
+        let data = {}
+        if(dataExamination?.DT?.status === 7 && !formData.dischargeStatus) {
+            return {
+                id: examId,
+                status: STATUS_BE.EXAMINING,
+                dischargeStatus: null,
+                treatmentResult: formData.treatmentResult,
+                dischargeDate: formData.dischargeDate,
+                reExaminationDate: formData.reExaminationDate,
+                time: formData.time,
+            }
+        }
+
         if (!formData.diseaseName) {
             message.error('Vui lòng nhập tên bệnh!');
-            return false;
+            return data;
         }
 
         if (!formData.dischargeStatus) {
             message.error('Vui lòng chọn tình trạng xuất viện!');
-            return false;
+            return data;
         }
         if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
             message.error('Vui lòng chọn ngày tái khám!');
-            return false;
+            return data;
         }
         if (formData.dischargeStatus === 4 && !formData.time) {
             message.error('Vui lòng chọn khung giờ tái khám!');
-            return false;
+            return data;
         }
         if (!formData.treatmentResult) {
             message.error('Vui lòng nhập kết quả điều trị!');
-            return false;
+            return data;
         }
         if (!formData.dischargeDate) {
             message.error('Vui lòng chọn ngày xuất viện!');
-            return false;
+            return data;
         }
     
         const dischargeDate = new Date(formData.dischargeDate);
@@ -270,7 +296,7 @@ const InpatientDetail = () => {
     
         if (dischargeDate < today) {
             message.error('Ngày xuất viện không hợp lệ!');
-            return false;
+            return data;
         }
     
         if (formData.reExaminationDate) {
@@ -279,31 +305,32 @@ const InpatientDetail = () => {
     
             if (reExamDate <= today || reExamDate <= dischargeDate) {
                 message.error('Ngày tái khám không hợp lệ!');
-                return false;
+                return data;
             }
     
             if (formData.time === null) {
                 message.error('Vui lòng chọn khung giờ tái khám!');
-                return false;
+                return data;
             }
         }
-        return true;
+
+        data = {
+            id: examId,
+            status: STATUS_BE.DONE,
+            dischargeStatus: formData.dischargeStatus,
+            treatmentResult: formData.treatmentResult,
+            dischargeDate: formData.dischargeDate,
+            reExaminationDate: formData.reExaminationDate,
+            time: formData.time,
+        }
+        return data;
     }
 
     const handleDischargedExam = async () => {
-        if (!checkValid()) return;
-
         try {
             setIsLoadingDischarged(true);
-            const data = {
-                id: examId,
-                status: 7,
-                dischargeStatus: formData.dischargeStatus,
-                treatmentResult: formData.treatmentResult,
-                dischargeDate: formData.dischargeDate,
-                reExaminationDate: formData.reExaminationDate,
-                time: formData.time,
-            }
+            const data = checkValid();
+            if (Object.keys(data).length === 0)  return
 
             const response = await updateExamination(data);
             if (response && response.DT.includes(1)) {
@@ -325,17 +352,10 @@ const InpatientDetail = () => {
 
         try {
             setIsLoadingReExam(true);
-            const data = {
-                id: examId,
-                status: 7,
-                dischargeStatus: formData.dischargeStatus,
-                treatmentResult: formData.treatmentResult,
-                dischargeDate: formData.dischargeDate,
-                reExaminationDate: formData.reExaminationDate,
-                time: formData.time,
-                createReExamination: true,
-            }
+            const data = checkValid();
+            if (Object.keys(data).length === 0)  return
 
+            data.createReExamination = true
             const response = await updateExamination(data);
             if (response && response.DT.includes(1)) {
                 message.success('Lưu thông tin tái khám thành công!');
@@ -408,7 +428,15 @@ const InpatientDetail = () => {
             ) : (
                 <div className="inpatient-exam-content">
                     <div className="inpatient-exam-content__header">
-                        <h1>Bệnh án</h1>
+                        <div className="flex justify-content-between">
+                            <h1>Bệnh án</h1>
+                            <button
+                                onClick={showModal}
+                                className='restore-button'>
+                                <i className="fa-solid fa-clock-rotate-left me-1"></i>
+                                Lịch sử khám bệnh
+                            </button>
+                        </div>
                         <p className='mt-2' style={{fontSize: '20px', fontWeight: '500'}}>
                             {examData?.userExaminationData?.lastName} {examData?.userExaminationData?.firstName}
                         </p>
@@ -615,31 +643,46 @@ const InpatientDetail = () => {
                                 )}
                             </div>
                             <div className='flex mt-3'>
-                                {isEditMode && 
-                                <>
-                                    <div style={{fontWeight: '500'}}>
-                                        <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
-                                                disabled={!isEditMode}  onClick={handleDischargedExam}>
-                                            {isLoadingDischarged ? (
-                                                <>
-                                                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
-                                                    Đang xử lý...
-                                                </>
-                                            ) : 'Lưu xuất viện'}
-                                        </button>               
-                                    </div>
-                                    { formData.dischargeStatus === 4 && formData.dischargeDate && (
-                                        <div className='col-3' style={{fontWeight: '500'}}>
-                                            <button className='safe-button' onClick={handleReExam}>
-                                                {isLoadingReExam ? (
+                                {isEditMode ? <>
+                                    {dataExamination?.DT?.status === 7 && <>
+                                        <button style={{ background: "#F44343", color: 'white' }}  
+                                                className='restore-button' 
+                                                onClick={() => {
+                                                    setIsEditMode(false);
+                                                    resetFormData();
+                                                }}>
+                                            Hủy
+                                        </button>  
+                                    </>} 
+                                    <>
+                                        <div style={{fontWeight: '500'}}>
+                                            <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
+                                                    disabled={!isEditMode}  onClick={handleDischargedExam}>
+                                                {isLoadingDischarged ? (
                                                     <>
                                                         <i className="fa-solid fa-spinner fa-spin me-2"></i>
                                                         Đang xử lý...
                                                     </>
-                                                ) : 'Lưu cùng lịch hẹn'}
-                                            </button>                        
+                                                ) : 'Lưu xuất viện'}
+                                            </button>               
                                         </div>
-                                    )}          
+                                        { formData.dischargeStatus === 4 && formData.dischargeDate && (
+                                            <div className='col-3' style={{fontWeight: '500'}}>
+                                                <button className='safe-button' onClick={handleReExam}>
+                                                    {isLoadingReExam ? (
+                                                        <>
+                                                            <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                                                            Đang xử lý...
+                                                        </>
+                                                    ) : 'Lưu cùng lịch hẹn'}
+                                                </button>                        
+                                            </div>
+                                        )}      
+                                    </>
+                                </> : <>
+                                    <button className='restore-button' onClick={() => setIsEditMode(true)}>
+                                        Chỉnh sửa
+                                    </button>  
                                 </>}  
                             </div>
                         </div>
@@ -778,7 +821,12 @@ const InpatientDetail = () => {
             <SummaryModal
                 open={open}
                 onCancel={handleCloseSummaryModal}
-                examinationData={examData}
+                examData={examData}
+            />
+            <HistoryModal
+                isModalOpen={isModalOpen}
+                handleCancel={handleCancel}
+                userId={examData?.userExaminationData?.id}
             />
         </>
     );

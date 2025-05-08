@@ -35,6 +35,7 @@ const HistoryItem = ({ id, data, onCopyPrescription = null }) => {
                     <div className="row mt-4">
                         <p><strong>Triệu chứng: </strong>{data.symptom}</p>
                         <p><strong>Bệnh: </strong>{data.diseaseName}</p>
+                        <p><strong>Loại KCB: </strong>{data.medicalTreatmentTier === 1 ?  'Nội trú' : 'Ngoại trú'}</p>
                         <p><strong>Ngày nhập viện: </strong>{formatDate(data.admissionDate)} - <strong>Ngày ra viện: </strong>{formatDate(data.dischargeDate)}</p>
                         <p><strong>Kết quả điều trị: </strong>{data.treatmentResult}</p>
                     </div>
@@ -138,30 +139,42 @@ const HistoryItem = ({ id, data, onCopyPrescription = null }) => {
                             )}
                             {selectedRadio === `prescription + ${id}` && (
                                 <div className="mt-2">
-                                    {data.prescriptionExamData[0]?.prescriptionDetails.length > 0 ? (
-                                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                            <thead>
-                                                <tr>
-                                                    <th>Tên thuốc</th>
-                                                    <th>Số lượng</th>
-                                                    <th>Đơn giá</th>
-                                                    <th>Liều dùng</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {data.prescriptionExamData[0]?.prescriptionDetails.map((item, index) => (
-                                                    <tr key={index}>
-                                                        <td>{item.name}</td>
-                                                        <td>{item.PrescriptionDetail.quantity}</td>
-                                                        <td>{formatCurrency(item.price)}</td>
-                                                        <td>{item.PrescriptionDetail.dosage}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    ) : (
-                                        <div className="mt-3" style={{ textAlign: 'start' }}>Không có thông tin đơn thuốc</div>
-                                    )}
+
+                                    {data.prescriptionExamData && data.prescriptionExamData.length > 0 && data.prescriptionExamData.map((presData, index) => (
+                                        presData?.prescriptionDetails && presData?.prescriptionDetails.length > 0 ? (
+                                            <>
+                                                {data.medicalTreatmentTier === 1 && (
+                                                    <div>
+                                                        Từ Ngày {formatDate(presData?.createdAt)} đến Ngày {formatDate(presData?.endDate)}
+                                                    </div>
+                                                )}
+                                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Tên thuốc</th>
+                                                            <th>Số lượng</th>
+                                                            <th>Đơn giá</th>    
+                                                            <th>Liều dùng</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {presData?.prescriptionDetails.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td>{item.name}</td>
+                                                                <td>{item.PrescriptionDetail.quantity}</td>
+                                                                <td>{formatCurrency(item.price)}</td>
+                                                                <td>{item.PrescriptionDetail.dosage}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="mt-3" style={{ textAlign: 'start' }}>Không có thông tin đơn thuốc</div>
+                                            </>
+                                        )
+                                    ))}
                                     
                                     {onCopyPrescription && (user.role === 3 || user.role === 4) && data.prescriptionExamData && data.prescriptionExamData.length > 0 && (
                                         <div className="mt-3 text-end">

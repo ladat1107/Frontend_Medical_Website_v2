@@ -185,7 +185,7 @@ const InpatientDetail = () => {
     useEffect(() => {
         if (dataExamination && dataExamination.DT) {
             setExamData(dataExamination.DT);
-            if (dataExamination.DT.status === 7) setIsEditMode(false);
+            if (dataExamination.DT.status >= 7) setIsEditMode(false);
         }
     }, [dataExamination]);
 
@@ -560,7 +560,7 @@ const InpatientDetail = () => {
                                     {isEditMode ? (
                                         <CustomDatePicker
                                             className="date-picker"
-                                            selectedDate={formData.dischargeDate}
+                                            selectedDate={formData.dischargeDate ? new Date(formData.dischargeDate) : null}
                                             onDateChange={handleDateChange('dischargeDate')}
                                             disabled={!isEditMode}
                                             placeholder="Chọn ngày..." />

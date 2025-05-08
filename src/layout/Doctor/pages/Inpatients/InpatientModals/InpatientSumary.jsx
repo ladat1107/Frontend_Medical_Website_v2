@@ -6,14 +6,13 @@ import { convertDateTime } from "@/utils/formatDate";
 import "./PrescriptionChangeModal.scss";
 import { getExaminationById, updateExamination } from "@/services/doctorService";
 import { useMutation } from "@tanstack/react-query";
-import { text } from "@fortawesome/fontawesome-svg-core";
 
 const columns = [
     {
         title: "STT",
         dataIndex: "stt",
         key: "stt",
-        width: 60,
+        width: 65,
     },
     {
         title: "Nội dung chi phí",
@@ -351,35 +350,64 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
         });
     });
 
-      // Tính toán các giá trị
-  const totalCost = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.total || 0), 0);
-  const insurancePaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0);
-  const patientPaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0);
-  const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
-    (sum, item) => sum + (item.amount || 0), 0) || 0);
+
+    // Tính toán các giá trị
+    const totalCost = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.total || 0), 0);
+    const insurancePaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0);
+    const patientPaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0);
+    const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
+        (sum, item) => sum + (item.amount || 0), 0) || 0);
+    
+    const difference = totalAdvance - patientPaid;
+    
+    // Định dạng tiền tệ
+    const formatCurrency = (amount) => amount.toLocaleString() + ' đ';
+    
+    const handlePayment = () => {
+        setIsPayLoading(true);
+        handleTotalPay();
+    };
+    
+    // Xác định trạng thái thanh toán
+    const getPaymentStatus = () => {
+        if (difference > 0) {
+            return { text: `Trả lại: ${formatCurrency(difference)}`, color: 'text-green-600' };
+        } else if (difference < 0) {
+            return { text: `Thu thêm: ${formatCurrency(Math.abs(difference))}`, color: 'text-red-600' };
+        } else {
+            return { text: 'Không cần đóng thêm hay trả lại', color: 'text-blue-600' };
+        }
+    };
   
-  const difference = totalAdvance - patientPaid;
-  
-  // Định dạng tiền tệ
-  const formatCurrency = (amount) => amount.toLocaleString() + ' đ';
-  
-  const handlePayment = () => {
-    setIsPayLoading(true);
-    handleTotalPay();
-  };
-  
-  // Xác định trạng thái thanh toán
-  const getPaymentStatus = () => {
-    if (difference > 0) {
-      return { text: `Tiền trả lại: ${formatCurrency(difference)}`, color: 'text-green-600' };
-    } else if (difference < 0) {
-      return { text: `Tiền còn phải đóng: ${formatCurrency(Math.abs(difference))}`, color: 'text-red-600' };
-    } else {
-      return { text: 'Không cần đóng thêm hay trả lại', color: 'text-blue-600' };
+    const paymentStatus = getPaymentStatus();
+
+    if (data.length > 0) {
+        data.push({
+            stt: '',
+            content: "Tổng cộng",
+            unit: "",
+            quantity: "",
+            unitPrice: "",
+            total: (data.reduce((sum, item) => sum + (item.total || 0), 0)),
+            insuranceRate: "", 
+            insurancePaid: (data.reduce((sum, item) => sum + (item.insurancePaid || 0), 0)),
+            patientPaid: (data.reduce((sum, item) => sum + (item.patientPaid || 0), 0)),
+        });
     }
-  };
-  
-  const paymentStatus = getPaymentStatus();
+
+    if (dischargePresData.length > 0) {
+        dischargePresData.push({
+            stt: '',
+            content: "Tổng cộng",
+            unit: "",
+            quantity: "",
+            unitPrice: "",
+            total: (dischargePresData.reduce((sum, item) => sum + (item.total || 0), 0)),
+            insuranceRate: "", 
+            insurancePaid: (dischargePresData.reduce((sum, item) => sum + (item.insurancePaid || 0), 0)),
+            patientPaid: (dischargePresData.reduce((sum, item) => sum + (item.patientPaid || 0), 0)),
+        });
+    }
 
     return (
         <Modal
@@ -387,7 +415,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
             title="Tổng hợp chi phí khám chữa bệnh"
             onCancel={onCancel}
             footer={null}
-            width="90%"
+            width="93%"
             style={{ top: 20 }}
             styles={{ overflow: 'hidden', maxHeight: 'none' }}
         >
@@ -442,6 +470,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
                         pagination={false}
                         rowKey={(record) => `${record.stt}-${record.content}`}
                         scroll={{ y: 395 }}
+                        rowClassName={(record) => record.content === "Tổng cộng" ? "summary-row" : ""}
                     />
                     {dischargePresData.length > 0 && (
                         <>  
@@ -455,87 +484,88 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
                                 pagination={false}
                                 rowKey={(record) => `${record.stt}-${record.content}`}
                                 scroll={{ y: 395 }}
+                                rowClassName={(record) => record.content === "Tổng cộng" ? "summary-row" : ""}
                             />
                         </>
                     )}
-                </div>
-                <div className="bg-white shadow-md rounded-lg border border-gray-200">
-                    <div className="p-2 bg-blue-50 rounded-t-lg border-b border-gray-200">
+                    <div className="p-2 bg-blue-50 rounded-t-lg border-b border-gray-200 mt-4">
                         <h3 className="font-bold text-lg text-blue-800">Thông tin thanh toán</h3>
                     </div>
+                    <div className="mt-1 flex justify-between items-center">
+                        <span className="font-medium text-gray-700">Tổng chi phí KCB:</span>
+                        <span className="font-semibold text-gray-900">{formatCurrency(totalCost)}</span>
+                    </div>
                     
-                    <div className="p-3 space-y-2">
-                        <div className="flex justify-between items-center">
-                            <span className="font-medium text-gray-700">Tổng chi phí KCB:</span>
-                            <span className="font-semibold text-gray-900">{formatCurrency(totalCost)}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                            <span className="font-medium text-gray-700">Tổng BHYT chi trả:</span>
-                            <span className="font-semibold text-green-600">{formatCurrency(insurancePaid)}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                            <span className="font-medium text-gray-700">Người bệnh chi trả:</span>
-                            <span className="font-semibold text-indigo-600">{formatCurrency(patientPaid)}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                            <span className="font-medium text-gray-700">Tổng tạm ứng:</span>
-                            <span className="font-semibold text-gray-900">{formatCurrency(totalAdvance)}</span>
-                        </div>
-                        
+                    <div className="flex justify-between items-center">
+                        <span className="font-medium text-gray-700">Tổng BHYT chi trả:</span>
+                        <span className="font-semibold text-green-600">{formatCurrency(insurancePaid)}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                        <span className="font-medium text-gray-700">Người bệnh chi trả:</span>
+                        <span className="font-semibold text-indigo-600">{formatCurrency(patientPaid)}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                        <span className="font-medium text-gray-700">Tổng tạm ứng:</span>
+                        <span className="font-semibold text-gray-900">{formatCurrency(totalAdvance)}</span>
+                    </div>
+                </div>
+                <div className="bg-white shadow-md">
+                    <div className="p-3 pt-0 pb-2 space-y-2">
                         <div className="pt-2 border-t border-gray-200">
                             <div className="flex justify-between items-center">
-                                <span className="font-bold text-gray-800">Thanh toán cuối cùng:</span>
+                                <span className="font-bold text-gray-800">Thanh toán:</span>
                                 <span className={`font-bold text-lg ${paymentStatus.color}`}>{paymentStatus.text}</span>
                             </div>
                         </div>
                     </div>
                     
                     {examinationId && examinationData.status === STATUS_BE.DONE && (
-                        <div className="p-2 bg-gray-50 rounded-b-lg border-t border-gray-200">
+                        <div className="p-2 bg-gray-50 rounded-b-lg">
                             <div className="flex items-center justify-between">
                                 <div className="space-x-4">
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            className="form-radio h-4 w-4 text-blue-600"
-                                            value="CASH"
-                                            checked={paymentMethod === 'CASH'}
-                                            onChange={() => setPaymentMethod('CASH')}
-                                        />
-                                        <span className="ml-2 text-gray-700">Tiền mặt</span>
-                                    </label>
-                                    
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"    
-                                            className="form-radio h-4 w-4 text-blue-600"
-                                            value="MOMO"
-                                            checked={paymentMethod === 'MOMO'}
-                                            onChange={() => setPaymentMethod('MOMO')}
-                                        />
-                                        <span className="ml-2 text-gray-700">Chuyển khoản</span>
-                                    </label>
+                                    <div class="radio-button-container ms-2">
+                                        <div class="radio-button">
+                                            <input type="radio" class="radio-button__input" id="radio1" name="radio-group"
+                                                value={PAYMENT_METHOD.CASH}
+                                                checked={paymentMethod === PAYMENT_METHOD.CASH}
+                                                onChange={() => setPaymentMethod(PAYMENT_METHOD.CASH)}
+                                            />
+                                            <label class="radio-button__label" for="radio1">
+                                                <span class="radio-button__custom"></span>
+                                                Tiền mặt
+                                            </label>
+                                        </div>
+                                        <div class="radio-button">
+                                            <input type="radio" class="radio-button__input" id="radio2" name="radio-group"
+                                                value={PAYMENT_METHOD.MOMO}
+                                                checked={paymentMethod === PAYMENT_METHOD.MOMO}
+                                                onChange={() => setPaymentMethod(PAYMENT_METHOD.MOMO)}
+                                            />
+                                            <label class="radio-button__label" for="radio2">
+                                                <span class="radio-button__custom"></span>
+                                                Chuyển khoản
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <button
                                     onClick={handlePayment}
                                     className="save-button"
-                                    //disabled={isPayLoading}
                                 >
-                                {isPayLoading ? (
-                                    <span className="flex items-center">
-                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Đang xử lý...
-                                    </span>
-                                ) : (
-                                    'Hoàn tất viện phí'
-                                )}
+                                    {isPayLoading ? (
+                                        <span className="flex items-center">
+                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Đang xử lý...
+                                        </span>
+                                    ) : (
+                                        'Hoàn tất viện phí'
+                                    )}
                                 </button>
                             </div>
                         </div>

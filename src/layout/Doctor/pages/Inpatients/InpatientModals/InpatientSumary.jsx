@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Modal, Table, Spin, message } from "antd";
 import { COVERED, PAYMENT_METHOD, STATUS_BE } from "@/constant/value";
 import { insuranceCovered, medicineCovered } from "@/utils/coveredPrice";
-import { convertDateTime } from "@/utils/formatDate";
+import { convertDateTime, formatDate } from "@/utils/formatDate";
 import "./PrescriptionChangeModal.scss";
 import { getExaminationById, updateExamination } from "@/services/doctorService";
 import { useMutation } from "@tanstack/react-query";
+import { DISCHARGE_OPTIONS } from "@/constant/options";
 
 const columns = [
     {
@@ -70,6 +71,38 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
     const [examinationData, setExamData] = useState(examData || {});
     const [isLoading, setIsLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
+
+    const SpecialText = (special) => {
+        let specialClass = '';
+        let specialText = '';
+
+        switch (special) {
+            case 'normal':
+                specialClass = 'special';
+                specialText = '';
+                break;
+            case 'old':
+                specialClass = 'special-old';
+                specialText = 'Người già';
+                break;
+            case 'children':
+                specialClass = 'special-children';
+                specialText = 'Trẻ em';
+                break;
+            case 'disabled':
+                specialClass = 'special-disabled';
+                specialText = 'Người tàn tật';
+                break;
+            case 'pregnant':
+                specialClass = 'special-pregnant';
+                specialText = 'P.nữ mang thai';
+                break;
+            default:
+                specialClass = '';
+        }
+
+        return <p className={`special ${specialClass}`}>{specialText}</p>;
+    };
 
     let {
         data: dataExamination,
@@ -215,7 +248,6 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
         });
 
         dataExam = {
-            stt: stt++,
             content: "Phòng điều trị - " + (examinationData?.examinationRoomData?.name || "Chưa có tên") 
                     + (examinationData?.examinationRoomData?.serviceData?.[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
             unit: "Ngày",
@@ -438,6 +470,113 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
         >
             <div className="custom-summary-container">
                 <div className="custom-scroll-area">
+                    <div className="">
+                        <p className="flex justify-content-center" style={{color: "#0077F9", fontSize: "20px"}}>
+                            <span style={{fontWeight: "600"}}>BỆNH ÁN</span>
+                        </p>
+                        <div style={{ color: "#000" }}>
+                            <p style={{ fontWeight: "600", color: "#0077F9" }}>
+                                Thông tin bệnh nhân:
+                            </p>
+                            <div className="flex">
+                                <div className="col-flex">
+                                    <p className="me-5">
+                                        Họ và tên:&nbsp;
+                                        {examinationData?.userExaminationData?.lastName + ' ' + examinationData?.userExaminationData?.firstName || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Ngày sinh:&nbsp;
+                                        {convertDateTime(examinationData?.userExaminationData?.dob) || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Giới tính:&nbsp;
+                                        {examinationData?.userExaminationData?.gender == 0 ? 'Nam'
+                                            : examinationData?.userExaminationData?.gender == 1 ? 'Nữ'
+                                            : ''}
+                                    </p>
+                                    <p className="me-5">
+                                        Đối tượng ưu tiên:&nbsp;
+                                        {SpecialText(examinationData?.special)}
+                                    </p>
+                                </div>
+                                <div className="col-flex">
+                                    <p className="me-5">
+                                        Căn cước công dân:&nbsp;
+                                        {examinationData?.userExaminationData?.cid || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Số điện thoại:&nbsp;
+                                        {examinationData?.userExaminationData?.phoneNumber || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Địa chỉ:&nbsp;
+                                        {examinationData?.userExaminationData?.currentResident || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Bảo hiểm y tế:&nbsp;
+                                        {examinationData?.insuranceCode || ""}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="">
+                        <div style={{ color: "#000" }}>
+                            <p style={{ fontWeight: "600", color: "#0077F9" }}>
+                                Thông tin khám bệnh:
+                            </p>
+                            <div className="flex">
+                                <div className="col-flex">
+                                    <p className="me-5">
+                                        Lý do vào viện:&nbsp;
+                                        {examinationData?.reason || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Triệu chứng:&nbsp;
+                                        {examinationData?.symptom || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Tên bệnh chính:&nbsp;
+                                        {examinationData?.diseaseName || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Bệnh đi kèm:&nbsp;
+                                        {examinationData?.comorbiditiesDetails && examinationData?.comorbiditiesDetails.length > 0 ? (
+                                        <div style={{ flex: 1 }}>
+                                            {examinationData.comorbiditiesDetails.map((item, index) => (
+                                            <div key={index} style={{ fontWeight: 500 }}>
+                                                {item.code + ' - ' + item.name}
+                                            </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span style={{ fontWeight: 500 }}>Không có</span>
+                                    )}
+                                    </p>
+                                    <p className="me-5">
+                                        Tình trạng xuất viện:&nbsp;
+                                        {DISCHARGE_OPTIONS.find(option => option.value === examinationData.dischargeStatus)?.label || ''}
+                                    </p>
+                                    <p className="me-5">
+                                        Ngày xuất viện:&nbsp;
+                                        {formatDate(examinationData.dischargeDate) || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Kết quả điều trị:&nbsp;
+                                        {examinationData?.treatmentResult || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Phòng bệnh:&nbsp;
+                                        {examinationData?.examinationRoomData?.name || ""}
+                                    </p>
+                                    <p className="me-5">
+                                        Khoa:&nbsp;
+                                        {examinationData?.examinationRoomData?.roomDepartmentData?.name || ""}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex justify-content-between">
                         <div style={{ color: "#000" }}>
                             <p style={{ fontWeight: "600", color: "#0077F9" }}>
@@ -542,26 +681,26 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
                         <div className="p-2 bg-gray-50 rounded-b-lg">
                             <div className="flex items-center justify-between">
                                 <div className="space-x-4">
-                                    <div class="radio-button-container ms-2">
-                                        <div class="radio-button">
-                                            <input type="radio" class="radio-button__input" id="radio1" name="radio-group"
+                                    <div className="radio-button-container ms-2">
+                                        <div className="radio-button">
+                                            <input type="radio" className="radio-button__input" id="radio1" name="radio-group"
                                                 value={PAYMENT_METHOD.CASH}
                                                 checked={paymentMethod === PAYMENT_METHOD.CASH}
                                                 onChange={() => setPaymentMethod(PAYMENT_METHOD.CASH)}
                                             />
-                                            <label class="radio-button__label" for="radio1">
-                                                <span class="radio-button__custom"></span>
+                                            <label className="radio-button__label" htmlFor="radio1">
+                                                <span className="radio-button__custom"></span>
                                                 Tiền mặt
                                             </label>
                                         </div>
-                                        <div class="radio-button">
-                                            <input type="radio" class="radio-button__input" id="radio2" name="radio-group"
+                                        <div className="radio-button">
+                                            <input type="radio" className="radio-button__input" id="radio2" name="radio-group"
                                                 value={PAYMENT_METHOD.MOMO}
                                                 checked={paymentMethod === PAYMENT_METHOD.MOMO}
                                                 onChange={() => setPaymentMethod(PAYMENT_METHOD.MOMO)}
                                             />
-                                            <label class="radio-button__label" for="radio2">
-                                                <span class="radio-button__custom"></span>
+                                            <label className="radio-button__label" htmlFor="radio2">
+                                                <span className="radio-button__custom"></span>
                                                 Chuyển khoản
                                             </label>
                                         </div>

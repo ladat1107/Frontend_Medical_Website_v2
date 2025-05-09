@@ -131,7 +131,7 @@ const HistoryItem = ({ id, data, onCopyPrescription = null }) => {
                             {selectedRadio === `vitalsign + ${id}` && (
                                 <div className="mt-2">
                                     {data.examinationVitalSignData && data.examinationVitalSignData.length > 0 ? data.examinationVitalSignData.map((vital, index) => (
-                                        <div className="mt-2">
+                                        <div className="mt-2" key={index}>
                                             {data.examinationVitalSignData.length > 1 && (
                                                 <div className="ms-3" style={{color: '#00B3ED'}}>
                                                     <i className="fa-regular fa-clock me-2 align-middle text-center"></i> {moment(vital.updatedAt).format('HH:mm')} - Ngày {formatDate(vital.updatedAt)}
@@ -183,7 +183,7 @@ const HistoryItem = ({ id, data, onCopyPrescription = null }) => {
                                     {data.examinationResultParaclincalData && data.examinationResultParaclincalData.length > 0 ? (
                                         <div className="mt-2">
                                             {data.examinationResultParaclincalData.length > 0 && data.examinationResultParaclincalData.map((parac, index) => (
-                                                <div className="inpatient-vitals-detail__body flex mt-3">
+                                                <div className="inpatient-vitals-detail__body flex mt-3" key={index}>
                                                     <div className="col-9">
                                                         <div className='flex mt-2' style={{justifyContent: 'space-between'}}>
                                                             <p style={{fontSize: '16px', color: '#00B3ED' , fontWeight: '500'}}>{parac.paracName}</p> 

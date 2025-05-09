@@ -127,6 +127,9 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
             const datapay = {
                 id: examinationData?.id,
                 status: 8,
+                price: dataExam?.total || 0,
+                insuranceCovered: dataExam?.insurancePaid || 0,
+                coveredPrice: dataExam?.patientPaid || 0,
                 payment: paymentMethod,
                 amount: [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0)
             }
@@ -185,6 +188,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
     }
 
     const data = [];
+    let dataExam = {};
     let stt = 1;
 
     const dischargePresData = [];
@@ -209,6 +213,19 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
             insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
             patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
         });
+
+        dataExam = {
+            stt: stt++,
+            content: "Phòng điều trị - " + (examinationData?.examinationRoomData?.name || "Chưa có tên") 
+                    + (examinationData?.examinationRoomData?.serviceData?.[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
+            unit: "Ngày",
+            quantity,
+            unitPrice,
+            total: quantity * unitPrice,
+            insuranceRate,
+            insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+            patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+        }
     }
 
     // Chi phí cận lâm sàng

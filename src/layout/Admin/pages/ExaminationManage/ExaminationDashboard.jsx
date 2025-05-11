@@ -33,10 +33,10 @@ const ExaminationDashboard = () => {
       let cancelExaminations = 0;
 
       examinations.forEach(examination => {
-        if ((examination.status === STATUS_BE.PENDING || new Date(examination.admissionDate) > new Date()) && examination.is_appointment) {
+        if ((new Date(examination.admissionDate) > new Date()) && examination.is_appointment) {
           upcomingAppointments += 1;
           _appointments.push(examination);
-        } else if (examination.status === STATUS_BE.DONE) {
+        } else if (examination.status === STATUS_BE.DONE || examination.status === STATUS_BE.DONE_INPATIENT) {
           completedExaminations += 1;
           totalExaminations += 1;
         } else if (examination.status === STATUS_BE.INACTIVE) {
@@ -80,20 +80,20 @@ const ExaminationDashboard = () => {
         <Col xs={24} sm={12} md={6}>
           <Card bordered={false} className="!shadow-table-admin rounded-xl  [&_.ant-card-body]:px-6 [&_.ant-card-body]:py-4">
             <Statistic
-              title="Đơn chờ xử lý"
-              value={stats.pendingExaminations}
-              prefix={<ClockCircleOutlined style={{ color: "#faad14" }} />}
-              valueStyle={{ color: "#faad14" }}
+              title="Đơn hoàn thành"
+              value={stats.completedExaminations}
+              prefix={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+              valueStyle={{ color: "#52c41a" }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card bordered={false} className="!shadow-table-admin rounded-xl  [&_.ant-card-body]:px-6 [&_.ant-card-body]:py-4">
             <Statistic
-              title="Đơn hoàn thành"
-              value={stats.completedExaminations}
-              prefix={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
-              valueStyle={{ color: "#52c41a" }}
+              title="Đơn chờ xử lý"
+              value={stats.pendingExaminations}
+              prefix={<ClockCircleOutlined style={{ color: "#faad14" }} />}
+              valueStyle={{ color: "#faad14" }}
             />
           </Card>
         </Col>
@@ -110,7 +110,7 @@ const ExaminationDashboard = () => {
       </Row>
 
       {/* Main Content Tabs */}
-      <Card className="!shadow-table-admin rounded-xl  [&_.ant-card-body]:px-6 [&_.ant-card-body]:py-4">
+      <Card className="!shadow-table-admin rounded-xl [&_.ant-card-body]:px-6 [&_.ant-card-body]:py-4 ">
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}

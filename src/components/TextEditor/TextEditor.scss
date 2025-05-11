@@ -1,5 +1,3 @@
-@import "../../styles/variables.scss";
-
 .editor-quill {
 
     .ql-toolbar {
@@ -49,7 +47,7 @@
                 font-size: 1.5em;
                 font-weight: 600;
                 margin-bottom: 10px;
-                color: $primary-color-admin;
+                color: var(--primary-color-admin);
                 margin-bottom: 20px;
                 margin-top: 40px;
             }
@@ -58,7 +56,7 @@
                 font-size: 1.2em;
                 font-weight: 600;
                 margin-bottom: 10px;
-                color: $secondary-color-admin;
+                color: var(--secondary-color-admin);
                 margin-bottom: 20px;
                 margin-top: 40px;
             }

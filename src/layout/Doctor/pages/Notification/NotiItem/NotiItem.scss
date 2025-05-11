@@ -1,7 +1,5 @@
-@import "/src/styles/variables.scss";
-
 .noti-item {
-    border: 2px solid $primary-color-admin;
+    border: 2px solid var(--primary-color-admin);
     border-radius: 10px;
     padding: 10px 20px;
     margin-top: 15px;
@@ -27,7 +25,7 @@
         font-family: 'Be Vietnam Pro', sans-serif;
         font-size: 14px;
         font-weight: 400;
-        color: $text-head-color-admin;
+        color: var(--text-head-color-admin);
     }
 
     .noti-item-content-container {

@@ -226,13 +226,6 @@ const AppointmentList = ({ appointmentList }) => {
               onClick={() => showDetailModal(record)}
             />
           </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="text"
-              icon={<EditOutlined style={{ color: "#faad14" }} />}
-              onClick={() => showModal(record)}
-            />
-          </Tooltip>
           <Tooltip title="Xóa">
             <Button
               type="text"

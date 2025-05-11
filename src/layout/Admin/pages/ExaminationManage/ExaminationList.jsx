@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Table, Tag, Button, Input, Select, DatePicker, message } from "antd"
+import { Table, Tag, Button, Input, Select, message } from "antd"
 import {
   FileExcelOutlined,
   SearchOutlined,
@@ -10,7 +10,6 @@ import ExaminationDrawer from "./ExaminationDetail"
 import { MEDICAL_TREATMENT_TIER, STATUS_BE } from "@/constant/value"
 import DropdownTypeExamination from "../../components/Dropdown/DropdownTypeExamination"
 
-const { RangePicker } = DatePicker
 const { Option } = Select
 
 const ExaminationList = ({ examinationList }) => {
@@ -54,14 +53,6 @@ const ExaminationList = ({ examinationList }) => {
         filteredData = filteredData.filter((item) => item.is_appointment !== 1 && item.medicalTreatmentTier !== MEDICAL_TREATMENT_TIER.INPATIENT && item.medicalTreatmentTier !== MEDICAL_TREATMENT_TIER.EMERGENCY)
     }
 
-    // Filter by date range if needed
-    if (dateRange) {
-      filteredData = filteredData.filter((item) => {
-        const itemDate = new Date(item.admissionDate)
-        return itemDate >= dateRange[0].toDate() && itemDate <= dateRange[1].toDate()
-      })
-    }
-
     // Filter by search text
     if (searchText) {
       filteredData = filteredData.filter(
@@ -100,10 +91,6 @@ const ExaminationList = ({ examinationList }) => {
     setPagination({ ...pagination, current: 1 })
   }
 
-  const handleDateRangeChange = (dates) => {
-    setDateRange(dates)
-    setPagination({ ...pagination, current: 1 })
-  }
   const handleTypeExaminationChange = (value) => {
     setTypeExamination(value)
     setPagination({ ...pagination, current: 1 })
@@ -228,7 +215,6 @@ const ExaminationList = ({ examinationList }) => {
             <Option value={STATUS_BE.DONE}>Hoàn thành</Option>
             <Option value={STATUS_BE.INACTIVE}>Đã hủy</Option>
           </Select>
-          <RangePicker onChange={handleDateRangeChange} format="DD/MM/YYYY" />
         </div>
         <div className="flex gap-2">
           <Button icon={<FileExcelOutlined />} onClick={handleExport}>

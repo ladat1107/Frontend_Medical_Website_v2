@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, Row, Col, Statistic, DatePicker, Select, Divider, Table, message, Tooltip as TooltipAntd, Button } from "antd"
+import { Card, Row, Col, Statistic, Table, Tooltip as TooltipAntd } from "antd"
 import {
   Bar,
   Line,
@@ -18,14 +18,10 @@ import {
 } from "recharts"
 import { UserOutlined, MedicineBoxOutlined, DollarOutlined, CalendarOutlined } from "@ant-design/icons"
 import dayjs from "dayjs";
-import { useGetExamination } from "@/hooks"
 import { MEDICAL_TREATMENT_TIER, PAYMENT_STATUS, STATUS_BE } from "@/constant/value"
 import TooltipTypeExam from "../../components/Tooltip/TooltipTypeExam"
-import { ChartBar, ChartPie, ChartScatter, ClipboardPlus, GraduationCap, Info, TrendingUp } from "lucide-react"
+import { ChartBar, ChartScatter, ClipboardPlus, GraduationCap, Info, TrendingUp } from "lucide-react"
 
-
-const { RangePicker } = DatePicker
-const { Option } = Select
 const examTrendDefault = [{ name: "T2", examinations: 0, appointments: 0, revenue: 0 },
 { name: "T3", examinations: 0, appointments: 0, revenue: 0 },
 { name: "T4", examinations: 0, appointments: 0, revenue: 0 },
@@ -35,12 +31,8 @@ const examTrendDefault = [{ name: "T2", examinations: 0, appointments: 0, revenu
 { name: "CN", examinations: 0, appointments: 0, revenue: 0 },
 ]
 
-const ExaminationStats = () => {
+const ExaminationStats = ({ examinationList, dateRange, timeFrame }) => {
 
-  const [loading, setLoading] = useState(false)
-  const [dateRange, setDateRange] = useState([dayjs().subtract(1, "month"), dayjs()])
-  const { data: examinationList, isLoading: isLoadingExamination, refetch: refetchExamination, isFetching: isFetchingExamination } = useGetExamination(dateRange ? { startDate: dateRange[0].format("YYYY-MM-DD HH:mm:ss"), endDate: dateRange[1].format("YYYY-MM-DD HH:mm:ss") } : null)
-  const [timeFrame, setTimeFrame] = useState("month")
   const [examinationStats, setExaminationStats] = useState({
     totalInpatient: 0,
     totalOutpatient: 0,
@@ -51,10 +43,6 @@ const ExaminationStats = () => {
     topDoctors: [],
     topDiseases: [],
   })
-
-  useEffect(() => {
-    refetchExamination()
-  }, [dateRange])
 
   useEffect(() => {
     if (examinationList?.EC === 0 && examinationList?.DT) {
@@ -221,23 +209,6 @@ const ExaminationStats = () => {
     }
   }, [examinationList])
 
-  const handleDateRangeChange = (dates) => {
-    setDateRange(dates)
-  }
-
-  const handleTimeFrameChange = (value) => {
-    if (value === "today") {
-      setDateRange([dayjs(), dayjs()])
-    } else if (value === "yesterday") {
-      setDateRange([dayjs().subtract(1, "day"), dayjs().subtract(1, "day")])
-    } else if (value === "week") {
-      setDateRange([dayjs().startOf("week"), dayjs().endOf("week")])
-    } else if (value === "month") {
-      setDateRange([dayjs().startOf("month"), dayjs().endOf("month")])
-    }
-    setTimeFrame(value)
-  }
-
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value)
   }
@@ -322,19 +293,6 @@ const ExaminationStats = () => {
       <div className="mb-4 flex flex-wrap justify-between items-center gap-2">
         <div>
           <div className="flex items-center gap-2 text-xl font-medium text-secondaryText-tw"><ChartBar size={20} /> Thống kê đơn khám bệnh</div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button loading={isFetchingExamination} type="default" onClick={refetchExamination}>Làm mới</Button>
-          <RangePicker
-            value={dateRange}
-            format="DD/MM/YYYY"
-            onChange={handleDateRangeChange} />
-          <Select defaultValue="month" style={{ width: 120 }} onChange={handleTimeFrameChange}>
-            <Option value="today">Hôm nay</Option>
-            <Option value="yesterday">Hôm qua</Option>
-            <Option value="week">Theo tuần</Option>
-            <Option value="month">Theo tháng</Option>
-          </Select>
         </div>
       </div>
 

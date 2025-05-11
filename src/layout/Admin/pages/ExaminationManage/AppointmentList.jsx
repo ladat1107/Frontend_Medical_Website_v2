@@ -5,7 +5,7 @@ import { Table, Tag, Button, Input, Space, Select, DatePicker, Modal, Tooltip, m
 import { PlusOutlined, EditOutlined, EyeOutlined, DeleteOutlined, SearchOutlined } from "@ant-design/icons"
 import ExaminationForm from "./ExaminationForm"
 import ExaminationDrawer from "./ExaminationDetail"
-import { STATUS_BE } from "@/constant/value"
+import { STATUS_BE, TIMESLOTS } from "@/constant/value"
 
 const { RangePicker } = DatePicker
 const { Option } = Select
@@ -134,15 +134,8 @@ const AppointmentList = ({ appointmentList }) => {
   }
 
   const getTimeSlot = (timeCode) => {
-    const timeSlots = {
-      1: "08:00 - 09:00",
-      2: "09:00 - 10:00",
-      3: "10:00 - 11:00",
-      4: "13:30 - 14:30",
-      5: "14:30 - 15:30",
-      6: "15:30 - 16:30",
-    }
-    return timeSlots[timeCode] || "Không xác định"
+    const timeSlots = TIMESLOTS.find((slot) => slot.value === timeCode)
+    return timeSlots?.label || "Không xác định"
   }
 
   const columns = [
@@ -255,7 +248,7 @@ const AppointmentList = ({ appointmentList }) => {
             <Option value="paid">Đã thanh toán</Option>
             <Option value="cancel">Hủy</Option>
           </Select>
-          <RangePicker onChange={handleDateRangeChange} format="DD/MM/YYYY" />
+          <RangePicker allowClear={true} onChange={handleDateRangeChange} format="DD/MM/YYYY" />
 
         </div>
         <div>

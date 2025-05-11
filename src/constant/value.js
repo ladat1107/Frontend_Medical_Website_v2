@@ -298,6 +298,7 @@ export const SPECIAL_EXAMINATION = {
 }
 
 export const STATUS_BE = {
+    DONE_INPATIENT: 8,
     DONE: 7, // đã khám xong
     EXAMINING: 6, // đang khám
     PAID: 5, // đã thanh toán chờ để khám
@@ -332,5 +333,16 @@ export const STATUS_MESSAGE = {
     SENT: "sent",
     RECEIVED: "received",
     READ: "read"
+}
+
+export const MEDICAL_TREATMENT_TIER = {
+    INPATIENT: 1,
+    OUTPATIENT: 2,
+    EMERGENCY: 3
+}
+export const PAYMENT_STATUS = {
+    UNPAID: 0,
+    PENDING: 1,
+    PAID: 2
 }
 

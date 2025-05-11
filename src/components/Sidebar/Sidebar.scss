@@ -1,5 +1,3 @@
-@import "/src/styles/variables.scss";
-
 .sidebar-content {
     position: fixed;
     top: 0;
@@ -52,12 +50,12 @@
 
         &:hover {
             text-decoration: none;
-            color: $primary-color-admin;
+            color: var(--primary-color-admin);
         }
 
         &:focus {
             text-decoration: none;
-            color: $primary-color-admin;
+            color: var(--primary-color-admin);
         }
     }
 }

@@ -1,6 +1,6 @@
 "use client"
 import { useGetExaminationById } from "@/hooks"
-import { Drawer, Tag, Divider, Button, Empty, Statistic, Row, Col, Card, Typography, Collapse, Spin } from "antd"
+import { Drawer, Tag, Divider, Button, Empty, Statistic, Row, Col, Card, Typography, Collapse } from "antd"
 import {
   User,
   Stethoscope,
@@ -27,26 +27,33 @@ import {
   Building,
   Calendar,
   TreesIcon as Lungs,
+  Calendar1,
+  Hospital,
+  Loader2,
+  CheckCircle2,
+  EyeOff,
 } from "lucide-react"
-import { SPECIAL_EXAMINATION } from "@/constant/value"
+import { SPECIAL_EXAMINATION, STATUS_BE } from "@/constant/value"
 import HistoryModal from "@/layout/Doctor/components/HistoryModal/HistoryModal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { formatDate } from "@/utils/formatDate"
+import PaymentTooltip from "../../components/Tooltip/PaymentTooltip"
+import ExaminationDetailSkeleton from "./Skeletons/ExaminationDetailSkeleton"
 const { Title, Text } = Typography
 const { Panel } = Collapse
 
 // Status mapping functions
 const getStatusTag = (status) => {
   const statusMap = {
-    0: { color: "gray", text: "Chưa xác định", icon: <Info size={14} className="mr-1" /> },
-    1: { color: "blue", text: "Đang chờ", icon: <Clock size={14} className="mr-1" /> },
-    2: { color: "processing", text: "Đang khám", icon: <Stethoscope size={14} className="mr-1" /> },
-    3: { color: "warning", text: "Chờ thanh toán", icon: <CreditCard size={14} className="mr-1" /> },
-    4: { color: "success", text: "Hoàn thành", icon: <CheckCircle size={14} className="mr-1" /> },
-    5: { color: "error", text: "Đã hủy", icon: <XCircle size={14} className="mr-1" /> },
-    6: { color: "default", text: "Vắng mặt", icon: <XCircle size={14} className="mr-1" /> },
-    7: { color: "purple", text: "Đã thanh toán", icon: <DollarSign size={14} className="mr-1" /> },
-  }
-
+    default: { color: "magenta", text: "Chưa xác định", icon: <Info size={14} className="mr-1" />, },
+    pending: { color: "purple", text: "Chờ xác nhận", icon: <Loader2 size={14} className="mr-1" />, },
+    processing: { color: "blue", text: "Đang khám", icon: <Stethoscope size={14} className="mr-1" />, },
+    isHospitalized: { color: "gold", text: "Đang nằm viện", icon: <Hospital size={14} className="mr-1" />, },
+    waitingPayment: { color: "orange", text: "Chờ thanh toán", icon: <CreditCard size={14} className="mr-1" />, },
+    done: { color: "green", text: "Hoàn thành", icon: <CheckCircle2 size={14} className="mr-1" />, },
+    cancel: { color: "red", text: "Đã hủy", icon: <XCircle size={14} className="mr-1" />, },
+    hide: { color: "error", text: "Trốn viện", icon: <EyeOff size={14} className="mr-1" />, },
+  };
   const statusInfo = statusMap[status] || {
     color: "default",
     text: "Không xác định",
@@ -60,12 +67,22 @@ const getStatusTag = (status) => {
   )
 }
 
+const isSameDay = (date1, date2) => {
+  const d1 = new Date(date1).toISOString().slice(0, 10);
+  const d2 = new Date(date2).toISOString().slice(0, 10);
+  return d1 === d2
+}
+
+const getDischargeStatusTag = (status) => {
+  if (status === 1) return <Text className="text-green-500">Đã xuất viện</Text>
+  if (status === 2) return <Text className="text-red-500">Trốn viện</Text>
+  if (status === 3) return <Text className="text-blue-500">Xin xuất viện</Text>
+  if (status === 4) return <Text className="text-yellow-500">Hẹn tái khám</Text>
+}
 const getPaymentStatusTag = (status) => {
   const statusMap = {
-    0: { color: "default", text: "Chưa thanh toán", icon: <Clock size={14} className="mr-1" /> },
-    1: { color: "processing", text: "Đang xử lý", icon: <Clock size={14} className="mr-1" /> },
-    2: { color: "success", text: "Đã thanh toán", icon: <CheckCircle size={14} className="mr-1" /> },
-    3: { color: "error", text: "Thanh toán thất bại", icon: <XCircle size={14} className="mr-1" /> },
+    0: { color: "default", text: "Chưa hoàn tất", icon: <Clock size={14} className="mr-1" /> },
+    1: { color: "success", text: "Hoàn tất", icon: <CheckCircle size={14} className="mr-1" /> },
   }
 
   const statusInfo = statusMap[status] || {
@@ -78,33 +95,15 @@ const getPaymentStatusTag = (status) => {
       {statusInfo.icon}
       {statusInfo.text}
     </Tag>
-  )
-}
-
-const getPaymentMethodText = (method) => {
-  const methodMap = {
-    1: { text: "Tiền mặt", icon: <DollarSign size={14} className="mr-1" /> },
-    2: { text: "Chuyển khoản", icon: <CreditCard size={14} className="mr-1" /> },
-    3: { text: "Thẻ tín dụng", icon: <CreditCard size={14} className="mr-1" /> },
-    4: { text: "Ví điện tử", icon: <CreditCard size={14} className="mr-1" /> },
-  }
-
-  const methodInfo = methodMap[method] || { text: "Không xác định", icon: <Info size={14} className="mr-1" /> }
-  return (
-    <div className="flex items-center">
-      {methodInfo.icon}
-      {methodInfo.text}
-    </div>
   )
 }
 
 const getParaclinicalStatusTag = (status) => {
   const statusMap = {
-    1: { color: "blue", text: "Chờ thực hiện", icon: <Clock size={14} className="mr-1" /> },
-    2: { color: "processing", text: "Đang thực hiện", icon: <Activity size={14} className="mr-1" /> },
-    3: { color: "warning", text: "Chờ kết quả", icon: <Clock size={14} className="mr-1" /> },
-    4: { color: "success", text: "Hoàn thành", icon: <CheckCircle size={14} className="mr-1" /> },
-    5: { color: "error", text: "Đã hủy", icon: <XCircle size={14} className="mr-1" /> },
+    5: { color: "blue", text: "Chờ thực hiện", icon: <Clock size={14} className="mr-1" /> },
+    4: { color: "warning", text: "Chờ thanh toán", icon: <Clock size={14} className="mr-1" /> },
+    7: { color: "success", text: "Hoàn thành", icon: <CheckCircle size={14} className="mr-1" /> },
+    0: { color: "error", text: "Đã hủy", icon: <XCircle size={14} className="mr-1" /> },
   }
 
   const statusInfo = statusMap[status] || {
@@ -118,18 +117,6 @@ const getParaclinicalStatusTag = (status) => {
       {statusInfo.text}
     </Tag>
   )
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return "N/A"
-  const date = new Date(dateString)
-  return date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
 }
 
 const formatCurrency = (amount) => {
@@ -142,11 +129,47 @@ const ArraySpecialExamination = Object.entries(SPECIAL_EXAMINATION).map(([key, v
 const formatSpecialExamination = (specialExamination) => {
   return ArraySpecialExamination.find((item) => item.value.includes(specialExamination))?.label || "Không xác định"
 }
+
+
 const ExaminationDrawer = ({ open, onClose, examinationId }) => {
   const { data: examination, isLoading } = useGetExaminationById(examinationId)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [statusExamination, setStatusExamination] = useState("default")
   const examinationData = examination?.DT || {}
-  //const totalPrice = examinationData.price + examinationData.insuranceCovered
+  const percentInsuranceCoverage = examinationData?.insuranceCoverage === 1 ? 100 : examinationData?.insuranceCoverage === 2 ? 95 : examinationData?.insuranceCoverage === 3 ? 80 : examinationData?.insuranceCoverage === 4 ? 100 : 0
+  const [totalPricePrescription, setTotalPricePrescription] = useState(0)
+  const [insuranceCoveredPrescription, setInsuranceCoveredPrescription] = useState(0)
+  const [coveredPricePrescription, setCoveredPricePrescription] = useState(0)
+  const [totalPriceParaclinical, setTotalPriceParaclinical] = useState(0)
+  const [insuranceCoveredParaclinical, setInsuranceCoveredParaclinical] = useState(0)
+  const [coveredPriceParaclinical, setCoveredPriceParaclinical] = useState(0)
+  useEffect(() => {
+    if (examinationData) {
+      setTotalPricePrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.totalMoney || 0), 0) || 0)
+      setInsuranceCoveredPrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.insuranceCovered || 0), 0) || 0)
+      setCoveredPricePrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.coveredPrice || 0), 0) || 0)
+      setTotalPriceParaclinical(examinationData?.examinationResultParaclincalData?.reduce((sum, p) => sum + (p?.coveredPrice || 0), 0) || 0)
+      setInsuranceCoveredParaclinical(examinationData?.examinationResultParaclincalData?.reduce((sum, p) => sum + (p?.insuranceCovered || 0), 0) || 0)
+      setCoveredPriceParaclinical(examinationData?.examinationResultParaclincalData?.reduce((sum, p) => sum + (p?.coveredPrice || 0), 0) || 0)
+
+      if (examinationData.status === STATUS_BE.DONE_INPATIENT || examinationData.status === STATUS_BE.DONE) {
+        if (examinationData?.dischargeStatus === 2) {
+          setStatusExamination("hide")
+        } else {
+          setStatusExamination("done")
+        }
+      } else if (examinationData.status === STATUS_BE.INACTIVE) {
+        setStatusExamination("cancel")
+      } else if (examinationData?.status === STATUS_BE.EXAMINING || examinationData?.status === STATUS_BE.PAID) {
+        if (examinationData.medicalTreatmentTier === 1) setStatusExamination("isHospitalized")
+        else setStatusExamination("processing")
+      } else if (examinationData.status === STATUS_BE.WAITING) {
+        setStatusExamination("waitingPayment")
+      } else if (examinationData.status === STATUS_BE.PENDING || examinationData.status === STATUS_BE.ACTIVE) {
+        setStatusExamination("pending")
+      } else setStatusExamination("default")
+    }
+  }, [examinationData])
 
   // Header section with basic info and actions
   const renderHeader = () => (
@@ -157,7 +180,7 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
             <Title level={4} className="!m-0 !text-primary-tw">
               Đơn khám #{examinationData.id}
             </Title>
-            {getStatusTag(examinationData.status)}
+            {getStatusTag(statusExamination)}
           </div>
           <Text type="secondary" className="block mt-1">
             Ngày tạo: {formatDate(examinationData.createdAt)}
@@ -166,7 +189,7 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
         <div className="flex flex-col sm:flex-row gap-2">
           <Statistic
             title="Tổng tiền"
-            value={examinationData.price}
+            value={(examinationData?.price || 0) + totalPriceParaclinical + totalPricePrescription}
             precision={0}
             valueStyle={{ color: "#cf1322" }}
             suffix="₫"
@@ -184,9 +207,6 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
       <div className="flex flex-wrap gap-2 mt-4">
         <Button icon={<Printer size={16} />} className="flex items-center">
           In đơn khám
-        </Button>
-        <Button icon={<Edit size={16} />} className="flex items-center">
-          Chỉnh sửa
         </Button>
         <Button type="primary" style={{ backgroundColor: "#00B5F1" }} className="flex items-center" onClick={() => setIsModalOpen(true)}>
           Xem lịch sử
@@ -218,11 +238,12 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
             </Button>
           </div>
         }
+        className="overflow-hidden"
         headerStyle={{ borderBottom: "1px solid #f0f0f0" }}
         bodyStyle={{ padding: "16px", backgroundColor: "#f5f7fa" }}
       >
-        {isLoading ? <Spin /> :
-          <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 120px)" }}>
+        {isLoading ? <ExaminationDetailSkeleton /> :
+          <div className="overflow-y-auto scrollbar-hide" style={{ maxHeight: "calc(100vh - 120px)" }}>
             {renderHeader()}
 
             {/* Patient Information Section */}
@@ -273,22 +294,22 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <Text type="secondary">Mã bảo hiểm:</Text>
-                        <Text>{examinationData.insuranceCode || "Không có"}</Text>
+                        <Text>{examinationData.insuranceCode || "Không sử dụng bảo hiểm"}</Text>
                       </div>
                       <div className="flex justify-between">
                         <Text type="secondary">Mức hưởng BHYT:</Text>
                         <Text>
-                          {examinationData.insuranceCoverage ? `${examinationData.insuranceCoverage * 20}%` : "Không có"}
+                          {percentInsuranceCoverage}%
                         </Text>
                       </div>
                       <div className="flex justify-between">
-                        <Text type="secondary">BHYT chi trả:</Text>
-                        <Text className="text-green-600">{formatCurrency(examinationData.insuranceCovered || 0)}</Text>
+                        <Text type="secondary">Ngày hết hạn:</Text>
+                        <Text className="text-green-600">{examinationData?.userExaminationData?.userInsuranceData?.exp ? formatDate(examinationData?.userExaminationData?.userInsuranceData?.exp) : "Chưa cập nhật"}</Text>
                       </div>
                       <div className="flex justify-between">
-                        <Text type="secondary">Bệnh nhân chi trả:</Text>
+                        <Text type="secondary">Mã đăng ký KCB:</Text>
                         <Text className="text-blue-600">
-                          {formatCurrency(examinationData.coveredPrice || examinationData.price)}
+                          {examinationData?.userExaminationData?.userInsuranceData?.residentialCode || "Chưa cập nhật"}
                         </Text>
                       </div>
                     </div>
@@ -308,43 +329,43 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
               className="mb-4"
               bordered={false}
             >
-              {examinationData.examinationVitalSignData ? (
+              {examinationData.examinationVitalSignData && examinationData.examinationVitalSignData.length > 0 ? (
                 <Row gutter={[16, 16]}>
                   <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Ruler className="text-primary-tw mx-auto mb-1" size={20} />
                       <div className="text-xs text-gray-500">Chiều cao</div>
-                      <div className="text-lg font-semibold">{examinationData.examinationVitalSignData.height} cm</div>
+                      <div className="text-base font-semibold">{examinationData.examinationVitalSignData[0].height} cm</div>
                     </div>
                   </Col>
                   <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Weight className="text-primary-tw mx-auto mb-1" size={20} />
                       <div className="text-xs text-gray-500">Cân nặng</div>
-                      <div className="text-lg font-semibold">{examinationData.examinationVitalSignData.weight} kg</div>
+                      <div className="text-base font-semibold">{examinationData.examinationVitalSignData[0].weight} kg</div>
                     </div>
                   </Col>
                   <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Heart className="text-primary-tw mx-auto mb-1" size={20} />
                       <div className="text-xs text-gray-500">Mạch</div>
-                      <div className="text-lg font-semibold">{examinationData.examinationVitalSignData.pulse} bpm</div>
+                      <div className="text-base font-semibold">{examinationData.examinationVitalSignData[0].pulse} bpm</div>
                     </div>
                   </Col>
                   <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Thermometer className="text-primary-tw mx-auto mb-1" size={20} />
                       <div className="text-xs text-gray-500">Nhiệt độ</div>
-                      <div className="text-lg font-semibold">{examinationData.examinationVitalSignData.temperature} °C</div>
+                      <div className="text-base font-semibold">{examinationData.examinationVitalSignData[0].temperature} °C</div>
                     </div>
                   </Col>
                   <Col xs={12} sm={8} md={6} lg={4}>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Activity className="text-primary-tw mx-auto mb-1" size={20} />
                       <div className="text-xs text-gray-500">Huyết áp</div>
-                      <div className="text-lg font-semibold">
-                        {examinationData.examinationVitalSignData.hightBloodPressure}/
-                        {examinationData.examinationVitalSignData.lowBloodPressure} mmHg
+                      <div className="text-base font-semibold">
+                        {examinationData.examinationVitalSignData[0].hightBloodPressure}/
+                        {examinationData.examinationVitalSignData[0].lowBloodPressure} mmHg
                       </div>
                     </div>
                   </Col>
@@ -352,8 +373,8 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Lungs className="text-primary-tw mx-auto mb-1" size={20} />
                       <div className="text-xs text-gray-500">Nhịp thở</div>
-                      <div className="text-lg font-semibold">
-                        {examinationData.examinationVitalSignData.breathingRate} lần/phút
+                      <div className="text-base font-semibold">
+                        {examinationData.examinationVitalSignData[0].breathingRate} lần/phút
                       </div>
                     </div>
                   </Col>
@@ -361,18 +382,18 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <Droplet className="text-primary-tw mx-auto mb-1" size={20} />
                       <div className="text-xs text-gray-500">Đường huyết</div>
-                      <div className="text-lg font-semibold">
-                        {examinationData.examinationVitalSignData.glycemicIndex} mg/dL
+                      <div className="text-base font-semibold">
+                        {examinationData.examinationVitalSignData[0].glycemicIndex} mg/dL
                       </div>
                     </div>
                   </Col>
-                  {examinationData.examinationVitalSignData.fetalWeight && (
+                  {examinationData.examinationVitalSignData[0].fetalWeight && (
                     <Col xs={12} sm={8} md={6} lg={4}>
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
                         <Weight className="text-primary-tw mx-auto mb-1" size={20} />
                         <div className="text-xs text-gray-500">Cân nặng thai nhi</div>
-                        <div className="text-lg font-semibold">
-                          {examinationData.examinationVitalSignData.fetalWeight} g
+                        <div className="text-base font-semibold">
+                          {examinationData.examinationVitalSignData[0].fetalWeight} g
                         </div>
                       </div>
                     </Col>
@@ -395,125 +416,115 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
               bordered={false}
             >
               <Row gutter={[16, 16]}>
-                <Col xs={24} md={12}>
-                  <Card title="Thông tin bác sĩ" bordered={false} className="h-full bg-bgAdmin">
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <Text type="secondary">Bác sĩ:</Text>
-                        <Text strong>
-                          {examinationData.examinationStaffData.staffUserData.lastName}{" "}
-                          {examinationData.examinationStaffData.staffUserData.firstName}
-                        </Text>
-                      </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Chức danh:</Text>
-                        <Text>{examinationData.examinationStaffData.position}</Text>
-                      </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Khoa:</Text>
-                        <div className="flex items-center">
-                          <Building size={14} className="mr-1 text-gray-500" />
-                          <Text>{examinationData.examinationStaffData.staffDepartmentData.name}</Text>
+                {examinationData?.medicalTreatmentTier !== 1 &&
+                  <Col xs={24} md={12}>
+                    <Card title="Thông tin bác sĩ" bordered={false} className="h-full bg-bgAdmin">
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <Text type="secondary">Bác sĩ:</Text>
+                          <Text strong>
+                            {examinationData?.examinationStaffData?.staffUserData?.lastName || ""}{" "}
+                            {examinationData?.examinationStaffData?.staffUserData?.firstName || ""}
+                          </Text>
+                        </div>
+                        <div className="flex justify-between">
+                          <Text type="secondary">Chức danh:</Text>
+                          <Text>{examinationData?.examinationStaffData?.position || ""}</Text>
+                        </div>
+                        <div className="flex justify-between">
+                          <Text type="secondary">Khoa:</Text>
+                          <div className="flex items-center">
+                            <Building size={14} className="mr-1 text-gray-500" />
+                            <Text>{examinationData?.examinationStaffData?.staffDepartmentData?.name || ""}</Text>
+                          </div>
+                        </div>
+                        <div className="flex justify-between">
+                          <Text type="secondary">Phòng khám:</Text>
+                          <Text>{examinationData?.examinationStaffData?.staffDepartmentData?.name || ""}</Text>
+                        </div>
+                        <div className="flex justify-between">
+                          <Text type="secondary">Số điện thoại:</Text>
+                          <div className="flex items-center">
+                            <Phone size={14} className="mr-1 text-gray-500" />
+                            <Text>{examinationData?.examinationStaffData?.staffUserData?.phoneNumber || ""}</Text>
+                          </div>
+                        </div>
+                        <div className="flex justify-between">
+                          <Text type="secondary">Email:</Text>
+                          <div className="flex items-center">
+                            <Mail size={14} className="mr-1 text-gray-500" />
+                            <Text>{examinationData?.examinationStaffData?.staffUserData?.email || ""}</Text>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Phòng khám:</Text>
-                        <Text>{examinationData.examinationStaffData.staffDepartmentData.name}</Text>
-                      </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Số điện thoại:</Text>
-                        <div className="flex items-center">
-                          <Phone size={14} className="mr-1 text-gray-500" />
-                          <Text>{examinationData.examinationStaffData.staffUserData.phoneNumber}</Text>
-                        </div>
-                      </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Email:</Text>
-                        <div className="flex items-center">
-                          <Mail size={14} className="mr-1 text-gray-500" />
-                          <Text>{examinationData.examinationStaffData.staffUserData.email}</Text>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </Col>
-
-                <Col xs={24} md={12}>
+                    </Card>
+                  </Col>
+                }
+                <Col xs={24} md={examinationData?.medicalTreatmentTier === 1 ? 24 : 12}>
                   <Card title="Chi tiết khám bệnh" bordered={false} className="h-full bg-bgAdmin">
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <Text type="secondary">Ngày khám:</Text>
                         <div className="flex items-center">
                           <Calendar size={14} className="mr-1 text-gray-500" />
-                          <Text>{formatDate(examinationData.admissionDate)}</Text>
+                          <Text>{isSameDay(examinationData?.admissionDate, examinationData?.dischargeDate) ? formatDate(examinationData?.admissionDate || "") : `${formatDate(examinationData?.admissionDate || "")} - ${formatDate(examinationData?.dischargeDate || "")}`}</Text>
                         </div>
                       </div>
                       <div className="flex justify-between">
                         <Text type="secondary">Triệu chứng:</Text>
                         <div className="flex items-center">
                           <Thermometer size={14} className="mr-1 text-gray-500" />
-                          <Text>{examinationData.symptom || "Không có"}</Text>
+                          <Text>{examinationData?.symptom || "Không có"}</Text>
                         </div>
                       </div>
                       <div className="flex justify-between">
                         <Text type="secondary">Chẩn đoán:</Text>
                         <Text strong className="text-right max-w-[250px]">
-                          {examinationData.diseaseName || "Chưa có chẩn đoán"}
+                          {examinationData?.diseaseName || "Chưa có chẩn đoán"}
                         </Text>
                       </div>
                       <div className="flex justify-between">
                         <Text type="secondary">Bệnh đi kèm:</Text>
-                        <Text>{examinationData.comorbidities || "Không có"}</Text>
+                        <Text>{examinationData?.comorbidities || "Không có"}</Text>
                       </div>
                       <div className="flex justify-between">
                         <Text type="secondary">Ưu tiên:</Text>
-                        <Text>{formatSpecialExamination(examinationData?.special)}</Text>
+                        <Text>{formatSpecialExamination(examinationData?.special || "")}</Text>
                       </div>
                       <div className="flex justify-between">
                         <Text type="secondary">Loại khám:</Text>
                         <Text>
                           {examinationData?.medicalTreatmentTier === 1
-                            ? `Khám bệnh`
+                            ? `Nhập viện`
                             : "Ngoại trú"}
                         </Text>
                       </div>
                       <div className="flex justify-between">
-                        <Text type="secondary">Lý do hủy/vắng mặt:</Text>
-                        <Text>{examinationData.reason || "Không có"}</Text>
+                        <Text type="secondary">Tuyến khám:</Text>
+                        <Text>
+                          {examinationData?.isWrongTreatment === 0
+                            ? `Đúng tuyến`
+                            : "Trái tuyến"}
+                        </Text>
                       </div>
+                      <div className="flex justify-between">
+                        <Text type="secondary">Lý do nhập viện:</Text>
+                        <Text>{examinationData?.reason || "Không có"}</Text>
+                      </div>
+                      <div className="flex justify-between">
+                        <Text type="secondary">Kết quả điều trị:</Text>
+                        <Text>{examinationData?.treatmentResult || "Chưa có kết quả điều trị"}</Text>
+                      </div>
+                      {examinationData?.dischargeStatus && (
+                        <div className="flex justify-between">
+                          <Text type="secondary">Tình trạng:</Text>
+                          {getDischargeStatusTag(examinationData?.dischargeStatus)}
+                        </div>
+                      )}
                     </div>
                   </Card>
                 </Col>
               </Row>
-
-              {/* Treatment Results */}
-              <div className="mt-4">
-                <Card title="Kết quả điều trị" bordered={false} className="bg-bgAdmin">
-                  {examinationData.treatmentResult ? (
-                    <div>
-                      <div className="mb-4">
-                        <Text type="secondary" className="block mb-1">
-                          Kết quả điều trị:
-                        </Text>
-                        <div className="p-3 bg-white rounded border border-gray-200">{examinationData.treatmentResult}</div>
-                      </div>
-                      {examinationData.reExaminationDate && (
-                        <div className="mb-4">
-                          <Text type="secondary" className="block mb-1">
-                            Ngày tái khám:
-                          </Text>
-                          <div className="p-3 bg-white rounded border border-gray-200 flex items-center">
-                            <Calendar className="mr-2" size={16} />
-                            {formatDate(examinationData.reExaminationDate)}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Empty description="Chưa có kết quả điều trị" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                  )}
-                </Card>
-              </div>
             </Card>
 
             {/* Payment Information */}
@@ -537,10 +548,10 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                           Tổng tiền
                         </div>
                       }
-                      value={examinationData.price}
+                      value={examinationData?.price + totalPriceParaclinical + totalPricePrescription}
                       precision={0}
-                      valueStyle={{ color: "#cf1322" }}
                       suffix="₫"
+                      valueStyle={{ color: "#cf1322" }}
                     />
                     <div className="mt-2 text-xs text-gray-500">Tổng chi phí khám bệnh</div>
                   </Card>
@@ -554,14 +565,14 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                           BHYT chi trả
                         </div>
                       }
-                      value={examinationData.insuranceCovered || 0}
+                      value={insuranceCoveredParaclinical + insuranceCoveredPrescription + (examinationData?.insuranceCovered || 0)}
                       precision={0}
                       valueStyle={{ color: "#3f8600" }}
                       suffix="₫"
                     />
                     <div className="mt-2 text-xs text-gray-500">
-                      {examinationData.insuranceCoverage
-                        ? `Mức hưởng: ${examinationData.insuranceCoverage * 20}%`
+                      {examinationData?.insuranceCoverage
+                        ? `Mức hưởng: ${percentInsuranceCoverage}%`
                         : "Không có BHYT"}
                     </div>
                   </Card>
@@ -575,7 +586,7 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                           Bệnh nhân chi trả
                         </div>
                       }
-                      value={examinationData.coveredPrice || examinationData.price}
+                      value={(coveredPriceParaclinical > 0 ? coveredPriceParaclinical : totalPriceParaclinical) + (coveredPricePrescription > 0 ? coveredPricePrescription : totalPricePrescription) + (examinationData?.coveredPrice || examinationData?.price)}
                       precision={0}
                       valueStyle={{ color: "#1677ff" }}
                       suffix="₫"
@@ -590,86 +601,117 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <Text strong>Thông tin giao dịch</Text>
-                  {getPaymentStatusTag(examinationData?.paymentData?.status || 1)}
                 </div>
 
                 <Row gutter={16}>
-                  <Col xs={24} md={12}>
-                    <div className="space-y-3 bg-bgAdmin p-4 rounded-lg">
-                      <div className="flex justify-between">
-                        <Text type="secondary">Mã thanh toán:</Text>
-                        <Text>#{examinationData?.paymentData?.id}</Text>
-                      </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Phương thức thanh toán:</Text>
-                        <div>{getPaymentMethodText(examinationData?.paymentData?.paymentMethod || 1)}</div>
-                      </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Số tiền thanh toán:</Text>
-                        <Text className="text-red-500 font-medium">
-                          {formatCurrency(examinationData?.paymentData?.amount)}
-                        </Text>
-                      </div>
-                      <div className="flex justify-between">
-                        <Text type="secondary">Ngày thanh toán:</Text>
-                        <div className="flex items-center">
-                          <Calendar size={14} className="mr-1 text-gray-500" />
-                          <Text>{formatDate(examinationData.updatedAt)}</Text>
-                        </div>
-                      </div>
-                    </div>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <div className="bg-bgAdmin p-4 rounded-lg">
-                      <Text strong className="block mb-3">
+                  <Col xs={24}>
+                    <div className="bg-white shadow-sm p-4 rounded-lg border border-gray-100">
+                      <Text strong className="block mb-3 text-base text-gray-800">
                         Chi tiết chi phí
                       </Text>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <Text>Phí khám bệnh:</Text>
-                          <Text>{formatCurrency(examinationData.price)}</Text>
-                        </div>
-                        {examinationData.prescriptionExamData && examinationData.prescriptionExamData.length > 0 && (
+                      <div className="space-y-3 text-sm text-gray-700">
+                        {examinationData.price && examinationData?.medicalTreatmentTier === 1 ? (
                           <div className="flex justify-between">
-                            <Text>Tiền thuốc:</Text>
-                            <Text>
-                              {formatCurrency(
-                                examinationData.prescriptionExamData.reduce((sum, p) => sum + p.totalMoney, 0),
+                            <Text className="text-gray-600">Giường:</Text>
+                            <Text className="font-medium text-right">{formatCurrency(examinationData.coveredPrice || examinationData.price)}</Text>
+                          </div>
+                        ) : (
+                          <div className={`grid gap-2 items-start ${examinationData?.insuranceCovered ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                            <Text className="text-gray-600">Phí khám bệnh:</Text>
+                            {examinationData?.insuranceCovered && (
+                              <Text className="text-right">
+                                {formatCurrency(examinationData?.price)}
+                                <span className="ml-2 border border-green-400 text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs">BHYT: {formatCurrency(examinationData?.insuranceCovered)}</span>
+                              </Text>
+                            )}
+                            <Text className="flex flex-wrap items-center justify-end text-end gap-1">
+                              {formatCurrency(examinationData?.coveredPrice || examinationData?.price || 0)}
+                              {!examinationData?.paymentData || examinationData?.paymentData?.status !== 2 ? (
+                                <span className="ml-1 text-blue-500 italic text-xs">(Chưa thanh toán)</span>
+                              ) : (
+                                <PaymentTooltip
+                                  paymentData={examinationData?.paymentData}
+                                >
+                                  <span className="ml-1 text-gray-400 italic text-xs cursor-pointer"><Info size={12} className="mr-1" /></span>
+                                </PaymentTooltip>
                               )}
                             </Text>
                           </div>
                         )}
 
-                        {examinationData.examinationResultParaclincalData &&
-                          examinationData.examinationResultParaclincalData.length > 0 && (
-                            <div className="flex justify-between">
-                              <Text>Xét nghiệm cận lâm sàng:</Text>
-                              <Text>
-                                {formatCurrency(
-                                  examinationData.examinationResultParaclincalData.reduce((sum, p) => sum + p.price, 0),
-                                )}
+                        {examinationData.prescriptionExamData && examinationData.prescriptionExamData.length > 0 && (
+                          <div className={`grid gap-2 items-start ${insuranceCoveredPrescription > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                            <Text className="text-gray-600">Tiền thuốc:</Text>
+                            {insuranceCoveredPrescription > 0 && (
+                              <Text className="text-right">
+                                {formatCurrency(totalPricePrescription)}
+                                <span className="ml-2 border border-green-400 text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs">BHYT: {formatCurrency(coveredPricePrescription)}</span>
                               </Text>
-                            </div>
-                          )}
+                            )}
+                            <Text className="flex flex-wrap items-center justify-end text-end gap-1">
+                              {formatCurrency(totalPricePrescription - insuranceCoveredPrescription)}
+                              {examinationData?.medicalTreatmentTier !== 1 &&
+                                <>
+                                  {(!examinationData?.prescriptionExamData[0]?.paymentData ||
+                                    examinationData?.prescriptionExamData[0]?.paymentData?.status !== 2) ? (
+                                    <span className="ml-1 text-blue-500 italic text-xs">(Chưa thanh toán)</span>
+                                  ) : (
+                                    <PaymentTooltip
+                                      paymentData={examinationData?.prescriptionExamData[0]?.paymentData}
+                                    >
+                                      <span className="ml-1 text-gray-400 cursor-pointer"><Info size={12} className="mr-1" /></span>
+                                    </PaymentTooltip>
+                                  )}
+                                </>
+                              }
+                            </Text>
+                          </div>
+                        )}
+
+                        {examinationData.examinationResultParaclincalData && examinationData.examinationResultParaclincalData.length > 0 && (
+                          <div className={`grid gap-2 items-start ${insuranceCoveredParaclinical > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                            <Text className="text-gray-600">Xét nghiệm cận lâm sàng:</Text>
+                            {insuranceCoveredParaclinical > 0 && (
+                              <Text className="text-right">
+                                {formatCurrency(totalPriceParaclinical)}
+                                <span className="ml-2 border border-green-400 text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs">BHYT: {formatCurrency(coveredPriceParaclinical)}</span>
+                              </Text>
+                            )}
+                            <Text className="flex flex-wrap items-center justify-end text-end gap-1">
+                              {formatCurrency(insuranceCoveredParaclinical > 0 ? coveredPriceParaclinical : totalPriceParaclinical)}
+                              {examinationData?.medicalTreatmentTier !== 1 &&
+                                <>
+                                  {(!examinationData?.examinationResultParaclincalData[0]?.paymentData ||
+                                    examinationData?.examinationResultParaclincalData[0]?.paymentData?.status !== 2) ? (
+                                    <span className="ml-1 text-blue-500 italic text-xs">(Chưa thanh toán)</span>
+                                  ) : (
+                                    <PaymentTooltip
+                                      paymentData={examinationData?.examinationResultParaclincalData[0]?.paymentData}
+                                    >
+                                      <span className="ml-1 text-gray-400 cursor-pointer"><Info size={12} className="mr-1" /></span>
+                                    </PaymentTooltip>
+                                  )}
+                                </>}
+                            </Text>
+                          </div>
+                        )}
+
                         <Divider className="my-2" />
-                        <div className="flex justify-between font-bold">
-                          <Text strong>Tổng cộng:</Text>
+
+                        <div className="flex justify-between font-semibold text-base">
+                          <Text strong className="text-gray-800">Tổng cộng:</Text>
                           <Text strong className="text-red-500">
                             {formatCurrency(
-                              examinationData.price +
-                              (examinationData.prescriptionExamData
-                                ? examinationData.prescriptionExamData.reduce((sum, p) => sum + p.totalMoney, 0)
-                                : 0) +
-                              (examinationData.examinationResultParaclincalData
-                                ? examinationData.examinationResultParaclincalData.reduce((sum, p) => sum + p.price, 0)
-                                : 0),
+                              (examinationData.coveredPrice || examinationData.price) +
+                              (coveredPriceParaclinical > 0 ? coveredPriceParaclinical : totalPriceParaclinical) +
+                              (coveredPricePrescription > 0 ? coveredPricePrescription : totalPricePrescription)
                             )}
                           </Text>
                         </div>
                       </div>
                     </div>
                   </Col>
+
                 </Row>
               </div>
             </Card>
@@ -682,17 +724,21 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                   <span className="font-bold">Đơn thuốc</span>
                 </div>
               }
-              className="mb-4"
+              className="mb-4 [&_.ant-card-body]:p-0"
               bordered={false}
             >
               {examinationData.prescriptionExamData && examinationData.prescriptionExamData.length > 0 ? (
-                examinationData.prescriptionExamData.map((prescription, index) => (
+                examinationData.prescriptionExamData.map((prescription) => (
                   <Card
                     key={prescription.id}
                     title={
-                      <div className="flex items-center">
-                        <Pill className="mr-2" size={16} />
-                        <span>Đơn thuốc #{prescription.id}</span>
+                      <div className="flex flex-col sm:flex-row items-start font-normal gap-2">
+                        <span className="flex items-center text-sm text-secondaryText-tw">Đơn thuốc #{prescription.id} </span>
+                        <span className="flex items-center ms-1 text-[12px] text-gray-500"><Calendar1 size={12} className="mr-1" />
+                          {isSameDay(prescription?.createdAt, prescription?.endDate)
+                            ? formatDate(prescription?.createdAt || "")
+                            : `${formatDate(prescription?.createdAt || "")} - ${formatDate(prescription?.endDate || "")}`}
+                        </span>
                       </div>
                     }
                     bordered={false}
@@ -782,7 +828,8 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                       Tổng chi phí:{" "}
                       <span className="text-red-500 font-medium">
                         {formatCurrency(
-                          examinationData.examinationResultParaclincalData.reduce((sum, p) => sum + p.price, 0),
+                          examinationData.examinationResultParaclincalData.reduce((sum, p) =>
+                            p?.paymentData && p?.paymentData?.status === 2 ? sum + (p?.coveredPrice || p?.price) : sum + p?.price, 0),
                         )}
                       </span>
                     </Text>
@@ -800,7 +847,11 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                             </div>
                             <div className="flex items-center gap-2">
                               {getParaclinicalStatusTag(paraclinical.status)}
-                              <Text className="text-red-500">{formatCurrency(paraclinical.price)}</Text>
+                              <Text className="text-red-500">
+                                {paraclinical?.paymentData && paraclinical?.paymentData?.status === 2 ?
+                                  formatCurrency(paraclinical?.coveredPrice || paraclinical?.price) :
+                                  paraclinical?.paymentData?.status === 0 ? "Đã hủy" : "Chờ thanh toán"}
+                              </Text>
                             </div>
                           </div>
                         }
@@ -835,6 +886,18 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                                   <Text>{formatDate(paraclinical.createdAt)}</Text>
                                 </div>
                               </div>
+                              <div className="flex justify-between">
+                                <Text type="secondary">Giá:</Text>
+                                <div className="flex items-center">
+                                  <Text>{formatCurrency(paraclinical.price)}</Text>
+                                </div>
+                              </div>
+                              {paraclinical.insuranceCovered && < div className="flex justify-between">
+                                <Text type="secondary">BHYT chi trả:</Text>
+                                <div className="flex items-center">
+                                  <Text>{formatCurrency(paraclinical.insuranceCovered)}</Text>
+                                </div>
+                              </div>}
                             </div>
                           </Col>
 
@@ -895,8 +958,8 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                 <Empty description="Không có dữ liệu cận lâm sàng" image={Empty.PRESENTED_IMAGE_SIMPLE} />
               )}
             </Card>
-          </div>}
-      </Drawer>
+          </div >}
+      </Drawer >
 
       {!isLoading && (
         <div className="modal-history-content">

@@ -25,6 +25,7 @@ export default {
     "./src/layout/User/pages/Login/**/*.{js,jsx,ts,tsx}",
     "./src/layout/User/pages/ProfileUser/**/*.{js,jsx,ts,tsx}",
     "./src/components/Profile/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/Admin/components/Tooltip/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
@@ -39,6 +40,7 @@ export default {
         'bgTableHead': '#dceff8',
         'textHeadTable': '#007BFF',
         'hoverTable': '#edf3fc',
+        'evenRow': '#EEF5FF',
         'gradient-primary': 'linear-gradient(36deg, #00b5f1, #00e0ff)',
       },
       borderRadius: {

@@ -3,11 +3,11 @@ import { getAllExaminationsAdmin, getExaminationByIdAdmin } from "../services/ad
 import { useSelector } from "react-redux";
 import { ROLE } from "@/constant/role";
 
-export const useGetExamination = () => {
+export const useGetExamination = (query) => {
     const { user } = useSelector(state => state.authen);
     return useQuery({
-        queryKey: ['examinations'],
-        queryFn: () => getAllExaminationsAdmin(),
+        queryKey: ['examinations', query],
+        queryFn: () => getAllExaminationsAdmin(query),
         enabled: user?.role === ROLE.ADMIN,
         placeholderData: keepPreviousData,
     })

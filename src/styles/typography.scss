@@ -1,9 +1,7 @@
-@import "./variables.scss";
-
 // _typography.scss
 body,
 header {
-  font-family: "Be Vietnam Pro", sans-serif ;
+  font-family: "Be Vietnam Pro", sans-serif;
 
 }
 
@@ -13,42 +11,42 @@ h3,
 h4,
 h5,
 h6 {
-  color: $primary-color;
+  color: var(--primary-color);
 }
 
 // _colors.scss
 .title-section {
   text-align: center;
-  color: $main-text-color;
-  font-weight: $font-weight-title-section;
-  font-size: $font-size-title-section;
+  color: var(--main-text-color);
+  font-weight: var(--font-weight-title-section);
+  font-size: var(--font-size-title-section);
 }
 
 .subtitle-section {
   text-align: center;
-  color: $main-text-color;
-  font-size: $font-size-large;
+  color: var(--main-text-color);
+  font-size: var(--font-size-large);
   font-weight: 500;
 }
 
 .main-text {
-  color: $main-text-color;
+  color: var(--main-text-color);
 
   font-size: 16px;
-  font-weight: $font-weight-main-text;
+  font-weight: var(--font-weight-main-text);
   line-height: 19px;
 }
 
 .secondary-text {
-  color: $main-text-color;
+  color: var(--main-text-color);
 
   font-size: 20px;
-  font-weight: $font-weight-main-text;
+  font-weight: var(--font-weight-main-text);
   line-height: 25px;
 }
 
 .item-title {
-  color: $main-text-color;
+  color: var(--main-text-color);
   font-size: 24px;
   font-weight: 700;
   line-height: 25px;
@@ -56,7 +54,7 @@ h6 {
 }
 
 .header-text {
-  color: $main-text-color;
+  color: var(--main-text-color);
   font-size: 16px;
   font-weight: 600;
   line-height: 25px;

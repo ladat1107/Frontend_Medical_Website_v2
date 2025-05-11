@@ -1,30 +1,24 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Table, Tag, Button, Input, Space, Select, DatePicker, Modal, Tooltip, message } from "antd"
+import { Table, Tag, Button, Input, Select, message } from "antd"
 import {
-  PlusOutlined,
-  EditOutlined,
-  EyeOutlined,
-  DeleteOutlined,
   FileExcelOutlined,
-  PrinterOutlined,
   SearchOutlined,
 } from "@ant-design/icons"
-import ExaminationForm from "./ExaminationForm"
 import ExaminationDrawer from "./ExaminationDetail"
-import { STATUS_BE } from "@/constant/value"
+import { MEDICAL_TREATMENT_TIER, STATUS_BE } from "@/constant/value"
+import DropdownTypeExamination from "../../components/Dropdown/DropdownTypeExamination"
 
-const { RangePicker } = DatePicker
 const { Option } = Select
 
 const ExaminationList = ({ examinationList }) => {
   const [examinations, setExaminations] = useState([])
+  const [typeExamination, setTypeExamination] = useState("all")
   const [loading, setLoading] = useState(false)
   const [searchText, setSearchText] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
   const [dateRange, setDateRange] = useState(null)
-  const [isModalVisible, setIsModalVisible] = useState(false)
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false)
   const [currentExamination, setCurrentExamination] = useState(null)
   const [pagination, setPagination] = useState({
@@ -39,17 +33,24 @@ const ExaminationList = ({ examinationList }) => {
     if (filterStatus !== "all") {
       if (filterStatus === STATUS_BE.EXAMINING) {
         filteredData = filteredData.filter((item) => item.status === STATUS_BE.WAITING || item.status === STATUS_BE.PAID || item.status === STATUS_BE.EXAMINING)
-      } else {
-        filteredData = filteredData.filter((item) => item.status === filterStatus)
+      } else if (filterStatus === STATUS_BE.DONE) {
+        filteredData = filteredData.filter((item) => item.status === STATUS_BE.DONE || item.status === STATUS_BE.DONE_INPATIENT)
+      } else if (filterStatus === STATUS_BE.PENDING) {
+        filteredData = filteredData.filter((item) => item.status === STATUS_BE.PENDING || item.status === STATUS_BE.ACTIVE)
+      } else if (filterStatus === STATUS_BE.INACTIVE) {
+        filteredData = filteredData.filter((item) => item.status === STATUS_BE.INACTIVE)
       }
     }
 
-    // Filter by date range if needed
-    if (dateRange) {
-      filteredData = filteredData.filter((item) => {
-        const itemDate = new Date(item.admissionDate)
-        return itemDate >= dateRange[0].toDate() && itemDate <= dateRange[1].toDate()
-      })
+    if (typeExamination !== "all") {
+      if (typeExamination === "appointment")
+        filteredData = filteredData.filter((item) => item.is_appointment === 1 && item.medicalTreatmentTier !== MEDICAL_TREATMENT_TIER.INPATIENT && item.medicalTreatmentTier !== MEDICAL_TREATMENT_TIER.EMERGENCY)
+      else if (typeExamination === MEDICAL_TREATMENT_TIER.INPATIENT)
+        filteredData = filteredData.filter((item) => item.is_appointment !== 1 && item.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.INPATIENT)
+      else if (typeExamination === MEDICAL_TREATMENT_TIER.EMERGENCY)
+        filteredData = filteredData.filter((item) => item.is_appointment !== 1 && item.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.EMERGENCY)
+      else if (typeExamination === MEDICAL_TREATMENT_TIER.OUTPATIENT)
+        filteredData = filteredData.filter((item) => item.is_appointment !== 1 && item.medicalTreatmentTier !== MEDICAL_TREATMENT_TIER.INPATIENT && item.medicalTreatmentTier !== MEDICAL_TREATMENT_TIER.EMERGENCY)
     }
 
     // Filter by search text
@@ -60,22 +61,21 @@ const ExaminationList = ({ examinationList }) => {
           return patient.toLowerCase().includes(searchText.toLowerCase()) ||
             item?.diseaseName?.toLowerCase().includes(searchText.toLowerCase()) ||
             item?.symptom?.toLowerCase().includes(searchText.toLowerCase()) ||
-            item?.id?.toString().includes(searchText)
+            item?.id?.toString().includes(searchText) ||
+            item?.userExaminationData?.phoneNumber?.toString().includes(searchText) ||
+            item?.userExaminationData?.cid?.toString().includes(searchText)
         }
       )
     }
-
     setExaminations(
       filteredData.slice((pagination.current - 1) * pagination.pageSize, pagination.current * pagination.pageSize),
     )
-
     setPagination({
       ...pagination,
       total: filteredData.length,
     })
 
-  }, [examinationList, pagination.current, pagination.pageSize, filterStatus, dateRange, searchText])
-
+  }, [examinationList, pagination.current, pagination.pageSize, filterStatus, dateRange, searchText, typeExamination])
 
   const handleTableChange = (pagination) => {
     setPagination(pagination)
@@ -91,57 +91,13 @@ const ExaminationList = ({ examinationList }) => {
     setPagination({ ...pagination, current: 1 })
   }
 
-  const handleDateRangeChange = (dates) => {
-    setDateRange(dates)
+  const handleTypeExaminationChange = (value) => {
+    setTypeExamination(value)
     setPagination({ ...pagination, current: 1 })
   }
-
-  const showModal = (record = null) => {
-    setCurrentExamination(record)
-    setIsModalVisible(true)
-  }
-
   const showDetailModal = (record) => {
     setCurrentExamination(record)
     setIsDetailModalVisible(true)
-  }
-
-  const handleModalCancel = () => {
-    setIsModalVisible(false)
-    setCurrentExamination(null)
-  }
-
-  const handleDetailModalCancel = () => {
-    setIsDetailModalVisible(false)
-    setCurrentExamination(null)
-  }
-
-  const handleSave = (values) => {
-    // Handle save logic here
-    if (currentExamination) {
-      // Update existing examination
-      message.success("Cập nhật đơn khám thành công")
-    } else {
-      // Create new examination
-      message.success("Tạo đơn khám mới thành công")
-    }
-    setIsModalVisible(false)
-    fetchExaminations()
-  }
-
-  const handleDelete = (id) => {
-    Modal.confirm({
-      title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa đơn khám này không?",
-      okText: "Xóa",
-      okType: "danger",
-      cancelText: "Hủy",
-      onOk() {
-        // Delete logic here
-        message.success("Xóa đơn khám thành công")
-        fetchExaminations()
-      },
-    })
   }
 
   const handleExport = () => {
@@ -158,14 +114,16 @@ const ExaminationList = ({ examinationList }) => {
       dataIndex: "id",
       key: "id",
       width: 80,
+      className: "text-center",
     },
     {
       title: "Tên bệnh nhân",
       dataIndex: "patientName",
       key: "patientName",
+      width: 200,
       render: (_, record) => {
         const patient = record?.userExaminationData?.lastName + " " + record?.userExaminationData?.firstName;
-        return <a onClick={() => showDetailModal(record)}>{patient}</a>
+        return <a className="w-full overflow-hidden text-ellipsis whitespace-nowrap" title={patient} onClick={() => showDetailModal(record)}>{patient}</a>
       }
     },
     {
@@ -173,34 +131,48 @@ const ExaminationList = ({ examinationList }) => {
       dataIndex: "symptom",
       key: "symptom",
       ellipsis: true,
+      width: 100,
     },
     {
       title: "Chẩn đoán",
       dataIndex: "diseaseName",
       key: "diseaseName",
       ellipsis: true,
+      width: 100,
     },
     {
       title: "Ngày khám",
       dataIndex: "admissionDate",
       key: "admissionDate",
+      width: 110,
       render: (date) => new Date(date).toLocaleDateString("vi-VN"),
     },
     {
       title: "Phòng khám",
       dataIndex: "roomName",
       key: "roomName",
+      width: 150,
+      render: (roomName) => {
+        return <div className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap " title={roomName}>{roomName}</div>
+      }
     },
     {
-      title: "Loại",
+      title: (<div className="flex justify-center items-center gap-2">Loại <DropdownTypeExamination typeExamination={typeExamination} setTypeExamination={handleTypeExaminationChange} /></div>),
       dataIndex: "is_appointment",
       key: "is_appointment",
-      render: (value) => <Tag color={value === 1 ? "purple" : "cyan"}>{value === 1 ? "Lịch hẹn" : "Khám thường"}</Tag>,
+      width: 100,
+      className: "text-center",
+      render: (_, record) => {
+        const value = record?.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.INPATIENT ? 1 : record?.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.EMERGENCY ? 2 : record?.is_appointment === 1 ? 3 : 4
+        return <Tag color={value === 1 ? "purple" : value === 2 ? "cyan" : value === 3 ? "blue" : "pink"}>{value === 1 ? "Nội trú" : value === 2 ? "Cấp cứu" : value === 3 ? "Lịch hẹn" : "Ngoại trú"}</Tag>
+      }
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: 130,
+      className: "text-center",
       render: (status) => {
         let color = "blue"
         let text = "Chờ duyệt"
@@ -208,7 +180,7 @@ const ExaminationList = ({ examinationList }) => {
         if (status === STATUS_BE.EXAMINING || status === STATUS_BE.PAID || status === STATUS_BE.WAITING) {
           color = "orange"
           text = "Đang khám"
-        } else if (status === STATUS_BE.DONE) {
+        } else if (status === STATUS_BE.DONE || status === STATUS_BE.DONE_INPATIENT) {
           color = "green"
           text = "Hoàn thành"
         } else if (status === STATUS_BE.INACTIVE) {
@@ -220,21 +192,6 @@ const ExaminationList = ({ examinationList }) => {
         }
 
         return <Tag color={color}>{text}</Tag>
-      },
-    },
-    {
-      title: "Thành tiền",
-      dataIndex: "price",
-      className: "text-center",
-      key: "price",
-      render: (price, record) => {
-        const payment = record?.paymentData;
-        if (payment) {
-          return <span className="text-[12px] text-primary-tw font-bold" >{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(payment?.amount)}</span>
-        }
-        return (
-          <span className="text-[12px] text-gray-500">Chưa thanh toán</span>
-        )
       },
     }
   ]
@@ -258,17 +215,8 @@ const ExaminationList = ({ examinationList }) => {
             <Option value={STATUS_BE.DONE}>Hoàn thành</Option>
             <Option value={STATUS_BE.INACTIVE}>Đã hủy</Option>
           </Select>
-          <RangePicker onChange={handleDateRangeChange} format="DD/MM/YYYY" />
         </div>
         <div className="flex gap-2">
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => showModal()}
-            style={{ backgroundColor: "#00B5F1" }}
-          >
-            Tạo đơn mới
-          </Button>
           <Button icon={<FileExcelOutlined />} onClick={handleExport}>
             Xuất Excel
           </Button>
@@ -284,18 +232,12 @@ const ExaminationList = ({ examinationList }) => {
         onChange={handleTableChange}
         scroll={{ x: 1200 }}
         size="middle"
+        rowClassName={(_, index) =>
+          `${index % 2 === 0 ? 'bg-white' : 'bg-evenRow'}
+          `
+        }
       />
 
-      {/* Examination Form Modal */}
-      <Modal
-        title={currentExamination ? "Cập nhật đơn khám" : "Tạo đơn khám mới"}
-        open={isModalVisible}
-        onCancel={handleModalCancel}
-        footer={null}
-        width={800}
-      >
-        <ExaminationForm initialValues={currentExamination} onSave={handleSave} onCancel={handleModalCancel} />
-      </Modal>
 
       {currentExamination &&
         <ExaminationDrawer open={isDetailModalVisible}

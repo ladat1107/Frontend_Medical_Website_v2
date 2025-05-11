@@ -1,13 +1,11 @@
-@import "../../../../../src/styles/variables.scss";
-
-.send-noti-container{
+.send-noti-container {
     .header-send-noti {
         padding: 0px 30px;
 
         .text {
             font-size: 2em;
             font-weight: 600;
-            color: $primary-color-admin;
+            color: var(--primary-color-admin);
         }
     }
 
@@ -15,7 +13,7 @@
         border-radius: 5px;
         padding: 5px 15px;
         border: none;
-        background-color: $primary-color-admin;
+        background-color: var(--primary-color-admin);
         color: white;
         cursor: pointer;
         font-weight: 600;
@@ -30,9 +28,9 @@
         }
     }
 
-    .send-noti-content{
+    .send-noti-content {
         border-radius: 10px;
-        box-shadow: $box-shadow-content-admin;
+        box-shadow: var(--box-shadow-content-admin);
         background: white;
         padding: 20px 30px;
         margin-top: 30px;
@@ -47,18 +45,20 @@
             width: 100%;
             font-size: 14px;
         }
-    
+
         .radio-noti-inputs .radio-noti {
-            flex: 1; /* Cho phép các phần tử mở rộng để chiếm đều không gian */
+            flex: 1;
+            /* Cho phép các phần tử mở rộng để chiếm đều không gian */
             text-align: center;
             position: relative;
-            min-width: 100px; /* Kích thước tối thiểu cho mỗi phần tử */
+            min-width: 100px;
+            /* Kích thước tối thiểu cho mỗi phần tử */
         }
-    
+
         .radio-noti-inputs .radio-noti input {
             display: none;
         }
-    
+
         .radio-noti-inputs .radio-noti .name {
             display: flex;
             cursor: pointer;
@@ -71,22 +71,25 @@
             transition: all 0.15s ease-in-out;
             position: relative;
         }
-    
-        .radio-noti-inputs .radio-noti input:checked + .name::after {
+
+        .radio-noti-inputs .radio-noti input:checked+.name::after {
             content: "";
             position: absolute;
-            bottom: -5px; /* Điều chỉnh khoảng cách từ chữ tới gạch */
+            bottom: -5px;
+            /* Điều chỉnh khoảng cách từ chữ tới gạch */
             left: 0;
             width: 100%;
-            height: 3px; /* Độ dày của gạch */
-            background-color: #83BDF4; /* Màu gạch */
+            height: 3px;
+            /* Độ dày của gạch */
+            background-color: #83BDF4;
+            /* Màu gạch */
             border-radius: 2px;
         }
-    
-        .radio-noti-inputs .radio-noti input:checked + .name {
+
+        .radio-noti-inputs .radio-noti input:checked+.name {
             font-weight: 600;
         }
-    
+
         .radio-noti-content {
             display: flex;
             flex-direction: column;

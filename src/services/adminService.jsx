@@ -185,8 +185,8 @@ export const blockMedicine = (data) => {
 }
 
 // EXAMINATION MANAGEMENT
-export const getAllExaminationsAdmin = () => {
-    return axios.get(`/api/admin/getAllExaminationsAdmin`)
+export const getAllExaminationsAdmin = (query = null) => {
+    return axios.get(`/api/admin/getAllExaminationsAdmin`, { params: query })
 }
 
 export const getExaminationByIdAdmin = (id) => {

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Card, Col, Row, Progress, Tooltip, Table } from "antd"
 import {
-    BarChart,
     Bar,
     XAxis,
     YAxis,

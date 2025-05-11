@@ -228,6 +228,7 @@ const Cashier = () => {
                                             visit_status={item.data.visit_status}
                                             onClickItem={() => handlePay(index)}
                                             sort={false}
+                                            doctorHeader=""
                                         />
                                     ) : null}
                                 </div>
@@ -254,11 +255,12 @@ const Cashier = () => {
                                         symptom={item?.symptom}
                                         special={item?.special}
                                         room={item?.roomName}
-                                        doctor={`${item.data?.examinationStaffData?.staffUserData.lastName} ${item.data?.examinationStaffData?.staffUserData.firstName}`}
+                                        doctor={`${item?.userExaminationData?.phoneNumber}`}
                                         downItem={downItem}
                                         visit_status={item?.visit_status}
                                         onClickItem={() => handlePay(index)}
                                         sort={false}
+                                        doctorHeader="Số điện thoại"
                                     />
                                 </div>
                             )) : (
@@ -281,14 +283,15 @@ const Cashier = () => {
                                         index={index + 1}
                                         id={item.id}
                                         name={`${item?.userExaminationData.lastName} ${item?.userExaminationData.firstName}`}
-                                        symptom={item?.symptom}
+                                        symptom={item?.userExaminationData?.cid}
                                         special={item?.special}
                                         room={item?.roomName}
-                                        doctor={`${item.data?.examinationStaffData?.staffUserData.lastName} ${item.data?.examinationStaffData?.staffUserData.firstName}`}
+                                        doctor={`${item?.treatmentResult}`}
                                         downItem={downItem}
                                         visit_status={item?.visit_status}
                                         onClickItem={() => handlePay(index)}
                                         sort={false}
+                                        doctorHeader="Kết quả điều trị"
                                     />
                                 </div>
                             )) : (

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Modal, Table, Spin, message } from "antd";
 import { COVERED, PAYMENT_METHOD, STATUS_BE } from "@/constant/value";
 import { insuranceCovered, medicineCovered } from "@/utils/coveredPrice";
@@ -470,113 +471,149 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
         >
             <div className="custom-summary-container">
                 <div className="custom-scroll-area">
-                    <div className="">
-                        <p className="flex justify-content-center" style={{color: "#0077F9", fontSize: "20px"}}>
-                            <span style={{fontWeight: "600"}}>BỆNH ÁN</span>
-                        </p>
-                        <div style={{ color: "#000" }}>
-                            <p style={{ fontWeight: "600", color: "#0077F9" }}>
-                                Thông tin bệnh nhân:
-                            </p>
-                            <div className="flex">
-                                <div className="col-flex">
-                                    <p className="me-5">
-                                        Họ và tên:&nbsp;
-                                        {examinationData?.userExaminationData?.lastName + ' ' + examinationData?.userExaminationData?.firstName || ""}
+                    {examinationId && (
+                        <>
+                            <div className="">
+                                <p className="flex justify-content-center" style={{color: "#0077F9", fontSize: "20px"}}>
+                                    <span style={{fontWeight: "600"}}>HỒ SƠ BỆNH ÁN</span>
+                                </p>
+                                <div style={{ color: "#000" }}>
+                                    <p style={{ fontWeight: "600", color: "#0077F9" }}>
+                                        Thông tin bệnh nhân:
                                     </p>
-                                    <p className="me-5">
-                                        Ngày sinh:&nbsp;
-                                        {convertDateTime(examinationData?.userExaminationData?.dob) || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Giới tính:&nbsp;
-                                        {examinationData?.userExaminationData?.gender == 0 ? 'Nam'
-                                            : examinationData?.userExaminationData?.gender == 1 ? 'Nữ'
-                                            : ''}
-                                    </p>
-                                    <p className="me-5">
-                                        Đối tượng ưu tiên:&nbsp;
-                                        {SpecialText(examinationData?.special)}
-                                    </p>
-                                </div>
-                                <div className="col-flex">
-                                    <p className="me-5">
-                                        Căn cước công dân:&nbsp;
-                                        {examinationData?.userExaminationData?.cid || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Số điện thoại:&nbsp;
-                                        {examinationData?.userExaminationData?.phoneNumber || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Địa chỉ:&nbsp;
-                                        {examinationData?.userExaminationData?.currentResident || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Bảo hiểm y tế:&nbsp;
-                                        {examinationData?.insuranceCode || ""}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="">
-                        <div style={{ color: "#000" }}>
-                            <p style={{ fontWeight: "600", color: "#0077F9" }}>
-                                Thông tin khám bệnh:
-                            </p>
-                            <div className="flex">
-                                <div className="col-flex">
-                                    <p className="me-5">
-                                        Lý do vào viện:&nbsp;
-                                        {examinationData?.reason || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Triệu chứng:&nbsp;
-                                        {examinationData?.symptom || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Tên bệnh chính:&nbsp;
-                                        {examinationData?.diseaseName || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Bệnh đi kèm:&nbsp;
-                                        {examinationData?.comorbiditiesDetails && examinationData?.comorbiditiesDetails.length > 0 ? (
-                                        <div style={{ flex: 1 }}>
-                                            {examinationData.comorbiditiesDetails.map((item, index) => (
-                                            <div key={index} style={{ fontWeight: 500 }}>
-                                                {item.code + ' - ' + item.name}
-                                            </div>
-                                            ))}
+                                    <div className="col-flex">
+                                        <div className="row">
+                                            <p className="col-6">
+                                                Họ và tên:&nbsp;
+                                                {examinationData?.userExaminationData?.lastName + ' ' + examinationData?.userExaminationData?.firstName || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Ngày sinh:&nbsp;
+                                                {convertDateTime(examinationData?.userExaminationData?.dob) || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Giới tính:&nbsp;
+                                                {examinationData?.userExaminationData?.gender == 0 ? 'Nam'
+                                                    : examinationData?.userExaminationData?.gender == 1 ? 'Nữ'
+                                                    : ''}
+                                            </p>
                                         </div>
-                                    ) : (
-                                        <span style={{ fontWeight: 500 }}>Không có</span>
-                                    )}
-                                    </p>
-                                    <p className="me-5">
-                                        Tình trạng xuất viện:&nbsp;
-                                        {DISCHARGE_OPTIONS.find(option => option.value === examinationData.dischargeStatus)?.label || ''}
-                                    </p>
-                                    <p className="me-5">
-                                        Ngày xuất viện:&nbsp;
-                                        {formatDate(examinationData.dischargeDate) || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Kết quả điều trị:&nbsp;
-                                        {examinationData?.treatmentResult || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Phòng bệnh:&nbsp;
-                                        {examinationData?.examinationRoomData?.name || ""}
-                                    </p>
-                                    <p className="me-5">
-                                        Khoa:&nbsp;
-                                        {examinationData?.examinationRoomData?.roomDepartmentData?.name || ""}
-                                    </p>
+                                        <div className="row">
+                                            <p className="col-9">
+                                                Địa chỉ hiện tại:&nbsp;
+                                                {examinationData?.userExaminationData?.currentResident || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Địa chỉ hiện tại:&nbsp;
+                                                {examinationData?.userExaminationData?.currentResident || ""}
+                                            </p>
+                                        </div>
+                                        <div className="row">
+                                            <p className="col-6">
+                                                Bảo hiểm y tế:&nbsp;
+                                                {examinationData?.insuranceCode || ""}
+                                            </p>
+                                            <p className="col-6">
+                                                Giá trị từ:&nbsp;
+                                                {examinationData?.insuranceCode || ""}
+                                            </p>
+                                            <p className="col-9">
+                                                Nơi ĐKKCB ban đầu:&nbsp;
+                                                {examinationData?.userExaminationData?.cid || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Mã:&nbsp;
+                                                {examinationData?.userExaminationData?.phoneNumber || ""}
+                                            </p>
+                                        </div>
+                                        <div className="row">
+                                            <p className="me-5">
+                                                Đối tượng ưu tiên:&nbsp;
+                                                {SpecialText(examinationData?.special)}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                            <div className="">
+                                <div style={{ color: "#000" }}>
+                                    <p style={{ fontWeight: "600", color: "#0077F9" }}>
+                                        Thông tin khám bệnh:
+                                    </p>
+                                    <div className="col-flex">
+                                        <div className="row">
+                                            <p className="col-6">
+                                                Ngày nhập viện:&nbsp;
+                                                {formatDate(examinationData?.admissionDate) || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Tuyến điều trị:&nbsp;
+                                                {examinationData?.isWrongTreatment === 1 ? "Trái tuyến" : "Đúng tuyến" || ""}
+                                            </p>
+                                        </div>
+                                        <div className="row">
+                                            <p className="col-6">
+                                                Ngày ra viện:&nbsp;
+                                                {formatDate(examinationData?.dischargeDate) || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Tổng số ngày điều trị:&nbsp;
+                                                { examinationData?.admissionDate && examinationData?.dischargeDate ? calculateDays(examinationData?.admissionDate, examinationData?.dischargeDate) : "" || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Tình trạng ra viện:&nbsp;
+                                                {DISCHARGE_OPTIONS.find(option => option.value === examinationData.dischargeStatus)?.label || ''}
+                                            </p>
+                                        </div>
+                                        <div className="row">
+                                            <p className="col-6">
+                                                Lý do vào viện:&nbsp;
+                                                {examinationData?.reason || ""}
+                                            </p>
+                                            <p className="col-6">
+                                                Triệu chứng:&nbsp;
+                                                {examinationData?.symptom || ""}
+                                            </p>
+                                            <p className="col-12">
+                                                Tên bệnh chính:&nbsp;
+                                                {examinationData?.diseaseName || ""}
+                                            </p>
+                                            <div className="d-flex align-items-top">
+                                                <div className="col-1">Bệnh đi kèm: </div>
+                                                <div className="col-11 row">
+                                                    {examinationData?.comorbiditiesDetails && examinationData?.comorbiditiesDetails.length > 0 ? (
+                                                        examinationData.comorbiditiesDetails.map((item, index) => (
+                                                            <span key={index} className="me-2">
+                                                                {item.code + ' - ' + item.name}
+                                                            </span>
+                                                        ))
+                                                    ) : (
+                                                        <span />
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <p className="col-6">
+                                                Kết quả điều trị:&nbsp;
+                                                {examinationData?.treatmentResult || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Phòng bệnh:&nbsp;
+                                                {examinationData?.examinationRoomData?.name || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Khoa:&nbsp;
+                                                {examinationData?.examinationRoomData?.roomDepartmentData?.name || ""}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    
+                    <p className="flex justify-content-center mt-3" style={{color: "#0077F9", fontSize: "20px"}}>
+                        <span style={{fontWeight: "600"}}>BẢNG KÊ CHI PHÍ KHÁM BỆNH</span>
+                    </p>
                     <div className="flex justify-content-between">
                         <div style={{ color: "#000" }}>
                             <p style={{ fontWeight: "600", color: "#0077F9" }}>
@@ -616,9 +653,6 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
                             )}
                         </div>
                     </div>
-                    <p className="flex justify-content-center" style={{color: "#0077F9", fontSize: "20px"}}>
-                        <span style={{fontWeight: "600"}}>BẢNG KÊ CHI PHÍ KHÁM BỆNH</span>
-                    </p>
                     <Table
                         className="custom-summary-table mt-2"
                         columns={columns}
@@ -730,6 +764,12 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
                 </div>
         </Modal>
     );
+};
+SummaryModal.propTypes = {
+    open: PropTypes.bool,
+    onCancel: PropTypes.func,
+    examData: PropTypes.object,
+    examinationId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default SummaryModal;

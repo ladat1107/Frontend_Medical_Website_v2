@@ -171,6 +171,9 @@ export const getStatisticalAppoinment = (query) => {
 export const getAllMedicinesAdmin = () => {
     return axios.get(`/api/admin/getAllMedicinesAdmin`)
 }
+export const getPrescriptionUsed = (query) => {
+    return axios.get(`/api/admin/getPrescriptionUsed`, { params: query })
+}
 export const createMedicine = (data) => {
     return axios.post(`/api/admin/createMedicine`, data)
 }

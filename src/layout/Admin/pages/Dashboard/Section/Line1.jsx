@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
 
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { name } from "dayjs/locale/vi";
 
 // Đăng ký các thành phần của Chart.js
 ChartJS.register(

@@ -24,7 +24,7 @@ import { STATUS_BE, TABLE, TIMESLOTS } from "@/constant/value"
 import { PATHS } from "@/constant/path"
 import { useMutation } from "@/hooks/useMutation"
 import userService from "@/services/userService"
-import ConfirmModal from "../../components/ConfirmModal/confirmModal"
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal"
 import { OldParaclinicalModal } from "@/components/Modals"
 import "./AppoimentList.css"
 const AppointmentList = () => {

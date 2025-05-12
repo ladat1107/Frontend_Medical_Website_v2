@@ -56,6 +56,7 @@ import MedicineManage from "./layout/Admin/pages/MedicineManage/MedicineMange";
 import ExaminationManage from "./layout/Admin/pages/ExaminationManage/ExaminationManage";
 import InpatientList from "./layout/Doctor/pages/Inpatients/InpationList";
 import InpatientDetail from "./layout/Doctor/pages/Inpatients/InpatientDetail";
+import MedicalRecord from "./layout/Receptionist/pages/Dashboard/medicalRecord";
 
 function App() {
   const location = useLocation();
@@ -150,6 +151,7 @@ function App() {
               <Route path={PATHS.STAFF.SCHEDULE} element={<Schedule />} />
               <Route path={PATHS.STAFF.PROFILE} element={<ProfileStaff />} />
               <Route path={PATHS.RECEPTIONIST.DASHBOARD} element={<ReceptionistDashboard />} />
+              <Route path={PATHS.RECEPTIONIST.MEDICAL_RECORD} element={<MedicalRecord />} />
               <Route path={PATHS.STAFF.DASHBOARD} element={<DoctorHomePage />} />
               <Route path={PATHS.RECEPTIONIST.CASHIER} element={<Cashier />} />
               <Route path={PATHS.STAFF.PARACLINICAL} element={<ParaclinicalList />} />

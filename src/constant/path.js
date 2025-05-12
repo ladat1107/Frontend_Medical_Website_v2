@@ -1,4 +1,3 @@
-
 export const PATHS = {
     ADMIN: {
         DASHBOARD: "/admin",
@@ -33,6 +32,7 @@ export const PATHS = {
         DASHBOARD: "/receptionist",
         CASHIER: "/cashier",
         PRESCRIBE: "/prescribe",
+        MEDICAL_RECORD: "/medicalRecord",
     },
     HOME: {
         HOMEPAGE: "/",

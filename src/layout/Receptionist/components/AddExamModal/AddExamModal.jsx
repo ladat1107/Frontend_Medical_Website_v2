@@ -583,8 +583,9 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                     placeholder="Chọn loại KCB"
                                     optionFilterProp="label"
                                     options={[
-                                        { label: 'Khám bệnh', value: 1 },
                                         { label: 'Khám bệnh ngoại trú', value: 2 },
+                                        { label: 'Khám bệnh nội trú', value: 1 },
+                                        { label: 'Cấp cứu', value: 3 },
                                     ]}
                                     style={{ width: '100%' }}
                                     value={medicalTreatmentTier}

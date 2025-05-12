@@ -259,3 +259,19 @@ export const deletePrescription = async (id) => {
         }
     });
 }
+
+export const getMedicalRecords = async (status, medicalTreatmentTier, page, limit, search) => {
+    return axios.get(`/api/getMedicalRecords?status=${status}&medicalTreatmentTier=${medicalTreatmentTier}&page=${+page}&limit=${+limit}&search=${search}`);
+}
+
+export const createRelative = async (data) => {
+    return axios.post(`/api/createRelative`, data);
+}
+
+export const deleteRelative = async (id) => {
+    return axios.delete(`/api/deleteRelative`, {
+        params: {
+            id: id
+        }
+    });
+}

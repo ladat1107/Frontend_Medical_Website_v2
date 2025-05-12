@@ -157,6 +157,11 @@ const Cashier = () => {
         setIsModelSummaryOpen(true);
     }
 
+    const handlePaySusscess = () => {
+        setIsModelSummaryOpen(false);
+        fetchInpatients();
+    }
+
     // #endregion
 
     return (
@@ -341,6 +346,7 @@ const Cashier = () => {
                         open={isModelSummaryOpen}
                         onCancel={handleCloseSummaryModal}
                         examinationId={examData.id}
+                        onPaySusscess={handlePaySusscess}
                     />
                 }
             </div>

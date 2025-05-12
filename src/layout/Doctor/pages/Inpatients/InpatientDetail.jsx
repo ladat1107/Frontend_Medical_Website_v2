@@ -7,8 +7,8 @@ import MultiSelect from '../../components/MultiSelect';
 import SelectBox2 from '../../components/Selectbox';
 import { useParams } from 'react-router-dom';
 import { useMutation } from '@/hooks/useMutation';
-import { createAdvanceMoney, getAllDisease, getExaminationById, updateExamination } from '@/services/doctorService';
-import { message, Spin } from 'antd';
+import { createAdvanceMoney, getAllDisease, getExaminationById, updateExamination, updateInpatientRoom } from '@/services/doctorService';
+import { message, Spin, Tooltip } from 'antd';
 import { convertDateTime } from '@/utils/formatDate';
 import { DISCHARGE_OPTIONS } from '@/constant/options';
 import CustomDatePicker from '@/components/DatePicker';
@@ -19,6 +19,7 @@ import SummaryModal from './InpatientModals/InpatientSumary';
 import MoneyInput from '@/components/Input/MoneyInput';
 import FlexibleCollapsible from './Components/FlexibleCollapsible';
 import HistoryModal from '../../components/HistoryModal/HistoryModal';
+import RoomSelectionModal from '../../components/RoomOptionModal/RoomSelectionModal';
 
 const InpatientDetail = () => {
     const { schedule } = useSelector(state => state.schedule);
@@ -37,6 +38,11 @@ const InpatientDetail = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoadingAddAdvance, setIsLoadingAddAdvance] = useState(false);
     const [amount, setAmount] = useState("");
+    
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState(null);   
+
+
     const handleAmountChange = (value) => {
         setAmount(value);
     };
@@ -51,6 +57,35 @@ const InpatientDetail = () => {
 
     const handleCancel = () => {
         setIsModalOpen(false);
+    };
+
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleRoomSelect = async (room) => {
+        setIsModalVisible(false);
+
+        try {
+            const data = {
+                examId: examId,
+                roomId: room.id,
+            }
+            const response = await updateInpatientRoom(data);
+            if (response && response.EC === 0 && response.DT) {
+                message.success('Chuyển phòng thành công!');
+                setSelectedRoom(room);
+                setExamData(prev => ({
+                    ...prev,
+                    examinationRoomData: room,
+                }));
+            } else {
+                message.error(response.EM);
+            }
+        } catch (error) {
+            console.error('Error updating examination room:', error);
+            message.error('Cập nhật phòng thất bại!');
+        }
     };
 
     const [formData, setFormData] = useState({
@@ -185,6 +220,7 @@ const InpatientDetail = () => {
     useEffect(() => {
         if (dataExamination && dataExamination.DT) {
             setExamData(dataExamination.DT);
+            setSelectedRoom(dataExamination.DT.examinationRoomData);
             if (dataExamination.DT.status >= 7) setIsEditMode(false);
         }
     }, [dataExamination]);
@@ -474,7 +510,16 @@ const InpatientDetail = () => {
                             </div>
                             <div className='flex mt-2'>
                                 <div className='col-4 gray-p'>Phòng:</div>
-                                <div className='col-8' style={{fontWeight: '500'}}>{examData?.examinationRoomData?.name}</div>
+                                <div className='col-7' style={{fontWeight: '500'}}>{examData?.examinationRoomData?.name}</div>
+                                <div className='col-1' style={{fontWeight: '500'}}>
+                                    {isEditMode && (
+                                        <Tooltip title="Chuyển phòng" color='white' overlayInnerStyle={{ color: 'black' }}> 
+                                            <button className='safe-button' style={{borderRadius: '50%'}} onClick={() => setIsModalVisible(true)}>
+                                                <i className="fa-solid fa-arrows-rotate"></i>
+                                            </button>
+                                        </Tooltip>
+                                    )}
+                                </div>
                             </div>
                             <div className='flex mt-2'>
                                 <div className='col-4 gray-p'>Bảo hiểm y tế:</div>
@@ -828,6 +873,14 @@ const InpatientDetail = () => {
                 handleCancel={handleCancel}
                 userId={examData?.userExaminationData?.id}
             />
+            {isModalVisible && (
+                <RoomSelectionModal
+                    isVisible={isModalVisible}
+                    onClose={handleModalClose}
+                    onRoomSelect={handleRoomSelect}
+                    selected={selectedRoom}
+                />
+            )}
         </>
     );
 }

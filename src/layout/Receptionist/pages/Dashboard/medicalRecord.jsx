@@ -68,7 +68,7 @@ const MedicalRecord = () => {
             <div className="appointment-content">
                 <div className="search-container row">
                     <div className="col-2">
-                        <p className="search-title">Đối tượng thanh toán</p>
+                        <p className="search-title">Đối tượng </p>
                         <Select className="select-box" defaultValue="2" onChange={handelTreatmentTierChange}>
                             <Select.Option value="2">Ngoại trú</Select.Option>
                             <Select.Option value="1">Nội trú</Select.Option>

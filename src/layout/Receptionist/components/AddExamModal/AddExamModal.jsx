@@ -11,7 +11,6 @@ import RoomSelectionModal from '@/layout/Doctor/components/RoomOptionModal/RoomS
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditMode, examId, patientData, comorbiditiesOptions, specialtyOptions, dataQRCode }) => {
-
     const [selectedComorbidities, setSelectedComorbidities] = useState([]);
     const [inputComorbidity, setInputComorbidity] = useState('');
     const [shakeId, setShakeId] = useState(null);
@@ -591,6 +590,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                     value={medicalTreatmentTier}
                                     className='select-add-exam'
                                     onChange={(value) => setMedicalTreatmentTier(value)}
+                                    open={timeSlot ? false : undefined}
                                 />
                             </div>
                         </div>

@@ -68,7 +68,7 @@ const columns = [
     },
 ];
 
-const SummaryModal = ({ open, onCancel, examData = null, examinationId = null }) => {
+const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, onPaySusscess }) => {
     const [examinationData, setExamData] = useState(examData || {});
     const [isLoading, setIsLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
@@ -161,16 +161,17 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
             const datapay = {
                 id: examinationData?.id,
                 status: 8,
-                price: dataExam?.total || 0,
-                insuranceCovered: dataExam?.insurancePaid || 0,
-                coveredPrice: dataExam?.patientPaid || 0,
+                price: [...dataExam].reduce((sum, item) => sum + (item.total || 0), 0),
+                insuranceCovered: [...dataExam].reduce((sum, item) => sum + (item.insurancePaid || 0), 0),
+                coveredPrice: [...dataExam].reduce((sum, item) => sum + (item.patientPaid || 0), 0),
                 payment: paymentMethod,
-                amount: [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0)
+                amount: [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0)
             }
             if (paymentMethod === PAYMENT_METHOD.CASH) {
                 const response = await updateExamination(datapay)
                 if (response.EC === 0 && response.DT.includes(1)) {
                     message.success('thành công!');
+                    onPaySusscess();
                 } else {
                     message.error('Cập nhật bệnh nhân thất bại!');
                 }
@@ -222,44 +223,48 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null })
     }
 
     const data = [];
-    let dataExam = {};
+    let dataExam = [];
     let stt = 1;
 
     const dischargePresData = [];
     let discharge_stt = 1;
 
-    const admission = examinationData?.admissionDate;
-    const discharge = examinationData?.dischargeDate || new Date();
-    const unitPrice = examinationData?.examinationRoomData?.serviceData?.[0]?.price || 0;
-    const quantity = admission && discharge ? calculateDays(admission, discharge) : 0;
-    const insuranceRate = (COVERED[+examinationData?.insuranceCoverage] * 100 || 0) + '%';
+    examinationData?.inpatientRoomExaminationData?.forEach((item) => {
+        if (!item) return;
+        
+        const admission = item?.startDate;
+        const discharge = item?.endDate || new Date();
+        const unitPrice = item?.inpatientRoomRoomData?.serviceData?.[0]?.price || 0;
+        const quantity = admission && discharge ? calculateDays(admission, discharge) : 0;
+        const insuranceRate = (COVERED[+examinationData?.insuranceCoverage] * 100 || 0) + '%';
 
-    if (admission && unitPrice) {
-        data.push({
-            stt: stt++,
-            content: "Phòng điều trị - " + (examinationData?.examinationRoomData?.name || "Chưa có tên") 
-                    + (examinationData?.examinationRoomData?.serviceData?.[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
-            unit: "Ngày",
-            quantity,
-            unitPrice,
-            total: quantity * unitPrice,
-            insuranceRate,
-            insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
-            patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
-        });
+        if (admission && unitPrice) {
+            data.push({
+                stt: stt++,
+                content: "Phòng điều trị - " + (item?.roomName || "") 
+                        + (item?.inpatientRoomRoomData?.serviceData?.[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
+                unit: "Ngày",
+                quantity,
+                unitPrice,
+                total: quantity * unitPrice,
+                insuranceRate,
+                insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+                patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+            });
 
-        dataExam = {
-            content: "Phòng điều trị - " + (examinationData?.examinationRoomData?.name || "Chưa có tên") 
-                    + (examinationData?.examinationRoomData?.serviceData?.[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
-            unit: "Ngày",
-            quantity,
-            unitPrice,
-            total: quantity * unitPrice,
-            insuranceRate,
-            insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
-            patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+            dataExam.push({
+                content: "Phòng điều trị - " + (item?.roomName || "")
+                        + (item?.inpatientRoomRoomData?.serviceData?.[0]?.RoomServiceTypes?.serviceId === 4 ? " (VIP)" : ""),
+                unit: "Ngày",
+                quantity,
+                unitPrice,
+                total: quantity * unitPrice,
+                insuranceRate,
+                insurancePaid: insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+                patientPaid: quantity * unitPrice - insuranceCovered(quantity * unitPrice, examinationData?.insuranceCoverage),
+            })
         }
-    }
+    })
 
     // Chi phí cận lâm sàng
     const paraclinicalGroups = {};
@@ -770,6 +775,7 @@ SummaryModal.propTypes = {
     onCancel: PropTypes.func,
     examData: PropTypes.object,
     examinationId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onPaySusscess: PropTypes.func,
 };
 
 export default SummaryModal;

@@ -275,3 +275,7 @@ export const deleteRelative = async (id) => {
         }
     });
 }
+
+export const updateInpatientRoom = async (data) => {
+    return axios.post(`/api/updateInpatientRoom`, data);
+}

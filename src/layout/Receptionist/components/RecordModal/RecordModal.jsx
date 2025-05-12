@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import './RecordModal.scss';
 import SelectBox2 from '@/layout/Doctor/components/Selectbox';
 import { RELATIVE_OPTIONS } from '@/constant/options';
-import { use } from 'react';
 import { createRelative, deleteRelative } from '@/services/doctorService';
 import { message, Popconfirm } from 'antd';
+import PropTypes from 'prop-types';
 
 const RecordModal = ({ isOpen, onClose, record }) => {
     const [relatives, setRelatives] = useState([]);
@@ -17,8 +17,6 @@ const RecordModal = ({ isOpen, onClose, record }) => {
             setRelatives(record.userExaminationData.userRelativeData);
         }
     }, [record]);
-
-
     
     // State cho thông tin người thân
     const [relativeInfo, setRelativeInfo] = useState({
@@ -498,5 +496,10 @@ const RecordModal = ({ isOpen, onClose, record }) => {
         </div>
     )
 }
+RecordModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    record: PropTypes.object,
+};
 
 export default RecordModal;

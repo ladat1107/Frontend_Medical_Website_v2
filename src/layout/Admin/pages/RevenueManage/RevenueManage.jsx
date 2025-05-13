@@ -5,19 +5,20 @@ import HeaderDashboard from "./Section/HeaderDasboard";
 import CardRevenue from "./Section/CardRevenue";
 import { useQuery } from "@tanstack/react-query";
 import { getPaymentAdmin } from "@/services/adminService";
-import { MEDICAL_TREATMENT_TIER, PAYMENT_METHOD, PAYMENT_STATUS, STATUS_BE } from "@/constant/value";
-import ExamCard from "./Section/ExamCard";
-import { useGetExamination } from "@/hooks";
+import { MEDICAL_TREATMENT_TIER, PAYMENT_METHOD, PAYMENT_STATUS } from "@/constant/value";
+import ChartRevenue from "./Section/ChartRevenue";
+import TableRevenue from "./Section/TableRevenue";
 
-const AdminDashboard = () => {
-    const [dateRange, setDateRange] = useState([dayjs().subtract(1, "year"), dayjs()]);
-    const [cardRevenue, setCardRevenue] = useState({ totalRevenue: 0, totalBank: 0, totalCash: 0, totalInsurance: 0 })
-    const [cardExam, setCardExam] = useState({
-        inPatient: { import: 0, export: 0, examming: 0, emergency: 0 },
-        outPatient: { total: 0, success: 0, processing: 0, pending: 0, cancel: 0 }
+const RevenueManage = () => {
+    const [dateRange, setDateRange] = useState([dayjs().subtract(1, "month"), dayjs()]);
+    const [cardRevenue, setCardRevenue] = useState({
+        totalRevenue: 0,
+        totalBank: 0,
+        totalCash: 0,
+        totalInsurance: 0,
     })
+    const [chartRevenue, setChartRevenue] = useState([])
     const [timeFrame, setTimeFrame] = useState("month");
-    const { data: examinationData, isLoading: isLoadingExamination, refetch: refetchExamination, isFetching: isFetchingExamination } = useGetExamination(dateRange ? { startDate: dateRange[0].format("YYYY-MM-DD 00:00:00"), endDate: dateRange[1].format("YYYY-MM-DD 23:59:59") } : null)
     const { data: paymentData, isLoading: isLoadingPayment, refetch: refetchPayment, isFetching: isFetchingPayment } = useQuery({
         queryKey: ["payment", dateRange],
         queryFn: () => getPaymentAdmin(dateRange ? { startDate: dateRange[0].format("YYYY-MM-DD 00:00:00"), endDate: dateRange[1].format("YYYY-MM-DD 23:59:59") } : null)
@@ -29,6 +30,7 @@ const AdminDashboard = () => {
             let totalBank = 0;
             let totalCash = 0;
             let totalInsurance = 0;
+            let _chartRevenue = [];
             payments.forEach(payment => {
                 if (payment.status === PAYMENT_STATUS.REFUNDED) {
                     totalBank += payment.amount
@@ -71,6 +73,40 @@ const AdminDashboard = () => {
                     }
                 }
             })
+            if (dateRange[0].diff(dateRange[1], "day") === 0) {
+                const hours = Array.from({ length: 24 }, (_, i) => ({
+                    time: `${String(i).padStart(2, '0')}:00`,
+                    cash: 0,
+                    bank: 0
+                }));
+                payments.forEach(payment => {
+                    if (payment.status === PAYMENT_STATUS.PAID) {
+                        const hourIndex = Number(dayjs(payment.createdAt).format('H'));
+                        payment.paymentMethod === PAYMENT_METHOD.CASH ? hours[hourIndex].cash += payment.amount : hours[hourIndex].bank += payment.amount;
+                    }
+                })
+                _chartRevenue = hours.map(item => ({ ...item }));
+            } else {
+                let grouped = payments.reduce((acc, curr) => {
+                    if (curr.status === PAYMENT_STATUS.PAID) {
+                        const time = dayjs(curr.createdAt).format("DD/MM/YYYY");
+                        if (!acc[time]) {
+                            acc[time] = {
+                                time,
+                                cash: 0,
+                                bank: 0,
+                            }
+                        }
+                        curr.paymentMethod === PAYMENT_METHOD.CASH ? acc[time].cash += curr.amount : acc[time].bank += curr.amount;
+                    }
+                    return acc;
+                }, [])
+                _chartRevenue = Object.values(grouped).map(item => ({
+                    time: item.time,
+                    cash: item.cash,
+                    bank: item.bank,
+                }))
+            }
             setCardRevenue({
                 ...cardRevenue,
                 totalRevenue,
@@ -78,43 +114,11 @@ const AdminDashboard = () => {
                 totalCash,
                 totalInsurance
             });
+            setChartRevenue(_chartRevenue)
         }
     }, [paymentData])
     useEffect(() => {
-        if (examinationData?.EC === 0 && examinationData?.DT) {
-            const examinations = examinationData?.DT;
-            let _inPatient = { import: 0, export: 0, examming: 0, emergency: 0 }
-            let _outPatient = { total: 0, success: 0, processing: 0, pending: 0, cancel: 0 }
-            examinations.forEach(examination => {
-                if (examination.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.OUTPATIENT) {
-                    _outPatient.total += 1;
-                    if (examination.status === STATUS_BE.DONE) {
-                        _outPatient.success += 1;
-                    } else if (examination.status === STATUS_BE.WAITING || examination.status === STATUS_BE.PAID || examination.status === STATUS_BE.EXAMINING) {
-                        _outPatient.processing += 1;
-                    } else if (examination.status === STATUS_BE.PENDING || examination.status === STATUS_BE.ACTIVE) {
-                        _outPatient.pending += 1;
-                    } else if (examination.status === STATUS_BE.INACTIVE) {
-                        _outPatient.cancel += 1;
-                    }
-                } else {
-                    if (examination?.status === STATUS_BE.DONE_INPATIENT) _inPatient.export += 1;
-                    else {
-                        _inPatient.examming += 1;
-                        if (examination.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.INPATIENT) {
-                            _inPatient.import += 1;
-                        } else if (examination.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.EMERGENCY) {
-                            _inPatient.emergency += 1;
-                        }
-                    }
-                }
-            })
-            setCardExam({ ...cardExam, inPatient: _inPatient, outPatient: _outPatient })
-        }
-    }, [examinationData])
-    useEffect(() => {
-        refetchPayment();
-        refetchExamination();
+        refetchPayment();        
     }, [dateRange])
 
     const handleDateRangeChange = (dates) => {
@@ -139,9 +143,10 @@ const AdminDashboard = () => {
         <div className="p-4 bg-bgAdmin min-h-screen">
             <HeaderDashboard handleRefetch={handleRefetch} handleDateRangeChange={handleDateRangeChange} handleTimeFrameChange={handleTimeFrameChange} dateRange={dateRange} timeFrame={timeFrame} />
             <CardRevenue {...cardRevenue} />
-            <ExamCard {...cardExam} />
+            <ChartRevenue chartRevenue={chartRevenue} />
+            <TableRevenue tableRevenue={paymentData?.DT} isLoading={isLoadingPayment || isFetchingPayment} />
         </div>
     );
 }
 
-export default AdminDashboard;
+export default RevenueManage;

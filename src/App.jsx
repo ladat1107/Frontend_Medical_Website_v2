@@ -56,6 +56,7 @@ import MedicineManage from "./layout/Admin/pages/MedicineManage/MedicineMange";
 import ExaminationManage from "./layout/Admin/pages/ExaminationManage/ExaminationManage";
 import InpatientList from "./layout/Doctor/pages/Inpatients/InpationList";
 import InpatientDetail from "./layout/Doctor/pages/Inpatients/InpatientDetail";
+import RevenueManage from "./layout/Admin/pages/RevenueManage/RevenueManage";
 import MedicalRecord from "./layout/Receptionist/pages/Dashboard/medicalRecord";
 import Numerical from "./layout/User/pages/Numerical/Numerical";
 
@@ -144,6 +145,7 @@ function App() {
               <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
               <Route path={PATHS.ADMIN.MEDICINE_MANAGE} element={<MedicineManage />} />
               <Route path={PATHS.ADMIN.EXAMINATION_MANAGE} element={<ExaminationManage />} />
+              <Route path={PATHS.ADMIN.REVENUE_MANAGE} element={<RevenueManage />} />
             </Route>
             <Route element={<DoctorLayout />}>
               <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />

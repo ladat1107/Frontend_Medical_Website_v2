@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Card, Col, Row, Progress, Tooltip, Table, message } from "antd"
+import { Card, Col, Row, Progress, Tooltip, Table } from "antd"
 import {
     Bar,
     XAxis,
@@ -35,7 +35,7 @@ const COLORS = [
 ];
 
 const MedicineStatistical = ({ medicineData, refetch, isRefetchingMedicineData, isLoadingMedicineData }) => {
-    const { data: prescriptionUsed } = useGetPrescriptionUsed({ startDate: dayjs().startOf('day').add(1, 'day').toDate(), endDate: dayjs().endOf('day').toDate() })
+    const { data: prescriptionUsed } = useGetPrescriptionUsed({ startDate: dayjs().format("YYYY-MM-DD 00:00:00"), endDate: dayjs().format("YYYY-MM-DD 23:59:59") })
     const [expiringMedicines, setExpiringMedicines] = useState([])
     const [lowStockMedicines, setLowStockMedicines] = useState([])
     const [medicinesByGroup, setMedicinesByGroup] = useState([])
@@ -303,7 +303,7 @@ const MedicineStatistical = ({ medicineData, refetch, isRefetchingMedicineData, 
                                                 return null;
                                             }}
                                         />
-                                        <Bar dataKey="quantityUsed" fill="#00B5F1" radius={[5, 5, 0, 0]} />
+                                        <Bar dataKey="quantityUsed" fill="#00B5F1" radius={[5, 5, 0, 0]} maxBarSize={40} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             ) : (

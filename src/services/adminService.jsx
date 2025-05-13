@@ -196,3 +196,8 @@ export const getExaminationByIdAdmin = (id) => {
     return axios.get(`/api/admin/getExaminationByIdAdmin?id=${id}`)
 }
 
+// PAYMENT MANAGEMENT
+export const getPaymentAdmin = (query = null) => {
+    return axios.get(`/api/admin/getPaymentAdmin`, { params: query })
+}
+

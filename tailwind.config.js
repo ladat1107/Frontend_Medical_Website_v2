@@ -28,6 +28,8 @@ export default {
     "./src/layout/Admin/components/Tooltip/**/*.{js,jsx,ts,tsx}",
     "./src/layout/Doctor/pages/Notification/Skeletons/**/*.{js,jsx,ts,tsx}",
     "./src/components/Empty/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/Admin/pages/Dashboard/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/Admin/pages/RevenueManage/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

@@ -179,7 +179,8 @@ const RoomSelectionModal = ({ isVisible, onClose, onRoomSelect, selected, medica
                     <span>
                         {serviceType === 3 ? 'Phòng thường' 
                         : serviceType === 4 ? 'Phòng VIP'
-                        : 'Phòng cấp cứu'}
+                        : serviceType === 6 ? 'Phòng cấp cứu'
+                        : 'Phòng khác'}
                     </span>
                 );
             },

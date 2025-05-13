@@ -406,8 +406,10 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     insuranceCode: insurance,
                     
                     comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
-                    status: patientData?.paymentId ? STATUS_BE.PAID : STATUS_BE.WAITING,
-                    // is_appointment: 0, -->bỏ nhe. để thống kê
+                    status: patientData?.paymentId ? STATUS_BE.PAID : 
+                            +medicalTreatmentTier === 3 ? STATUS_BE.PAID : 
+                            STATUS_BE.WAITING,
+       
                     isWrongTreatment: isWrongTreatment,
                     medicalTreatmentTier: medicalTreatmentTier,
                     roomId: selectedRoomData ? selectedRoomData.id : null,
@@ -436,7 +438,9 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
                     time: timeSlot ? timeSlot : null,
                     is_appointment: timeSlot ? 1 : 0,
-                    status: timeSlot ? STATUS_BE.PENDING : STATUS_BE.WAITING,
+                    status: timeSlot ? STATUS_BE.PENDING : 
+                            +medicalTreatmentTier === 3 ? STATUS_BE.PAID : 
+                            STATUS_BE.WAITING,
                     isWrongTreatment: isWrongTreatment,
                     medicalTreatmentTier: medicalTreatmentTier,
 
@@ -771,6 +775,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     onClose={handleModalClose}
                     onRoomSelect={handleRoomSelect}
                     selected={selectedRoom}
+                    medicalTreatmentTier={+medicalTreatmentTier}
                 />
             )}
         </div>

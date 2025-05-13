@@ -490,21 +490,35 @@ const ReceptionistDashboard = () => {
                     <div className="grid grid-cols-7 md:grid-cols-7">
                         <div className="col-span-5 md:col-span-7 lg:col-span-5">
                             <div className="text-gray-500">
-                                <p className="m-0 ml-1.5 text-sm text-gray-500">
-                                    {type === TYPE_NUMBER.NORMAL ? "Số khám thường" : "Số khám ưu tiên"}
-                                    <DropdownSpecialty value={type} setValue={(value) => { setType(value) }} />
-                                </p>
+                                <div className="m-0 ml-1.5 text-sm text-gray-500 flex items-center">
+                                    <p style={{width: '120px'}}>{type === TYPE_NUMBER.NORMAL ? "Số khám thường" : "Số khám ưu tiên"}</p>
+                                    <button 
+                                        className='flex items-center justify-center bg-[#ffffff] text-white transition-all duration-200 hover:shadow-md hover:scale-105' 
+                                        style={{
+                                            borderRadius: '50%',
+                                            width: '25px', 
+                                            height: '25px', 
+                                            padding: '0',
+                                            border: '1px solid #e5e7eb' 
+                                        }}
+                                        onClick={() => {
+                                            setType(type === TYPE_NUMBER.NORMAL ? TYPE_NUMBER.PRIORITY : TYPE_NUMBER.NORMAL);
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-arrows-rotate" style={{color: '#FF7A56'}}></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div className="ms-2 text-[#3AA472] text-3xl font-semibold">
+                            <div className="ms-2 text-[#FF7A56] text-3xl font-semibold">
                                 <p className="m-0 ml-2.5 text-3xl">{type === TYPE_NUMBER.NORMAL ? currentNumber?.normalNumberCurrent : currentNumber?.priorityNumberCurrent}</p>
                             </div>
                             <div className="text-gray-500">
                                 <p className="m-0 ml-1.5 text-sm text-gray-500">Ngày {convertDateTime(new Date())}</p>
                             </div>
                         </div>
-                        <div className="col-span-2 md:col-span-7 lg:col-span-2 text-[#3AA472] flex justify-center">
+                        <div className="col-span-2 md:col-span-7 lg:col-span-2 text-[#FF7A56] flex justify-center">
                             <div
-                                className="p-2.5 rounded-full w-[75px] h-[75px] flex justify-center items-center cursor-pointer transition-all duration-200 bg-[#ddfced] hover:scale-105"
+                                className="p-2.5 rounded-full w-[75px] h-[75px] flex justify-center items-center cursor-pointer transition-all duration-200 bg-[#FFE3DD] hover:scale-105"
                                 onClick={() => handleGeneralNumber(type)}
                             >
                                 {loading ? <Loading /> :

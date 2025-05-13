@@ -94,7 +94,7 @@ const MenuSidebar = () => {
                 key: 'sub4',
                 label: 'Danh sách khám bệnh',
                 icon: <i className="fa-solid fa-list"></i>,
-                roles: [ROLE.DOCTOR],
+                roles: [ROLE.DOCTOR , ROLE.NURSE],
                 children: [
                     {
                         key: '9',

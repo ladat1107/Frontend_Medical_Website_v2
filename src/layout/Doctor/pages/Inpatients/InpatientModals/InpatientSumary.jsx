@@ -649,8 +649,12 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                             {examinationData?.advanceMoneyExaminationData?.length > 0 ? (
                                 examinationData.advanceMoneyExaminationData.map((item, index) => (
                                     <div className="flex" key={index}>
-                                        <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
-                                        <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                        {+item.status === 2 && (
+                                            <>
+                                                <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
+                                                <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                            </>
+                                        )}
                                     </div>
                                 ))
                             ) : (

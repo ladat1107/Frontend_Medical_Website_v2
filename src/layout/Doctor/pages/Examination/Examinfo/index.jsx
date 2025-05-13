@@ -47,8 +47,9 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
     const [isChanged, setIsChanged] = useState(false);
 
     const options = [
-        { value: '1', label: 'Khám bệnh' },
-        { value: '2', label: 'Điều trị ngoại trú' }
+        { value: '2', label: 'Điều trị ngoại trú' },
+        { value: '1', label: 'Điều trị nội trú' },
+        { value: '3', label: 'Cấp cứu' }
     ];
     
     const dischargeOptions = [
@@ -100,7 +101,16 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             [field]: value
         }));
 
+        if (field === 'dischargeStatus' && value !== null) {
+
+            setFormData(prev => ({
+                ...prev,
+                dischargeDate: new Date(),
+            }));
+        }
+
         if (field === 'dischargeStatus' && value !== 4) {
+
             setFormData(prev => ({
                 ...prev,
                 reExaminationDate: null
@@ -112,6 +122,20 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             setFormData(prev => ({
                 ...prev,
                 dischargeDate: new Date(),
+            }));
+        }
+
+        if (field === 'medicalTreatmentTier' && value !== '2') {
+            setFormData(prev => ({
+                ...prev,
+                dischargeDate: null,
+            }));
+
+            setFormData(prev => ({
+                ...prev,
+                dischargeStatus: null,
+                reExaminationDate: null,
+                treatmentResult: '',
             }));
         }
 
@@ -406,18 +430,6 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                         />
                     </div>
                     <div className="col-4 mt-3 col-lg-2">
-                        <p>Kết quả điều trị:</p>
-                    </div>
-                    <div className="col-8 mt-3 col-lg-4">
-                        <input type="text" className="input"
-                            value={formData.treatmentResult}
-                            readOnly={!isEditMode} 
-                            onChange={handleInputChange('treatmentResult')}
-                            placeholder="Kết quả điều trị" />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-4 mt-3 col-lg-2">
                         <p>Ngày nhập viện:</p>
                     </div>
                     <div className="col-8 mt-3 col-lg-4">
@@ -429,25 +441,54 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             isClearable={false}
                             placeholder="Chọn ngày..." />
                     </div>
-                    <div className="col-4 mt-3 col-lg-2">   
-                        <p>Ngày xuất viện:</p>
-                    </div>
-                    <div className="col-8 mt-3 col-lg-4">
-                        <CustomDatePicker
-                            className="date-picker"
-                            selectedDate={formData.dischargeDate}
-                            onDateChange={handleDateChange('dischargeDate')}
-                            disabled={!isEditMode}
-                            placeholder="Chọn ngày..." />
-                    </div>
                 </div>
                 <div className="row">
-                    <div className="col-4 mt-3 col-lg-2">
-                        <p>Giá:</p>
-                    </div>
-                    <div className="col-8 mt-3 col-lg-4">
-                        <p className="info">{formData.price.toLocaleString()} VND</p>
-                    </div>
+                    {formData.medicalTreatmentTier == 2 && (
+                        <>
+                            <div className="col-4 mt-3 col-lg-2">
+                                <p>Tình trạng ra viện:</p>
+                            </div>
+                            <div className="col-8 mt-3 col-lg-4">
+                                <SelectBox2
+                                    placeholder="Chọn tình trạng ra viện"
+                                    className="select-box2"
+                                    options={dischargeOptions}
+                                    value={formData.dischargeStatus}
+                                    onChange={handleSelectChange('dischargeStatus')}
+                                    disabled={!(isEditMode)}
+                                />
+                            </div>
+                            <div className="col-4 mt-3 col-lg-2">   
+                                <p>Ngày ra viện:</p>
+                            </div>
+                            <div className="col-8 mt-3 col-lg-4">
+                                <CustomDatePicker
+                                    className="date-picker"
+                                    selectedDate={formData.dischargeDate}
+                                    onDateChange={handleDateChange('dischargeDate')}
+                                    disabled={!isEditMode}
+                                    placeholder="Chọn ngày..." />
+                            </div>
+                            <div className="col-4 mt-3 col-lg-2">
+                                <p>Kết quả điều trị:</p>
+                            </div>
+                            <div className="col-8 mt-3 col-lg-4">
+                                <input type="text" className="input"
+                                    value={formData.treatmentResult}
+                                    readOnly={!isEditMode} 
+                                    onChange={handleInputChange('treatmentResult')}
+                                    placeholder="Kết quả điều trị" />
+                            </div>
+                            <div className="col-4 mt-3 col-lg-2">
+                                <p>Giá:</p>
+                            </div>
+                            <div className="col-8 mt-3 col-lg-4">
+                                <p className="info">{formData.price.toLocaleString()} VND</p>
+                            </div>
+                        </>
+                    )}
+                </div>
+                <div className="row">
                     <div className="col-4 mt-3 col-lg-2">
                         <p>Ưu tiên:</p>
                     </div>
@@ -463,23 +504,6 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     </div>
                 </div>
                 <div className="row">
-                    {formData.dischargeDate && (
-                        <>
-                            <div className="col-4 mt-3 col-lg-2">
-                                <p>Tình trạng ra viện:</p>
-                            </div>
-                            <div className="col-8 mt-3 col-lg-4">
-                                <SelectBox2
-                                    placeholder="Chọn tình trạng ra viện"
-                                    className="select-box2"
-                                    options={dischargeOptions}
-                                    value={formData.dischargeStatus}
-                                    onChange={handleSelectChange('dischargeStatus')}
-                                    disabled={!(isEditMode && formData.treatmentResult)}
-                                />
-                            </div>
-                        </>
-                    )}
                     {formData.dischargeStatus === 4 && formData.dischargeDate && (
                         <>
                             <div className="col-4 mt-3 col-lg-2">
@@ -538,7 +562,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                         <button
                             className={`save-button ${!isChanged ? 'disabled' : ''}`}
                             onClick={
-                                formData.medicalTreatmentTier === '1' ? showModal : handleSaveButton
+                                formData.medicalTreatmentTier !== '2' ? showModal : handleSaveButton
                             }
                             disabled={!isChanged}>
                             {isLoading ? (
@@ -570,6 +594,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     onClose={handleModalClose}
                     onRoomSelect={handleRoomSelect}
                     selected={selectedRoom}
+                    medicalTreatmentTier={formData.medicalTreatmentTier}
                 />
             )}
         </>

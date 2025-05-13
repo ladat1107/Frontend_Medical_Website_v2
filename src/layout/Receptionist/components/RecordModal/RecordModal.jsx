@@ -7,7 +7,7 @@ import { createRelative, deleteRelative } from '@/services/doctorService';
 import { message, Popconfirm } from 'antd';
 import PropTypes from 'prop-types';
 
-const RecordModal = ({ isOpen, onClose, record }) => {
+const RecordModal = ({ isOpen, onClose, record, onSusscess }) => {
     const [relatives, setRelatives] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
@@ -80,10 +80,14 @@ const RecordModal = ({ isOpen, onClose, record }) => {
             const res = await createRelative(data);
             if (res && res.EC === 0) {
                 message.success('Lưu thông tin người thân thành công');
+                
+                // Thêm người thân mới vào state hiện tại
                 setRelatives(prev => [...prev, {
                     ...data,
                     id: res.DT.id
                 }]);
+                
+                // Reset form
                 setRelativeInfo({
                     fullName: '',
                     cid: '',
@@ -92,7 +96,12 @@ const RecordModal = ({ isOpen, onClose, record }) => {
                     relationship: null,
                     email: ''
                 });
+                
+                // Đóng form nhập
                 setShowForm(false);
+                
+                // Thông báo cho component cha fetch lại dữ liệu
+                if (onSusscess) onSusscess();
             } else {
                 message.error(res.EM);
             }
@@ -140,7 +149,12 @@ const RecordModal = ({ isOpen, onClose, record }) => {
             const res = await deleteRelative(id);
             if (res && res.EC === 0) {
                 message.success('Xóa thông tin người thân thành công');
+                
+                // Cập nhật state để xóa người thân đã xóa
                 setRelatives(prev => prev.filter(item => item.id !== id));
+                
+                // Thông báo cho component cha fetch lại dữ liệu
+                if (onSusscess) onSusscess();
             }
         } catch (error) {
             console.error('Error deleting relative:', error);
@@ -500,6 +514,7 @@ RecordModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     record: PropTypes.object,
+    onSusscess: PropTypes.func
 };
 
 export default RecordModal;

@@ -304,6 +304,7 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                     onClose={handleModalClose}
                     onRoomSelect={handleRoomSelect}
                     selected={selectedRoom}
+                    medicalTreatmentTierId={patientData?.medicalTreatmentTier}
                 />
             )}
         </div>

@@ -138,7 +138,7 @@ const InpatientPres = ({prescriptionData, examinationId, refresh, isEditMode}) =
                                     {prescription.status !== 2 && isEditMode && <>
                                         <Popconfirm
                                             title="Xác nhận xóa"
-                                            description="Bạn có chắc chắn muốn xóa xét nghiệm này?"
+                                            description="Bạn có chắc chắn muốn xóa đơn thuốc này?"
                                             onConfirm={() => handleDeletePrescription(prescription.id)}
                                             okText="Xóa"
                                             cancelText="Hủy"

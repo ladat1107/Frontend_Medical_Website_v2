@@ -56,6 +56,7 @@ const StepModal = ({ isOpen, onClose, examinationData }) => {
             width={1000}
             footer={null}
             className="step-modal"
+            centered={true}
         >
             <div className="modal-content">
                 {examinationData?.DT?.mainExamination &&

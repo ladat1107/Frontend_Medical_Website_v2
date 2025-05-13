@@ -43,7 +43,7 @@ const Appointment = () => {
     }, [dataSchedules]);
 
     const handleClickRow = (examinationId) => {
-        navigate(`/doctorExamination/${examinationId}`);
+        navigate(`/examination/${examinationId}`);
     }
 
     const handlePageChange = (page, pageSize) => {

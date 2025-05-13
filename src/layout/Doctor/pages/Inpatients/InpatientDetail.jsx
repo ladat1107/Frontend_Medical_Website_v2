@@ -547,7 +547,7 @@ const InpatientDetail = () => {
                                         examData.advanceMoneyExaminationData.map((item, index) => (
                                             <div className="flex mb-2" key={index}>
                                                 <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
-                                                <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                                <p>Tạm ứng: {item.amount?.toLocaleString() || 0}đ</p>
                                                 {item.status=== 1 ?
                                                     <p className="ms-2" style={{color: '#FF8C00'}}>Chờ thanh toán</p> : 
                                                     item.status === 2 ?

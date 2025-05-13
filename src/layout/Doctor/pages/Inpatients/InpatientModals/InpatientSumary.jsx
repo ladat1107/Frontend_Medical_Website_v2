@@ -165,7 +165,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                 insuranceCovered: [...dataExam].reduce((sum, item) => sum + (item.insurancePaid || 0), 0),
                 coveredPrice: [...dataExam].reduce((sum, item) => sum + (item.patientPaid || 0), 0),
                 payment: paymentMethod,
-                amount: [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0)
+                amount: patientPaid - totalAdvance || 0,
             }
             if (paymentMethod === PAYMENT_METHOD.CASH) {
                 const response = await updateExamination(datapay)

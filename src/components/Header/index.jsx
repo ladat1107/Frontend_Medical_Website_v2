@@ -107,6 +107,11 @@ function Header() {
           icon: <FontAwesomeIcon icon={faCalendarCheck} />,
           action: PATHS.HOME.BOOKING,
         },
+        {
+          title: "Số thứ tự",
+          icon: <i className="fa-solid fa-list-ol"></i>,
+          action: PATHS.HOME.NUMERICAL,
+        },
       ],
     },
     {

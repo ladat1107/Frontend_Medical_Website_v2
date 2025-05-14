@@ -50,6 +50,7 @@ export const PATHS = {
         INSTRUCTION: "/instruction",
         LOGIN: "/login",
         NOTIFICATION: "/notification",
+        NUMERICAL: "/numerical",
     },
     SYSTEM: {
         GET_NUMBER: "/getNumber",

@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { checkOutParaclinical, updateExamination, updateListPayParaclinicals } from '@/services/doctorService';
 import './PayModal.scss';
-import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';
+import { PAYMENT_METHOD, PAYMENT_STATUS, STATUS_BE } from '@/constant/value';
 import MoneyInput from '@/components/Input/MoneyInput';
 import RoomSelectionModal from '@/layout/Doctor/components/RoomOptionModal/RoomSelectionModal';
 
 const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
-
+    
     const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
     const [isLoading, setIsLoading] = useState(false);
     const [amount, setAmount] = useState(
@@ -70,6 +70,15 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                 advanceId: patientData?.advanceMoneyExaminationData[0]?.id || null,
                 advanceMoney: +amount,
             };
+
+            if (selectedRoom?.id !== patientData?.examinationRoomData?.id){
+                paymentData = {
+                    ...paymentData,
+                    roomId: selectedRoom?.id,
+                    roomName: selectedRoom?.name,
+                    updateRoomId: patientData?.examinationRoomData?.id,
+                };
+            }
 
             if (paymentMethod === PAYMENT_METHOD.CASH) {
                 const response = await updateExamination(paymentData);
@@ -196,7 +205,8 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                             <p  className='text-start' 
                                 style={{ fontWeight: "400", width: '100%' }}>
                                     {selectedRoom?.serviceData[0]?.id === 3 ? 'Phòng thường' : 
-                                    selectedRoom?.serviceData[0]?.id === 4 ? 'Phòng VIP' : ''}
+                                    selectedRoom?.serviceData[0]?.id === 4 ? 'Phòng VIP' :
+                                    selectedRoom?.serviceData[0]?.id === 6 ? 'Phòng cấp cứu' : 'Phòng khác'}
                             </p>
                         </div>
                     </div>
@@ -208,7 +218,7 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                             <p>{selectedRoom?.serviceData[0]?.price ? formatCurrency(selectedRoom?.serviceData[0]?.price || 0) : null}</p>
                         </div>
                         <div className='col-5 d-flex align-items-center'>
-                            {+patientData?.status >= STATUS_BE.PAID ? <></>
+                            {+patientData?.advanceMoneyExaminationData[0]?.status === PAYMENT_STATUS.PAID ? <></>
                                 :
                                 <button className='change-btn' onClick={showModal}>
                                     Sửa phòng
@@ -257,7 +267,7 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.status >= STATUS_BE.PAID ? <div>Đã thanh toán</div> :
+                            {+patientData?.advanceMoneyExaminationData[0]?.status === PAYMENT_STATUS.PAID ? <div>Đã thanh toán</div> :
                                 <>
                                     <label className='me-5'>
                                         <input
@@ -279,13 +289,14 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                                         />
                                         Chuyển khoản
                                     </label>
-                                </>}
+                                </>
+                            }
                         </div>
                     </div>
                 </div>
                 <div className='payment-footer mt-4'>
                     <button className="close-user-btn" onClick={onClose}>Đóng</button>
-                    {+patientData?.status >= STATUS_BE.PAID ? <></>
+                    {+patientData?.advanceMoneyExaminationData[0]?.status === PAYMENT_STATUS.PAID ? <></>
                         :
                         <button className='payment-btn' onClick={handlePay}>
                         {isLoading ? (
@@ -304,7 +315,7 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                     onClose={handleModalClose}
                     onRoomSelect={handleRoomSelect}
                     selected={selectedRoom}
-                    medicalTreatmentTierId={patientData?.medicalTreatmentTier}
+                    medicalTreatmentTier={patientData?.medicalTreatmentTier}
                 />
             )}
         </div>

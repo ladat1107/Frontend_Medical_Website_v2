@@ -14,7 +14,7 @@ import { DISCHARGE_OPTIONS } from '@/constant/options';
 import CustomDatePicker from '@/components/DatePicker';
 import CustomDatePickerWithHighlights from '@/components/DatePicker/CustomDatePickerWithHighlights';
 import { useSelector } from 'react-redux';
-import { STATUS_BE, TIMESLOTS } from '@/constant/value';
+import { PAYMENT_STATUS, STATUS_BE, TIMESLOTS } from '@/constant/value';
 import SummaryModal from './InpatientModals/InpatientSumary';
 import MoneyInput from '@/components/Input/MoneyInput';
 import FlexibleCollapsible from './Components/FlexibleCollapsible';
@@ -548,9 +548,9 @@ const InpatientDetail = () => {
                                             <div className="flex mb-2" key={index}>
                                                 <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
                                                 <p>Tạm ứng: {item.amount?.toLocaleString() || 0}đ</p>
-                                                {item.status=== 1 ?
+                                                {item.status=== PAYMENT_STATUS.PENDING ?
                                                     <p className="ms-2" style={{color: '#FF8C00'}}>Chờ thanh toán</p> : 
-                                                    item.status === 2 ?
+                                                    item.status === PAYMENT_STATUS.PAID ?
                                                         <p className="ms-2" style={{color: '#008000'}}>Đã thanh toán</p> :
                                                         <p className="ms-2" style={{color: '#FF0000'}}>Đã hủy</p>                                                
                                                 }

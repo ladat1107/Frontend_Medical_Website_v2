@@ -108,7 +108,7 @@ function Header() {
           action: PATHS.HOME.BOOKING,
         },
         {
-          title: "Số thứ tự",
+          title: "Số khám bệnh",
           icon: <i className="fa-solid fa-list-ol"></i>,
           action: PATHS.HOME.NUMERICAL,
         },

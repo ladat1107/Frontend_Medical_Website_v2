@@ -172,7 +172,7 @@ const Cashier = () => {
                         <p className="search-title">Đối tượng thanh toán</p>
                         <Select className="select-box" defaultValue="2" onChange={handelTreatmentTierChange}>
                             <Select.Option value="2">Ngoại trú</Select.Option>
-                            <Select.Option value="1">Nội trú</Select.Option>
+                            <Select.Option value="1">Nhập viện</Select.Option>
                             <Select.Option value="3">Xuất viện</Select.Option>
                         </Select>
                     </div>

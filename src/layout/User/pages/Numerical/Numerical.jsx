@@ -57,7 +57,7 @@ const Numerical = () => {
                             <div className="card-content d-flex flex-column align-items-center justify-content-center w-100 h-100">
                                 <div className="number-label">Số ưu tiên</div>
                                 <div className="d-flex flex-row align-items-end" style={{color: "#08A476"}}>
-                                    <div className="big-num">{currentNumber?.priorityNumberCurrent || 0}</div>
+                                    <div className="big-num ms-3">{currentNumber?.priorityNumberCurrent || 0}</div>
                                     <div className="ms-1 small-num">/{currentNumber?.priorityNumber || 0}</div>
                                 </div>
                             </div>
@@ -68,17 +68,23 @@ const Numerical = () => {
                             <div className="card-content d-flex flex-column align-items-center justify-content-center w-100 h-100">
                                 <div className="number-label">Số thường</div>
                                 <div className="d-flex flex-row align-items-end" style={{color: "#0077F9"}}>
-                                    <div className="big-num">{currentNumber?.normalNumberCurrent || 0}</div>
+                                    <div className="big-num ms-3">{currentNumber?.normalNumberCurrent || 0}</div>
                                     <div className="ms-1 small-num">/{currentNumber?.normalNumber || 0}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <button className="btn-flip" onClick={() => { setIsFlipping(!isFlipping) }}>
-                    {isFlipping ? "Xem STT ưu tiên" : "Xem STT thường"}
-                </button>
+                <div className="flip-button-container" onClick={() => { setIsFlipping(!isFlipping) }}>
+                    <div className={`flip-button ${isFlipping ? 'flipped' : ''}`}>
+                        <div className="flip-button-front">
+                            Xem STT thường
+                        </div>
+                        <div className="flip-button-back">
+                            Xem STT ưu tiên
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

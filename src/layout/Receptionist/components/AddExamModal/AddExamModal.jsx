@@ -472,7 +472,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
 
     return (
         <div className="add-exam-container">
-            <div className="add-exam-content">
+            <div className={`add-exam-content ${isUserModalOpen ? 'dimmed' : ''}`}>
                 {isEditMode ? (
                     <div className='add-exam-header'>
                         Hồ sơ khám bệnh

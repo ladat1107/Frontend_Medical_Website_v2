@@ -520,7 +520,7 @@ const ReceptionistDashboard = () => {
                                 className="p-2.5 rounded-full w-[75px] h-[75px] flex justify-center items-center cursor-pointer transition-all duration-200 bg-[#FFE3DD] hover:scale-105"
                                 onClick={() => handleGeneralNumber(type)}
                             >
-                                {loading ? <Loading /> :
+                                {loading ? <Spin tip="Loading..." />  :
                                     <i className="text-2xl fa-solid fa-user-plus"></i>
                                 }
                             </div>

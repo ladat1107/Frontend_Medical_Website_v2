@@ -33,7 +33,7 @@ const ChatContentStaff = () => {
     const [form] = Form.useForm();
 
     const chatContentRef = useRef(null);
-    const inputRef = useRef(null);
+    const inputref = useRef(null);
     const emojiPickerRef = useRef(null);
     const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ const ChatContentStaff = () => {
 
     useEffect(() => {
         scrollToBottom();
-        if (inputRef.current) inputRef.current.focus();
+        if (inputref.current) inputref.current.focus();
     }, [messages, isUploading, uploadProgress, isCreatingMessage]);
 
     const handleScroll = () => {
@@ -145,7 +145,7 @@ const ChatContentStaff = () => {
             message: currentMessage + emojiData.emoji,
         });
         // Focus lại vào input sau khi chọn emoji
-        inputRef.current?.focus();
+        inputref.current?.focus();
     };
     return (
         <>
@@ -242,7 +242,7 @@ const ChatContentStaff = () => {
                         autoComplete="off"
                         placeholder="Nhập tin nhắn (tối đa 250 ký tự)..."
                         maxLength={500}
-                        ref={inputRef}
+                        ref={inputref}
                         autoSize={{ maxRows: 4 }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.altKey) {

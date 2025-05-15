@@ -103,6 +103,8 @@ const Login = () => {
                 navigate(PATHS.RECEPTIONIST.PRESCRIBE);
             } else if (roleUser === ROLE.ACCOUNTANT) {
                 navigate(PATHS.RECEPTIONIST.CASHIER);
+            } else if (roleUser === ROLE.NURSE) {
+                navigate(PATHS.STAFF.APPOINTMENT);
             } else {
                 navigate(PATHS.HOME.HOMEPAGE);
             }
@@ -161,7 +163,7 @@ const Login = () => {
                                         }
                                         open={showSavedAccounts}
                                         placement="bottom"
-                                        overlayClassName="w-[300px]"
+                                        classNames={{ root: "w-[300px]" }}
                                         onOpenChange={(visible) => setShowSavedAccounts(visible)}
                                     >
 

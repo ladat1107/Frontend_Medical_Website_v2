@@ -215,8 +215,8 @@ export const getScheduleByStaffIdFromToday = async () => {
     return axios.get(`/api/getScheduleByStaffIdFromToday`);
 }
 
-export const getAvailableRooms = async () => {
-    return axios.get(`/api/getAvailableRooms`);
+export const getAvailableRooms = async (medicalTreatmentTier) => {
+    return axios.get(`/api/getAvailableRooms?medicalTreatmentTier=${medicalTreatmentTier || ''}`);
 }
 
 export const getListAdvanceMoney = async (page = 1, limit = 20, search ='', statusPay = 4) => {

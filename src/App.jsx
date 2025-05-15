@@ -57,6 +57,7 @@ import ExaminationManage from "./layout/Admin/pages/ExaminationManage/Examinatio
 import InpatientList from "./layout/Doctor/pages/Inpatients/InpationList";
 import InpatientDetail from "./layout/Doctor/pages/Inpatients/InpatientDetail";
 import MedicalRecord from "./layout/Receptionist/pages/Dashboard/medicalRecord";
+import Numerical from "./layout/User/pages/Numerical/Numerical";
 
 function App() {
   const location = useLocation();
@@ -122,6 +123,7 @@ function App() {
             <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
             <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
             <Route path={`${PATHS.HOME.NOTIFICATION}`} element={<NotificationUser />} />
+            <Route path={PATHS.HOME.NUMERICAL} element={<Numerical />} />
           </Route>
           <Route path={PATHS.SYSTEM.GET_NUMBER} element={<GetNumber />} />
           <Route path={`${PATHS.SYSTEM.PRECRIPTION_PDF}/:id`} element={<PrintPrescription />} />

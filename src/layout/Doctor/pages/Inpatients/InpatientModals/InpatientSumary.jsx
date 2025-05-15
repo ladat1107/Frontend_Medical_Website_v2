@@ -165,7 +165,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                 insuranceCovered: [...dataExam].reduce((sum, item) => sum + (item.insurancePaid || 0), 0),
                 coveredPrice: [...dataExam].reduce((sum, item) => sum + (item.patientPaid || 0), 0),
                 payment: paymentMethod,
-                amount: [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0)
+                amount: patientPaid - totalAdvance || 0,
             }
             if (paymentMethod === PAYMENT_METHOD.CASH) {
                 const response = await updateExamination(datapay)
@@ -411,7 +411,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
     const insurancePaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0);
     const patientPaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0);
     const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
-        (sum, item) => sum + (item.amount || 0), 0) || 0);
+        (sum, item) => sum + (item.status === 2 ? item.amount || 0 : 0), 0) || 0);
     
     const difference = totalAdvance - patientPaid;
     
@@ -642,15 +642,19 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                             <p style={{ fontWeight: "600", color: "#0077F9" }}>
                                 Tiền đã tạm ứng:&nbsp;
                                 {(examinationData?.advanceMoneyExaminationData?.reduce(
-                                    (sum, item) => sum + (item.amount || 0), 
+                                    (sum, item) => sum + (item.status === 2 ? item.amount || 0 : 0), 
                                     0
                                 ) || 0).toLocaleString()} đ
                             </p>
                             {examinationData?.advanceMoneyExaminationData?.length > 0 ? (
                                 examinationData.advanceMoneyExaminationData.map((item, index) => (
                                     <div className="flex" key={index}>
-                                        <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
-                                        <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                        {+item.status === 2 && (
+                                            <>
+                                                <p className="me-1">Ngày: {convertDateTime(item?.date)} -</p>
+                                                <p>Tạm ứng: {item.amount?.toLocaleString()} đ</p>
+                                            </>
+                                        )}
                                     </div>
                                 ))
                             ) : (

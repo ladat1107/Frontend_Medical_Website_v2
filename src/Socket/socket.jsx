@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
 // Create the socket instance
-const socket = io('http://localhost:8843', {
+const socket = io('http://localhost:8844', {
   withCredentials: true,
   reconnection: true,
   reconnectionAttempts: Infinity,
@@ -29,7 +29,6 @@ socket.on('disconnect', (reason) => {
 // Authenticate socket with a token
 export const authenticateSocket = (token) => {
   if (socket && token) {
-    console.log('Authenticating socket with token');
     socket.emit('authenticate', token);
   }
 };

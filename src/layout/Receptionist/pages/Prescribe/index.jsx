@@ -97,7 +97,7 @@ const Prescribe = () => {
                     <div className="col-6">
                         <p className="search-title">Tìm kiếm cận lâm sàn</p>
                         <input type="text" className="search-box" 
-                                placeholder="Nhập tên bệnh nhân để tìm kiếm..." 
+                                placeholder="Nhập thông tin bệnh nhân để tìm kiếm..." 
                                 value={search}
                                 onChange={handleSearch}/>
                     </div>

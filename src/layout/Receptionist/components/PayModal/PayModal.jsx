@@ -138,7 +138,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                             message.error('Cập nhật bệnh nhân thất bại');
                         }
                     } else {
-                        const response = await checkOutParaclinical({ ids });
+                        const response = await checkOutParaclinical({ ids, insurance });
 
                         if (response.EC === 0) {
                             window.location.href = response?.DT?.payUrl;
@@ -292,10 +292,10 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                             <p style={{ fontWeight: "400" }}>Số BHYT:</p>
                         </div>
                         <div className='col-3'>
-                            <input 
-                                className='input-add-exam' 
+                            <input
+                                className='input-add-exam'
                                 style={{ width: "93%" }} maxLength={10}
-                                type='text' value={insurance} 
+                                type='text' value={insurance}
                                 readOnly
                                 placeholder='Nhập số BHYT...' />
                         </div>
@@ -342,7 +342,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.status >= STATUS_BE.PAID ? 
+                            {+patientData?.status >= STATUS_BE.PAID ?
                                 <div>
                                     Đã thanh toán
                                 </div> : <>
@@ -376,7 +376,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                     {+patientData?.status === STATUS_BE.PAID ? <></>
                         :
                         <button className='payment-btn' onClick={handlePay}>
-                        {isLoading ? (
+                            {isLoading ? (
                                 <>
                                     <i className="fa-solid fa-spinner fa-spin me-2"></i>
                                     Đang xử lý...

@@ -41,6 +41,9 @@ export const checkOutExamination = (data) => {
 export const checkOutExaminationAdvance = (data) => {
     return axios.post(`/api/paymentExaminationAdvanceMomo`, data);
 }
+export const checkOutDischarged = (data) => {
+    return axios.post(`/api/paymentDischargedMomo`, data);
+}
 export const checkOutPrescription = (data) => {
     return axios.post(`/api/paymentPrescriptionMomo`, data);
 }

@@ -27,7 +27,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
     const [medicalTreatmentTier, setMedicalTreatmentTier] = useState(2);
 
     const comorbidityContainerRef = useRef(null);
-    const inputRef = useRef(null);
+    const inputref = useRef(null);
     const searchResultsRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [isSearched, setIsSearched] = useState(false);
@@ -698,7 +698,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                             </div>
                             {/* Input tìm kiếm bệnh đi kèm */}
                             <input
-                                ref={inputRef}
+                                ref={inputref}
                                 className='input-add-exam'
                                 type='text'
                                 placeholder='Thêm bệnh đi kèm...'

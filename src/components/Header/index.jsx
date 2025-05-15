@@ -367,7 +367,7 @@ function Header() {
                     open={isDropdownVisible}
                     onOpenChange={setIsDropdownVisible}
                     overlayStyle={{ width: 350 }}
-                    dropdownRender={(menu) => (
+                    popupRender={(menu) => (
                       <div className="bg-white rounded-md shadow-lg">
                         {listNotiLoading ? (
                           <div className="p-5 text-center">

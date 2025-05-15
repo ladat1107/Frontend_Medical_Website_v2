@@ -18,7 +18,7 @@ const ChatContentAI = () => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const chatContentRef = useRef(null); // Tham chiếu vùng nội dung chat
-    const inputRef = useRef(null);
+    const inputref = useRef(null);
 
     const mdParser = new MarkdownIt({
         html: true, // Cho phép xử lý HTML
@@ -32,7 +32,7 @@ const ChatContentAI = () => {
 
     useEffect(() => {
         scrollToBottom(); // Nếu không cuộn lên, tự động cuộn xuống
-        if (inputRef.current) inputRef.current.focus(); // Tự động focus vào ô input khi mở chat
+        if (inputref.current) inputref.current.focus(); // Tự động focus vào ô input khi mở chat
 
         if (_persistedAt) {
             const expired = Date.now() - _persistedAt > 24 * 60 * 60 * 1000;
@@ -119,7 +119,7 @@ const ChatContentAI = () => {
                         autoComplete="off"
                         placeholder="Nhập tin nhắn (tối đa 250 ký tự)..."
                         maxLength={500}
-                        ref={inputRef}
+                        ref={inputref}
                         autoSize={{ maxRows: 4 }} // Giới hạn tối đa 4 hàng
                         onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.altKey) {

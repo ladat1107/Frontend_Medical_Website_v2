@@ -57,7 +57,7 @@ const MessengerReceptionist = () => {
     const isMobile = useMobile()
 
     const chatContentRef = useRef(null)
-    const inputRef = useRef(null)
+    const inputref = useRef(null)
     const emojiPickerRef = useRef(null)
 
     const scrollToBottom = () => {
@@ -96,7 +96,7 @@ const MessengerReceptionist = () => {
 
     useEffect(() => {
         scrollToBottom()
-        if (inputRef.current) inputRef.current.focus() // Tự động focus vào ô input khi mở chat
+        if (inputref.current) inputref.current.focus() // Tự động focus vào ô input khi mở chat
     }, [messages, isUploading, uploadProgress, isCreatingMessage])
 
     // Theo dõi vị trí thanh cuộn và hiển thị nút cuộn xuống nếu cần
@@ -190,7 +190,7 @@ const MessengerReceptionist = () => {
             message: currentMessage + emojiData.emoji,
         })
         // Focus lại vào input sau khi chọn emoji
-        inputRef.current?.focus()
+        inputref.current?.focus()
     }
     const handleBackToList = () => {
         setConversationSelected(null)
@@ -490,7 +490,7 @@ const MessengerReceptionist = () => {
                                             disabled={isUploading}
                                             placeholder="Nhập tin nhắn"
                                             maxLength={500}
-                                            ref={inputRef}
+                                            ref={inputref}
                                             onChange={(e) => setIsShowUploadFile(e.target.value.length > 0)}
                                             autoSize={{ maxRows: 4 }}
                                             onKeyDown={(e) => {

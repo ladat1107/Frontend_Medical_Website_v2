@@ -50,7 +50,7 @@ const ReceptionistDashboard = () => {
     const { data: dataUserByQRCode, refetch: refetchUserByQRCode } = useGetUserByQRCode({ qrCode: scannedQR });
     const [dataQRCode, setDataQRCode] = useState(null);
     // QR Code scanning refs
-    const hiddenInputRef = useRef(null);
+    const hiddeninputref = useRef(null);
     const lastScanTimeRef = useRef(0);
     const scanningInProgressRef = useRef(false);
     const qrTimeoutRef = useRef(null);
@@ -93,7 +93,7 @@ const ReceptionistDashboard = () => {
                     const activeElement = document.activeElement;
                     const isInputElement = activeElement.tagName === 'INPUT' ||
                         activeElement.tagName === 'TEXTAREA';
-                    const isOurHiddenInput = activeElement === hiddenInputRef.current;
+                    const isOurHiddenInput = activeElement === hiddeninputref.current;
 
                     // Start QR scan mode if scanner detected AND:
                     // 1. We're not in an input field, OR
@@ -109,7 +109,7 @@ const ReceptionistDashboard = () => {
 
                             // Focus our hidden input
                             if (!isOurHiddenInput) {
-                                hiddenInputRef.current.focus();
+                                hiddeninputref.current.focus();
                             }
 
                             // Recreate the start of the QR code from our keystroke buffer
@@ -119,7 +119,7 @@ const ReceptionistDashboard = () => {
                                 .join('');   // Join them into a string
 
                             // Set the hidden input value to include the start of the QR code
-                            hiddenInputRef.current.value = qrPrefix;
+                            hiddeninputref.current.value = qrPrefix;
 
                             // Prevent this keystroke from being processed elsewhere
                             e.preventDefault();
@@ -132,9 +132,9 @@ const ReceptionistDashboard = () => {
                     if (qrTimeoutRef.current) clearTimeout(qrTimeoutRef.current);
                     qrTimeoutRef.current = setTimeout(() => {
                         // QR scan completed
-                        if (hiddenInputRef.current.value) {
-                            setScannedQR(hiddenInputRef.current.value);
-                            hiddenInputRef.current.value = "";
+                        if (hiddeninputref.current.value) {
+                            setScannedQR(hiddeninputref.current.value);
+                            hiddeninputref.current.value = "";
                         }
 
                         // Clean up state
@@ -142,7 +142,7 @@ const ReceptionistDashboard = () => {
                         keystrokeSequenceRef.current = [];
 
                         // Restore focus
-                        if (previousActiveElementRef.current && previousActiveElementRef.current !== hiddenInputRef.current) {
+                        if (previousActiveElementRef.current && previousActiveElementRef.current !== hiddeninputref.current) {
                             try {
                                 previousActiveElementRef.current.focus();
                             } catch (err) {
@@ -582,7 +582,7 @@ const ReceptionistDashboard = () => {
             </Form>
 
             <input
-                ref={hiddenInputRef}
+                ref={hiddeninputref}
                 type="text"
                 className="opacity-0 h-0 w-0 absolute pointer-events-none"
                 autoComplete="off"

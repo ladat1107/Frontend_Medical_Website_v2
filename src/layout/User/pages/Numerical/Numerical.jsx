@@ -1,15 +1,14 @@
-// client/src/pages/Numerical.jsx - Cập nhật
-
 import Loading from "@/components/Loading/Loading";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import userService from "@/services/userService";
 import { useMutation } from "@/hooks/useMutation";
-import { useSelector } from "react-redux";
+import socket from '@/Socket/socket'
+import "./Numerical.scss";
 
 const Numerical = () => {
     const [currentNumber, setCurrentNumber] = useState({});
     const [loading, setLoading] = useState(false);
-    const { token } = useSelector((state) => state.authen);
+    const [isFlipping, setIsFlipping] = useState(false);
 
     // Setup data fetching
     const {
@@ -29,26 +28,57 @@ const Numerical = () => {
         }
     }, [ticketData]);
 
+    useEffect(() => {
+        const handleNumber = (ticket) => {
+            setCurrentNumber(ticket);
+        }
+
+        socket.on("updateTicket", handleNumber)
+        return () => {
+            socket.off("updateTicket", handleNumber)
+        }
+    }, [ticketData]);
+
 
     return (
-        <div className="get-number-bg">
+        <div className="get-number-bg2">
             {loading && (
                 <div className="loading-overlay">
                     <Loading />
                 </div>
             )}
-            <div className={`content ${loading ? "disabled" : ""}`}>
-                <h1 className="get-number-title">Số thứ tự khám bệnh</h1>
-                <div className="btn-group">
-                    <button className="get-number-btn priority">
-                        <div>Số ưu tiên</div>
-                        <div>({currentNumber?.priorityNumberCurrent || 0})</div>
-                    </button>
-                    <button className="get-number-btn normal">
-                        <div>Số thường</div>
-                        <div>({currentNumber?.normalNumberCurrent || 0})</div>
-                    </button>
+            <div className={`content ${loading ? "disabled" : ""} d-flex flex-column justify-content-center align-items-center`}>
+                <h1 className="get-number-title d-flex">Số thứ tự khám bệnh</h1>
+                
+                <div className="flip-card-container" onClick={() => { setIsFlipping(!isFlipping) }}>
+                    <div className={`flip-card ${isFlipping ? 'flipped' : ''}`}>
+                        {/* Mặt hiển thị số ưu tiên */}
+                        <div className="flip-card-front">
+                            <div className="card-content d-flex flex-column align-items-center justify-content-center w-100 h-100">
+                                <div className="number-label">Số ưu tiên</div>
+                                <div className="d-flex flex-row align-items-end" style={{color: "#08A476"}}>
+                                    <div className="big-num">{currentNumber?.priorityNumberCurrent || 0}</div>
+                                    <div className="ms-1 small-num">/{currentNumber?.priorityNumber || 0}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Mặt hiển thị số thường */}
+                        <div className="flip-card-back">
+                            <div className="card-content d-flex flex-column align-items-center justify-content-center w-100 h-100">
+                                <div className="number-label">Số thường</div>
+                                <div className="d-flex flex-row align-items-end" style={{color: "#0077F9"}}>
+                                    <div className="big-num">{currentNumber?.normalNumberCurrent || 0}</div>
+                                    <div className="ms-1 small-num">/{currentNumber?.normalNumber || 0}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
+                <button className="btn-flip" onClick={() => { setIsFlipping(!isFlipping) }}>
+                    {isFlipping ? "Xem STT ưu tiên" : "Xem STT thường"}
+                </button>
             </div>
         </div>
     );

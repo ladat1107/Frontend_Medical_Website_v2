@@ -163,7 +163,7 @@ const Login = () => {
                                         }
                                         open={showSavedAccounts}
                                         placement="bottom"
-                                        overlayClassName="w-[300px]"
+                                        classNames={{ root: "w-[300px]" }}
                                         onOpenChange={(visible) => setShowSavedAccounts(visible)}
                                     >
 

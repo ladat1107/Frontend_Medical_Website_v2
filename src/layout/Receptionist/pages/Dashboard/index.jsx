@@ -6,7 +6,6 @@ import { getAllDisease, getExaminations, getPatienSteps, getSpecialties } from "
 import PatientItem from "../../components/PatientItem/PatientItem";
 import { TIMESLOTS, TYPE_NUMBER } from "@/constant/value";
 import { convertDateTime } from "@/utils/formatDate";
-import DropdownSpecialty from "../../components/Dropdown/DropdownSpecialty";
 import userService from "@/services/userService";
 import Loading from "@/components/Loading/Loading";
 import dayjs from "dayjs";
@@ -38,7 +37,7 @@ const ReceptionistDashboard = () => {
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState(2);
     const [listExam, setListExam] = useState([]);
-    const [listStep, setListStep] = useState([]);
+    const [listStep, setListStep] = useState({});
 
     const [totalPatient, setTotalPatient] = useState(0);
     const [totalAppointment, setTotalAppointment] = useState(0);

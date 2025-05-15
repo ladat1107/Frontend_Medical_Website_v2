@@ -2,7 +2,7 @@ import { message } from 'antd';
 import { PropTypes } from 'prop-types';
 import { useEffect, useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
-import { checkOutExamination, checkOutParaclinical, updateExamination, updateListPayParaclinicals } from '@/services/doctorService';
+import { checkOutExaminationAdvance, checkOutParaclinical, updateExamination, updateListPayParaclinicals } from '@/services/doctorService';
 import './PayModal.scss';
 import { PAYMENT_METHOD, PAYMENT_STATUS, STATUS_BE } from '@/constant/value';
 import MoneyInput from '@/components/Input/MoneyInput';
@@ -53,8 +53,8 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
             return;
         }
 
-        if (+amount < 1) {
-            message.error('Số tiền tạm ứng tối thiểu là 1.000.000đ!');
+        if (+amount < 1000) {
+            message.error('Số tiền tạm ứng tối thiểu là 1.000đ!');
             return;
         }
 
@@ -71,7 +71,7 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                 advanceMoney: +amount,
             };
 
-            if (selectedRoom?.id !== patientData?.examinationRoomData?.id){
+            if (selectedRoom?.id !== patientData?.examinationRoomData?.id) {
                 paymentData = {
                     ...paymentData,
                     roomId: selectedRoom?.id,
@@ -90,13 +90,12 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                     message.error('Cập nhật bệnh nhân thất bại!');
                 }
             } else {
-                // let response = await checkOutExamination(paymentData);
-                // if (response.EC === 0) {
-                //     window.location.href = response?.DT?.shortLink;
-                // } else {
-                //     message.error(response.EM);
-                // }
-                message.error('Để La Đạt làm!');
+                let response = await checkOutExaminationAdvance(paymentData);
+                if (response.EC === 0) {
+                    window.location.href = response?.DT?.payUrl;
+                } else {
+                    message.error(response.EM);
+                }
             }
         } catch (error) {
             console.log(error);
@@ -204,9 +203,9 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                         <div className='col-3 d-flex align-items-center'>
                             <p className='text-start'
                                 style={{ fontWeight: "400", width: '100%' }}>
-                                    {selectedRoom?.serviceData[0]?.id === 3 ? 'Phòng thường' : 
+                                {selectedRoom?.serviceData[0]?.id === 3 ? 'Phòng thường' :
                                     selectedRoom?.serviceData[0]?.id === 4 ? 'Phòng VIP' :
-                                    selectedRoom?.serviceData[0]?.id === 6 ? 'Phòng cấp cứu' : 'Phòng khác'}
+                                        selectedRoom?.serviceData[0]?.id === 6 ? 'Phòng cấp cứu' : 'Phòng khác'}
                             </p>
                         </div>
                     </div>

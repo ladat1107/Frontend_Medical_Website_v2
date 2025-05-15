@@ -149,7 +149,7 @@ const Login = () => {
                                         color='white'
                                         title={
                                             showSavedAccounts && rememberLogins.length > 0 ? (
-                                                <div className="w-full">
+                                                <div className="w-full h-[200px] overflow-y-auto scrollbar-hide">
                                                     {rememberLogins.map((account, index) => (
                                                         <div
                                                             key={index}

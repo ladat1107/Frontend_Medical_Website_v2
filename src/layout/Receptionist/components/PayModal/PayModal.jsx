@@ -42,7 +42,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                     lastName: patientData?.examinationStaffData?.staffUserData?.lastName,
                     position: patientData?.examinationStaffData?.position,
                 },
-                price: patientData?.examinationStaffData?.price,
+                price: patientData?.price,
                 description: 'Khám bệnh',
                 isWrongTreatment: patientData?.isWrongTreatment,
             };
@@ -117,7 +117,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 } else {
                     let response = await checkOutExamination(paymentData);
                     if (response.EC === 0) {
-                        window.location.href = response?.DT?.shortLink;
+                        window.location.href = response?.DT?.payUrl;
                     } else {
                         message.error(response.EM);
                     }
@@ -141,7 +141,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         const response = await checkOutParaclinical({ ids });
 
                         if (response.EC === 0) {
-                            window.location.href = response?.DT?.shortLink;
+                            window.location.href = response?.DT?.payUrl;
                         } else {
                             message.error(response.EM);
                         }

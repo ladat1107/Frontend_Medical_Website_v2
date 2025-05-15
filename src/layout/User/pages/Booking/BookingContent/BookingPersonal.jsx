@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../Booking.scss"
 import { faLeftLong } from "@fortawesome/free-solid-svg-icons"
-import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd"
+import { Button, Col, DatePicker, Form, Input, message, Row, Select } from "antd"
 import dayjs from "dayjs"
 import { GENDER, SPECIAL_EXAMINATION } from "@/constant/value"
 import { apiService } from "@/services/apiService"
@@ -20,15 +20,15 @@ const BookingPersonal = (props) => {
     let [listFolk, setListFolk] = useState([]);
     let [showOldParaclinicalModal, setShowOldParaclinicalModal] = useState(false);
     let [oldParaclinical, setOldParaclinical] = useState(null);
-    let [currentListDistrict, setCurrentListDistrict] = useState([]);
-    let [currentListWard, setCurrentListWard] = useState([]);
     let [currentProvinceId, setCurrentProvinceId] = useState(+currentResidentData[3] || null);
     let [currentDistrictId, setCurrentDistrictId] = useState(+currentResidentData[2] || null);
+    let [currentListDistrict, setCurrentListDistrict] = useState([]);
+    let [currentListWard, setCurrentListWard] = useState([]);
     let { data: provinceData } = useQuery(() => apiService.getAllProvince())
     let { data: folkData } = useQuery(() => userService.getFolk());
-    
+
     useEffect(() => {
-        if (provinceData) {
+        if (provinceData?.data?.length > 0) {
             let _province = provinceData.data?.map((item) => {
                 return {
                     value: +item.id,
@@ -36,11 +36,10 @@ const BookingPersonal = (props) => {
                 }
             })
             setProvince(_province);
-            setCurrentProvinceId(+currentResidentData[3]);
-
+            setCurrentProvinceId(+currentResidentData[3] || null);
+            setCurrentDistrictId(+currentResidentData[2] || null);
         }
     }, [provinceData])
-
     useEffect(() => {
         if (currentProvinceId) {
             apiService.getDistrictByProvinceId(currentProvinceId).then((districtList) => {
@@ -51,12 +50,9 @@ const BookingPersonal = (props) => {
                     }
                 });
                 setCurrentListDistrict(_district);
-                setCurrentDistrictId(+currentResidentData[2]);
             }).catch(error => {
                 console.error("Lỗi khi lấy danh sách quận/huyện:", error);
             });
-        } else {
-            setCurrentListDistrict([]);
         }
     }, [currentProvinceId]);
 
@@ -73,8 +69,6 @@ const BookingPersonal = (props) => {
             }).catch(error => {
                 console.error("Error fetching wards:", error);
             });
-        } else {
-            setCurrentListWard([]);
         }
     }, [currentDistrictId]);
 
@@ -84,7 +78,7 @@ const BookingPersonal = (props) => {
             setListFolk(_folk);
         }
     }, [folkData])
-   
+
     useEffect(() => {
         if (profileData) {
             let profile = profileData;

@@ -344,7 +344,7 @@ export const PAYMENT_STATUS = {
     UNPAID: 0,
     PENDING: 1,
     PAID: 2,
-    REFUNDED: 3
+    REFUNDED: 4
 }
 
 

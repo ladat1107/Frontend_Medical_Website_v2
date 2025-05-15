@@ -411,7 +411,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
     const insurancePaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.insurancePaid || 0), 0);
     const patientPaid = [...data, ...dischargePresData].reduce((sum, item) => sum + (item.patientPaid || 0), 0);
     const totalAdvance = (examinationData?.advanceMoneyExaminationData?.reduce(
-        (sum, item) => sum + (item.amount || 0), 0) || 0);
+        (sum, item) => sum + (item.status === 2 ? item.amount || 0 : 0), 0) || 0);
     
     const difference = totalAdvance - patientPaid;
     
@@ -642,7 +642,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                             <p style={{ fontWeight: "600", color: "#0077F9" }}>
                                 Tiền đã tạm ứng:&nbsp;
                                 {(examinationData?.advanceMoneyExaminationData?.reduce(
-                                    (sum, item) => sum + (item.amount || 0), 
+                                    (sum, item) => sum + (item.status === 2 ? item.amount || 0 : 0), 
                                     0
                                 ) || 0).toLocaleString()} đ
                             </p>

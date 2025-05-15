@@ -459,25 +459,26 @@ const AppointmentList = () => {
                                                             <h4 className="font-semibold text-gray-700 border-b pb-2">Thông tin cuộc hẹn</h4>
 
                                                             <div className="space-y-3">
-                                                                <div className="flex items-start">
-                                                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-0.5">
-                                                                        <FontAwesomeIcon icon={faBriefcaseMedical} className="text-[#00B5F1]" />
+                                                                {profile?.medicalTreatmentTier === 2 && (
+                                                                    <div className="flex items-start">
+                                                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-0.5">
+                                                                            <FontAwesomeIcon icon={faBriefcaseMedical} className="text-[#00B5F1]" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-sm text-gray-500">
+                                                                                {profile?.examinationStaffData?.positon || "Bác sĩ"}
+                                                                            </p>
+                                                                            <p className="font-medium text-gray-800">
+                                                                                { profile?.examinationStaffData?.staffUserData?.lastName +
+                                                                                    " " +
+                                                                                    profile?.examinationStaffData?.staffUserData?.firstName}
+                                                                            </p>
+                                                                            <p className="text-sm text-blue-600 mt-1">
+                                                                                Chuyên khoa: {profile?.examinationStaffData?.staffSpecialtyData?.name}
+                                                                            </p>
+                                                                        </div>
                                                                     </div>
-                                                                    <div>
-                                                                        <p className="text-sm text-gray-500">
-                                                                            {profile?.examinationStaffData?.positon || "Bác sĩ"}
-                                                                        </p>
-                                                                        <p className="font-medium text-gray-800">
-                                                                            {profile?.examinationStaffData?.staffUserData?.lastName +
-                                                                                " " +
-                                                                                profile?.examinationStaffData?.staffUserData?.firstName}
-                                                                        </p>
-                                                                        <p className="text-sm text-blue-600 mt-1">
-                                                                            Chuyên khoa: {profile?.examinationStaffData?.staffSpecialtyData?.name}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-
+                                                                )}
                                                                 <div className="flex items-start">
                                                                     <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 mt-0.5">
                                                                         <FontAwesomeIcon icon={faLocationDot} className="text-[#00B5F1]" />

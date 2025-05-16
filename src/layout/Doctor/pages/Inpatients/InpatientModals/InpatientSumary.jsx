@@ -741,17 +741,19 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                                                 Tiền mặt
                                             </label>
                                         </div>
-                                        <div className="radio-button">
-                                            <input type="radio" className="radio-button__input" id="radio2" name="radio-group"
-                                                value={PAYMENT_METHOD.MOMO}
-                                                checked={paymentMethod === PAYMENT_METHOD.MOMO}
-                                                onChange={() => setPaymentMethod(PAYMENT_METHOD.MOMO)}
-                                            />
-                                            <label className="radio-button__label" htmlFor="radio2">
-                                                <span className="radio-button__custom"></span>
-                                                Chuyển khoản
-                                            </label>
-                                        </div>
+                                        {difference <= 0 && (
+                                            <div className="radio-button">
+                                                <input type="radio" className="radio-button__input" id="radio2" name="radio-group"
+                                                    value={PAYMENT_METHOD.MOMO}
+                                                    checked={paymentMethod === PAYMENT_METHOD.MOMO}
+                                                    onChange={() => setPaymentMethod(PAYMENT_METHOD.MOMO)}
+                                                />
+                                                <label className="radio-button__label" htmlFor="radio2">
+                                                    <span className="radio-button__custom"></span>
+                                                    Chuyển khoản
+                                                </label>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

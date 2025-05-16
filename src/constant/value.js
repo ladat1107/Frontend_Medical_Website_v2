@@ -347,4 +347,18 @@ export const PAYMENT_STATUS = {
     REFUNDED: 4
 }
 
+export const TYPE_ROOM = {
+    CLINIC: 2,
+    DUTY: 1,
+    INPATIENT_NORMAL: 3,
+    INPATIENT_VIP: 4,
+    LABORATORY: 5,
+    EMERGENCY: 6
+}
+
+export const DEPARTMENT = {
+    CLINIC: 2,
+    EMERGENCY: 3,
+}
+
 

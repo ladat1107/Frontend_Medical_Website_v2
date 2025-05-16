@@ -14,6 +14,7 @@ import ForgotPassword from './ForgotPassword';
 import socket, { authenticateSocket } from "@/Socket/socket";
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { BACKEND_URL } from '@/constant/environment';
+import { urlAuthorization } from '@/utils/urlAuthorization';
 const Login = () => {
     const open = {
         login: "login",
@@ -31,6 +32,7 @@ const Login = () => {
     const [showSavedAccounts, setShowSavedAccounts] = useState(false);
     const [rememberMe, setRememberMe] = useState(rememberLogins.length > 0 ? true : false);
     const [isLoading, setIsLoading] = useState(false);
+    const { user } = useSelector((state) => state.authen);
     useEffect(() => {
         let confirmToken = queryParams.get('confirm');
         if (confirmToken !== null) {
@@ -48,10 +50,15 @@ const Login = () => {
         if (loginGoogle !== null) {
             let dataLogin = JSON.parse(loginGoogle);
             dispatch(login(dataLogin));
-            redirect(dataLogin.user.role);
         }
         setLoading(false);
     }, []);
+    console.log(user)
+    useEffect(() => {
+        if (user && user?.role) {
+            navigate(urlAuthorization(user?.role));
+        }
+    }, [user])
 
     const handleSelectAccount = (account) => {
         form.setFieldsValue({
@@ -76,7 +83,6 @@ const Login = () => {
                     }
                     dispatch(addRememberLogin(remember));
                 }
-                redirect(response.DT.user.role);
             } else {
                 message.error(response?.EM || 'Đăng nhập thất bại')
             }
@@ -90,27 +96,6 @@ const Login = () => {
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
-    const redirect = (roleUser) => {
-        if (roleUser) {
-            if (roleUser === ROLE.ADMIN) {
-                navigate(PATHS.ADMIN.DASHBOARD);
-            } else if (roleUser === ROLE.PATIENT) {
-                navigate(PATHS.HOME.HOMEPAGE);
-            } else if (roleUser === ROLE.DOCTOR) {
-                navigate(PATHS.STAFF.APPOINTMENT);
-            } else if (roleUser === ROLE.RECEPTIONIST) {
-                navigate(PATHS.RECEPTIONIST.DASHBOARD);
-            } else if (roleUser === ROLE.PHARMACIST) {
-                navigate(PATHS.RECEPTIONIST.PRESCRIBE);
-            } else if (roleUser === ROLE.ACCOUNTANT) {
-                navigate(PATHS.RECEPTIONIST.CASHIER);
-            } else if (roleUser === ROLE.NURSE) {
-                navigate(PATHS.STAFF.APPOINTMENT);
-            } else {
-                navigate(PATHS.HOME.HOMEPAGE);
-            }
-        }
-    }
 
     return (
         <div className='w-full min-h-screen flex items-center justify-center bg-cover bg-center'

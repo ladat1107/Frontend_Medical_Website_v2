@@ -103,8 +103,8 @@ export const createServiceOfRoom = (data) => {
 export const createRoom = (data) => {
     return axios.post(`/api/admin/createRoom`, data)
 }
-export const getAllRoom = (page, limit, search, searchDepartment) => {
-    return axios.get(`/api/admin/getAllRoomAdmin?page=${+page}&limit=${+limit}&search=${search}&searchDepartment=${searchDepartment}`)
+export const getAllRoom = (query) => {
+    return axios.get(`/api/admin/getAllRoomAdmin`, { params: query })
 }
 export const getRoomById = (id) => {
     return axios.get(`/api/getRoomById?id=${id}`)
@@ -171,6 +171,9 @@ export const getStatisticalAppoinment = (query) => {
 export const getAllMedicinesAdmin = () => {
     return axios.get(`/api/admin/getAllMedicinesAdmin`)
 }
+export const getPrescriptionUsed = (query) => {
+    return axios.get(`/api/admin/getPrescriptionUsed`, { params: query })
+}
 export const createMedicine = (data) => {
     return axios.post(`/api/admin/createMedicine`, data)
 }
@@ -191,5 +194,10 @@ export const getAllExaminationsAdmin = (query = null) => {
 
 export const getExaminationByIdAdmin = (id) => {
     return axios.get(`/api/admin/getExaminationByIdAdmin?id=${id}`)
+}
+
+// PAYMENT MANAGEMENT
+export const getPaymentAdmin = (query = null) => {
+    return axios.get(`/api/admin/getPaymentAdmin`, { params: query })
 }
 

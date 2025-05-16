@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Badge, Menu } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/constant/path';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
@@ -15,28 +15,29 @@ import { handleLogout } from '@/redux/actions/authenActions';
 const MenuSidebar = () => {
     let { user } = useSelector(state => state.authen);
     let dispatch = useDispatch();
+    const navigate = useNavigate();
     const { totalUnreadCount } = useNotification();
-    
+
     // Force re-render on notification changes
     const [, setForceUpdate] = useState(0);
-    
+
     // Trong MenuSidebar.js
     useEffect(() => {
-        
+
         // Subscribe to events
         const handleMarkAllRead = () => {
             console.log('All notifications marked as read, updating menu');
             setForceUpdate(prev => prev + 1);
         };
-        
+
         const handleCountUpdated = (event) => {
             console.log('Notification count updated:', event.detail.count);
-            setForceUpdate(prev => prev + 1); 
+            setForceUpdate(prev => prev + 1);
         };
-        
+
         document.addEventListener('markAllNotificationsAsRead', handleMarkAllRead);
         document.addEventListener('notificationCountUpdated', handleCountUpdated);
-        
+
         return () => {
             document.removeEventListener('markAllNotificationsAsRead', handleMarkAllRead);
             document.removeEventListener('notificationCountUpdated', handleCountUpdated);
@@ -56,17 +57,24 @@ const MenuSidebar = () => {
                     {
                         key: 'personalAdmin1',
                         label: 'Thông tin cá nhân',
-                        onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info); }
+                        onClick: () => {
+                            navigate(PATHS.STAFF.PROFILE)
+                            emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info);
+                        }
                     },
                     {
                         key: 'personalAdmin2',
                         label: 'Đổi mật khẩu',
-                        onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword); }
+                        onClick: () => {
+                            navigate(PATHS.STAFF.PROFILE)
+                            emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword);
+                        }
                     },
                     {
                         key: 'personal3',
                         label: "Hồ sơ",
                         onClick: () => {
+                            navigate(PATHS.STAFF.PROFILE)
                             emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.staff);
                         }
                     }
@@ -94,7 +102,7 @@ const MenuSidebar = () => {
                 key: 'sub4',
                 label: 'Danh sách khám bệnh',
                 icon: <i className="fa-solid fa-list"></i>,
-                roles: [ROLE.DOCTOR , ROLE.NURSE],
+                roles: [ROLE.DOCTOR, ROLE.NURSE],
                 children: [
                     {
                         key: '9',
@@ -135,8 +143,8 @@ const MenuSidebar = () => {
                     <NavLink to={PATHS.STAFF.NOTIFICATION}>
                         Thông báo
                         {totalUnreadCount > 0 && (
-                            <Badge 
-                                count={totalUnreadCount} 
+                            <Badge
+                                count={totalUnreadCount}
                                 offset={[60, 0]}
                             />
                         )}
@@ -179,7 +187,7 @@ const MenuSidebar = () => {
     const onClick = (e) => {
         console.log('Menu item clicked:', e.key);
     };
-    
+
     return (
         <div className='menu-item'>
             <Menu
@@ -188,7 +196,7 @@ const MenuSidebar = () => {
                 defaultOpenKeys={['sub1']}
                 mode="inline"
                 items={items}
-            />  
+            />
         </div>
     );
 }

@@ -31,7 +31,7 @@ import Booking from "./layout/User/pages/Booking/Booking";
 import Cashier from "./layout/Receptionist/pages/Dashboard/cashier";
 import ParaclinicalList from "./layout/Receptionist/pages/Paraclinical";
 import Prescribe from "./layout/Receptionist/pages/Prescribe";
-import AppointmentList from "./layout/User/pages/AppointmentList/appoinmentList";
+import AppointmentList from "./layout/User/pages/AppointmentList/AppoinmentList";
 import ProfileUser from "./layout/User/pages/ProfileUser/ProfileUser";
 import BlogDetail from "./layout/User/pages/BlogDetail/BlogDetail";
 import AdminDashboard from "./layout/Admin/pages/Dashboard/AdminDashboard";
@@ -44,9 +44,9 @@ import PrintPrescription from "./components/Print/PrintPrescription/PrintPrescri
 import MessengerReceptionist from "./layout/Receptionist/pages/Messenger/MessengerReceptionist";
 import { useEffect, useRef } from "react";
 import { connectSocket, disconnectSocket } from "./Socket/socket";
-import Notification from "./layout/Doctor/pages/Notification/Notification";
+import Notification from "./layout/Doctor/pages/Notification/notification";
 import NotificationAdmin from "./layout/Admin/pages/Notification/notificationAdmin";
-import NotificationUser from "./layout/User/pages/Notification/Notification";
+import NotificationUser from "./layout/User/pages/Notification/notification";
 import { NotificationProvider } from './contexts/NotificationContext.jsx';
 import { useSelector } from "react-redux";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -56,6 +56,7 @@ import MedicineManage from "./layout/Admin/pages/MedicineManage/MedicineMange";
 import ExaminationManage from "./layout/Admin/pages/ExaminationManage/ExaminationManage";
 import InpatientList from "./layout/Doctor/pages/Inpatients/InpationList";
 import InpatientDetail from "./layout/Doctor/pages/Inpatients/InpatientDetail";
+import RevenueManage from "./layout/Admin/pages/RevenueManage/RevenueManage";
 import MedicalRecord from "./layout/Receptionist/pages/Dashboard/medicalRecord";
 import Numerical from "./layout/User/pages/Numerical/Numerical";
 
@@ -144,6 +145,7 @@ function App() {
               <Route path={PATHS.ADMIN.NOTIFICATION} element={<NotificationAdmin />} />
               <Route path={PATHS.ADMIN.MEDICINE_MANAGE} element={<MedicineManage />} />
               <Route path={PATHS.ADMIN.EXAMINATION_MANAGE} element={<ExaminationManage />} />
+              <Route path={PATHS.ADMIN.REVENUE_MANAGE} element={<RevenueManage />} />
             </Route>
             <Route element={<DoctorLayout />}>
               <Route path={PATHS.STAFF.APPOINTMENT} element={<Appointment />} />

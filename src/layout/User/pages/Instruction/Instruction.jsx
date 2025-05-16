@@ -1,10 +1,6 @@
 import React from "react";
-import { Typography } from "antd";
 import { Link } from "react-router-dom";
 import Container from "@/components/Container";
-
-const { Title } = Typography;
-
 const Instruction = () => {
     const data = [
         {
@@ -18,12 +14,12 @@ const Instruction = () => {
             key: "2",
             role: "Bác sĩ",
             description: "Khám bệnh tạo đơn thuốc, tạo đơn cận lâm sàn.",
-            email: "doctorCuong@gmail.com",
+            email: "doctorTu@gmail.com",
             password: "123456",
         },
         {
             key: "3",
-            role: "Bác sĩ cận lâm sàn",
+            role: "Bác sĩ CLS",
             description: "Thêm kết quả xét nghiệm.",
             email: "doctorLan@gmail.com",
             password: "123456",
@@ -32,14 +28,14 @@ const Instruction = () => {
             key: "4",
             role: "Tiếp nhận",
             description: "Quản lý lịch hẹn, tạo phiếu khám bệnh.",
-            email: "receptionist@gmail.com",
+            email: "receptionist1@gmail.com",
             password: "123456",
         },
         {
             key: "5",
             role: "Thanh toán",
             description: "Thanh toán.",
-            email: "accountant@gmail.com",
+            email: "Test11@gmail.com",
             password: "123456",
         },
         {
@@ -88,7 +84,7 @@ const Instruction = () => {
                                     <td className="px-3 py-2 font-medium text-gray-900">{item.role}</td>
                                     <td className="px-3 py-2">{item.email}</td>
                                     <td className="px-3 py-2">{item.password}</td>
-                                    <td className="px-3 py-2">{item.description}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap">{item.description}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -96,9 +92,12 @@ const Instruction = () => {
                 </div>
 
                 {/* Link GitHub (tuỳ chọn) */}
-                <div className="text-sm text-right text-primary-tw mt-4">
-                    <Link to="https://github.com/your-repo-url" target="_blank" rel="noopener noreferrer">
-                        Truy cập GitHub →
+                <div className="flex flex-col items-end text-sm text-right text-primary-tw mt-4">
+                    <Link to="https://github.com/ladat1107/Frontend_Medical_Website_v2.git" target="_blank" rel="noopener noreferrer">
+                        Truy cập GitHub Frontend →
+                    </Link>
+                    <Link to="https://github.com/ladat1107/Backend_Medical_Website.git" target="_blank" rel="noopener noreferrer">
+                        Truy cập GitHub Backend →
                     </Link>
                 </div>
             </Container>

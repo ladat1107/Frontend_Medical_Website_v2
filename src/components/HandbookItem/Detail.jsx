@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import useSendNotification from '@/hooks/useSendNotification';
+import { FRONTEND_URL } from '@/constant/environment';
 
 const DetailHandbook = (props) => {
     const navigate = useNavigate();
@@ -54,14 +55,14 @@ const DetailHandbook = (props) => {
             if (response?.EC === 0) {
                 message.success(response?.EM || "Thành công");
                 navigate(-1);
-                
-                if(status === STATUS_HOSPITAL.ACTIVE.value) {
+
+                if (status === STATUS_HOSPITAL.ACTIVE.value) {
                     handleSendNoti(
                         `[Cẩm nang mới] ${response.DT?.title}` || 'Cẩm nang mới',
                         `<p>
                             <span style="color: rgb(234, 195, 148); font-weight: bold;">✨ Tin mới ✨</span> 
                             Cẩm nang chăm sóc sức khỏe đã lên sóng! Khám phá ngay những bí quyết hữu ích để sống khỏe mỗi ngày 💪  
-                            👉 <a href="http://localhost:3000/handbookDetail/${response.DT.id}" rel="noopener noreferrer" target="_blank" style="color: #007bff; font-weight: bold;">Xem ngay</a>
+                            👉 <a href="${FRONTEND_URL}/handbookDetail/${response.DT.id}" rel="noopener noreferrer" target="_blank" style="color: #007bff; font-weight: bold;">Xem ngay</a>
                         </p>` || response.DT?.htmlDescription,
                         [],
                         false,

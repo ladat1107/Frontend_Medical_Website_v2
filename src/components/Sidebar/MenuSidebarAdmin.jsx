@@ -1,47 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { HomeOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { Badge, Menu } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressCard, faCalendarDays, faHospital } from '@fortawesome/free-regular-svg-icons';
 import { PATHS } from '@/constant/path';
 import emitter from '@/utils/eventEmitter';
 import { EMIT } from '@/constant/value';
 import "./Sidebar.scss";
-import { faArrowRightFromBracket, faBookMedical, faPills, faStethoscope } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faBookMedical, faDollarSign, faPills, faStethoscope } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleLogout } from '@/redux/actions/authenActions';
 import { useNotification } from '@/contexts/NotificationContext';
 const MenuSidebar = () => {
-    let { user } = useSelector((state) => state.authen);
     let dispatch = useDispatch();
     const [openKeys, setOpenKeys] = useState([]);
-    const [selectedKeys, setSelectedKeys] = useState("sub2");
-
+    const navigate = useNavigate();
     const { totalUnreadCount } = useNotification();
-        
+
     // Force re-render on notification changes
     const [, setForceUpdate] = useState(0);
-        
+
     // Trong MenuSidebar.js
     useEffect(() => {
         // Log for debugging
         console.log('MenuSidebar: totalUnreadCount =', totalUnreadCount);
-        
+
         // Subscribe to events
         const handleMarkAllRead = () => {
             console.log('All notifications marked as read, updating menu');
             setForceUpdate(prev => prev + 1);
         };
-        
+
         const handleCountUpdated = (event) => {
             console.log('Notification count updated:', event.detail.count);
-            setForceUpdate(prev => prev + 1); 
+            setForceUpdate(prev => prev + 1);
         };
-        
+
         document.addEventListener('markAllNotificationsAsRead', handleMarkAllRead);
         document.addEventListener('notificationCountUpdated', handleCountUpdated);
-        
+
         return () => {
             document.removeEventListener('markAllNotificationsAsRead', handleMarkAllRead);
             document.removeEventListener('notificationCountUpdated', handleCountUpdated);
@@ -73,12 +71,18 @@ const MenuSidebar = () => {
                 {
                     key: 'personalAdmin1',
                     label: 'Thông tin cá nhân',
-                    onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info); }
+                    onClick: () => {
+                        navigate(PATHS.ADMIN.PROFILE)
+                        emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info);
+                    }
                 },
                 {
                     key: 'personalAdmin2',
                     label: 'Đổi mật khẩu',
-                    onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword); }
+                    onClick: () => {
+                        navigate(PATHS.ADMIN.PROFILE)
+                        emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword);
+                    }
                 },
             ],
         },
@@ -143,23 +147,28 @@ const MenuSidebar = () => {
             icon: <FontAwesomeIcon icon={faStethoscope} />,
         },
         {
+            key: 'revenueAdmin',
+            label: (<NavLink to={PATHS.ADMIN.REVENUE_MANAGE}>Doanh thu</NavLink>),
+            icon: <FontAwesomeIcon icon={faDollarSign} />,
+        },
+        {
             key: 'notiAdmin',
             label: (
-                    <NavLink to={PATHS.ADMIN.NOTIFICATION}>
-                        Thông báo
-                        {totalUnreadCount > 0 && (
-                            <Badge 
-                                count={totalUnreadCount} 
-                                offset={[60, 0]}
-                            />
-                        )}
-                    </NavLink>
-                ),
-                icon: (
-                    <Badge dot={totalUnreadCount > 0}>
-                        <i className="fa-solid fa-bell"></i>
-                    </Badge>
-                ),
+                <NavLink to={PATHS.ADMIN.NOTIFICATION}>
+                    Thông báo
+                    {totalUnreadCount > 0 && (
+                        <Badge
+                            count={totalUnreadCount}
+                            offset={[60, 0]}
+                        />
+                    )}
+                </NavLink>
+            ),
+            icon: (
+                <Badge dot={totalUnreadCount > 0}>
+                    <i className="fa-solid fa-bell"></i>
+                </Badge>
+            ),
         },
         {
             type: 'divider',

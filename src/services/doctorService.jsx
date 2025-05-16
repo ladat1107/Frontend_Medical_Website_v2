@@ -38,6 +38,12 @@ export const checkOutParaclinical = (data) => {
 export const checkOutExamination = (data) => {
     return axios.post(`/api/paymentExaminationMomo`, data);
 }
+export const checkOutExaminationAdvance = (data) => {
+    return axios.post(`/api/paymentExaminationAdvanceMomo`, data);
+}
+export const checkOutDischarged = (data) => {
+    return axios.post(`/api/paymentDischargedMomo`, data);
+}
 export const checkOutPrescription = (data) => {
     return axios.post(`/api/paymentPrescriptionMomo`, data);
 }

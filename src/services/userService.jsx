@@ -58,9 +58,6 @@ const userService = {
       params: { id: data.id },
     });
   },
-  checkOutAppointment(query = "") {
-    return axiosInstance.get(`/api/paymentAppoinmentMomo`, { params: query });
-  },
   sendMessage(data) {
     return axiosInstance.post(`/api/messageSystem`, data);
   },

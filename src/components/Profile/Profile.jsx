@@ -5,7 +5,7 @@ import Information from "./section/Information";
 import Password from "./section/Password";
 import Notification from "./section/Notification";
 import useQuery from "@/hooks/useQuery";
-import StaffInfo from "./section/staff";
+import StaffInfo from "./section/Staff";
 import { EMIT } from "@/constant/value";
 import emitter from "@/utils/eventEmitter";
 import { useSelector } from "react-redux";

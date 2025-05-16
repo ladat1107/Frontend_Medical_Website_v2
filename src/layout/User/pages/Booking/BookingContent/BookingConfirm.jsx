@@ -6,28 +6,54 @@ import { faUser, faCalendarCheck, faEnvelopeOpen, faCircleCheck } from "@fortawe
 import { formatDate, formatDateDD_MM } from "@/utils/formatDate";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button, message } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import userService from "@/services/userService";
 import Loading from "@/components/Loading/Loading";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";
+import { getUserByCid } from "@/services/doctorService";
+import useQuery from "@/hooks/useQuery";
+import { insuranceCovered } from "@/utils/coveredPrice";
+import { getThirdDigitFromLeft } from "@/utils/numberSeries";
 
 const BookingConfirm = (props) => {
     let navigate = useNavigate();
     let [isConfirm, setIsConfirm] = useState(false);
+    const [price, setPrice] = useState(0);
     let profile = props?.profile;
     let doctor = props?.doctor;
     let schedule = props?.schedule;
     let [isLoading, setIsLoading] = useState(false);
-    console.log("profile", profile);
+    const [insuranceCode, setInsuranceCode] = useState(null);
+    const { data: userData } = useQuery(() => getUserByCid(profile?.cid))
+
+    useEffect(() => {
+        if (userData?.DT?.userInsuranceData?.insuranceCode) {
+            setPrice(Number(doctor?.price) - insuranceCovered(doctor?.price || 0, getThirdDigitFromLeft(userData?.DT?.userInsuranceData?.insuranceCode || '')))
+            setInsuranceCode(userData?.DT?.userInsuranceData?.insuranceCode)
+        } else {
+            setPrice(doctor?.price || 0)
+        }
+    }, [userData])
+
     const confirm = async () => {
         setIsLoading(true);
         try {
+            let obj = {}
+            if (insuranceCode) {
+                obj.insuranceCoverage = insuranceCovered(doctor?.price || 0, getThirdDigitFromLeft(insuranceCode || ''))
+                obj.coveredPrice = Number(price) - nsuranceCovered(doctor?.price || 0, getThirdDigitFromLeft(insuranceCode || ''))
+            }
             let data = {
                 doctor: doctor,
                 schedule: schedule,
-                profile: profile
+                profile: {
+                    ...profile,
+                    price: doctor?.price || 0,
+                    ...obj
+                },
             }
+            
             let respone = await userService.confirmBooking(data);
             if (respone.EC === 0) {
                 setIsConfirm(true)
@@ -37,9 +63,11 @@ const BookingConfirm = (props) => {
         } catch (e) { console.log(e) }
         finally { setIsLoading(false) }
     }
+
     const handleViewMail = () => {
         window.location.href = "https://mail.google.com/mail/u/0/#inbox"
     }
+
     return (
         <>
             <div className="header">
@@ -79,7 +107,7 @@ const BookingConfirm = (props) => {
                                     <div className="info-row">
                                         <FontAwesomeIcon icon={faHandHoldingMedical} className="icon" />
                                         <span>Mã số BHYT</span>
-                                        <strong>Chưa cập nhật</strong>
+                                        <strong>{insuranceCode || "Chưa cập nhật"}</strong>
                                     </div>
                                 </div>
                                 <div className="info-column">
@@ -128,7 +156,7 @@ const BookingConfirm = (props) => {
                                 </div>
                                 <div className="inf-doctor">
                                     <div className="a">Giá</div>
-                                    <div>{formatCurrency(doctor?.price || 0)} </div>
+                                    <div>{formatCurrency(price)} </div>
                                 </div>
                                 <div className="inf-doctor">
                                     <div className="a">Triệu chứng</div>

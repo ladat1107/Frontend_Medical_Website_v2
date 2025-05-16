@@ -13,6 +13,8 @@ import Register from './Register';
 import ForgotPassword from './ForgotPassword';
 import socket, { authenticateSocket } from "@/Socket/socket";
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { BACKEND_URL } from '@/constant/environment';
+import { urlAuthorization } from '@/utils/urlAuthorization';
 const Login = () => {
     const open = {
         login: "login",
@@ -30,6 +32,7 @@ const Login = () => {
     const [showSavedAccounts, setShowSavedAccounts] = useState(false);
     const [rememberMe, setRememberMe] = useState(rememberLogins.length > 0 ? true : false);
     const [isLoading, setIsLoading] = useState(false);
+    const { user } = useSelector((state) => state.authen);
     useEffect(() => {
         let confirmToken = queryParams.get('confirm');
         if (confirmToken !== null) {
@@ -47,10 +50,15 @@ const Login = () => {
         if (loginGoogle !== null) {
             let dataLogin = JSON.parse(loginGoogle);
             dispatch(login(dataLogin));
-            redirect(dataLogin.user.role);
         }
         setLoading(false);
     }, []);
+    console.log(user)
+    useEffect(() => {
+        if (user && user?.role) {
+            navigate(urlAuthorization(user?.role));
+        }
+    }, [user])
 
     const handleSelectAccount = (account) => {
         form.setFieldsValue({
@@ -75,7 +83,6 @@ const Login = () => {
                     }
                     dispatch(addRememberLogin(remember));
                 }
-                redirect(response.DT.user.role);
             } else {
                 message.error(response?.EM || 'Đăng nhập thất bại')
             }
@@ -89,27 +96,6 @@ const Login = () => {
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
-    const redirect = (roleUser) => {
-        if (roleUser) {
-            if (roleUser === ROLE.ADMIN) {
-                navigate(PATHS.ADMIN.DASHBOARD);
-            } else if (roleUser === ROLE.PATIENT) {
-                navigate(PATHS.HOME.HOMEPAGE);
-            } else if (roleUser === ROLE.DOCTOR) {
-                navigate(PATHS.STAFF.APPOINTMENT);
-            } else if (roleUser === ROLE.RECEPTIONIST) {
-                navigate(PATHS.RECEPTIONIST.DASHBOARD);
-            } else if (roleUser === ROLE.PHARMACIST) {
-                navigate(PATHS.RECEPTIONIST.PRESCRIBE);
-            } else if (roleUser === ROLE.ACCOUNTANT) {
-                navigate(PATHS.RECEPTIONIST.CASHIER);
-            } else if (roleUser === ROLE.NURSE) {
-                navigate(PATHS.STAFF.APPOINTMENT);
-            } else {
-                navigate(PATHS.HOME.HOMEPAGE);
-            }
-        }
-    }
 
     return (
         <div className='w-full min-h-screen flex items-center justify-center bg-cover bg-center'
@@ -148,7 +134,7 @@ const Login = () => {
                                         color='white'
                                         title={
                                             showSavedAccounts && rememberLogins.length > 0 ? (
-                                                <div className="w-full">
+                                                <div className="w-full h-[200px] overflow-y-auto scrollbar-hide">
                                                     {rememberLogins.map((account, index) => (
                                                         <div
                                                             key={index}
@@ -172,7 +158,7 @@ const Login = () => {
                                             rules={[{ required: true, message: 'Vui lòng nhập email!' }]}
                                         >
                                             <Input
-                                                className="border-2 border-primary-tw rounded-lg text-base h-10 px-3"
+                                                className="border-2 border-primary-tw focus:!border-primary-tw-light hover:!border-primary-tw-light rounded-lg text-base h-10 px-3"
                                                 placeholder="Email"
                                                 onFocus={() => setShowSavedAccounts(true)}
                                                 onBlur={() => setTimeout(() => setShowSavedAccounts(false), 200)}
@@ -191,7 +177,7 @@ const Login = () => {
                                 }
 
                                 <Form.Item name="password" rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}>
-                                    <Input.Password className='border-2 border-primary-tw rounded-lg text-base h-10 px-3' placeholder='Mật khẩu' />
+                                    <Input.Password className='border-2 border-primary-tw border-primary-tw focus:!border-primary-tw-light hover:!border-primary-tw-light rounded-lg text-base h-10 px-3' placeholder='Mật khẩu' />
                                 </Form.Item>
                                 <Row>
                                     <Col span={12}>
@@ -202,13 +188,13 @@ const Login = () => {
                                         </Checkbox>
                                     </Col>
                                     <Col span={12}>
-                                        <span className="block text-right text-xs text-secondary-tw cursor-pointer" onClick={() => setIsShow(open.forgotPassword)}>
+                                        <span className="block text-right text-xs text-secondaryText-tw cursor-pointer" onClick={() => setIsShow(open.forgotPassword)}>
                                             Quên mật khẩu?
                                         </span>
                                     </Col>
                                 </Row>
                                 <Button loading={isLoading} type="primary" htmlType="submit"
-                                    className="w-full bg-primary-tw h-10 text-lg rounded-lg mt-4 hover:bg-blue-400 transition-colors">
+                                    className="w-full bg-primary-tw h-10 text-lg rounded-lg mt-4 hover:!bg-primary-tw-light">
                                     Đăng nhập
                                 </Button>
                             </Form>
@@ -216,7 +202,7 @@ const Login = () => {
                             <div className="w-[90%] flex flex-col gap-2.5">
                                 <Button icon={<FontAwesomeIcon icon={faGoogle} />}
                                     className="w-full bg-white text-black border rounded-lg hover:border-primary-tw hover:text-primary-tw transition-colors"
-                                    onClick={() => window.location.href = `http://localhost:8843/auth/google`}>
+                                    onClick={() => window.location.href = `${BACKEND_URL}/auth/google`}>
                                     Đăng nhập với Google
                                 </Button>
                             </div>

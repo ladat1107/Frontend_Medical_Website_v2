@@ -33,6 +33,8 @@ export default {
     "./src/layout/Admin/pages/Room/**/*.{js,jsx,ts,tsx}",
     "./src/layout/Admin/components/Dropdown/**/*.{js,jsx,ts,tsx}",
     "./src/components/Sidebar/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/User/components/ChatUser/**/*.{js,jsx,ts,tsx}",
+    "./src/layout/User/pages/Booking/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

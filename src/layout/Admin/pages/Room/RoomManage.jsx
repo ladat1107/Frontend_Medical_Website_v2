@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faRotateRight } from "@fortawesome/free-solid-svg-icons";
-import { EyeOutlined } from "@ant-design/icons";
 import { SquareMenu } from "lucide-react";
 import InsertRoom from "./InsertRoom";
 import { useEffect, useState } from "react";
@@ -9,7 +8,7 @@ import { getAllRoom, getNameDepartment, getRoomById, getServiceSearch, getSpecia
 import { message, Button, Tooltip } from "antd";
 import DropdownPaginate from "../../components/Dropdown/DropdownPaginate";
 import PaginateCustom from "../../components/Paginate/PaginateCustom";
-import { TABLE } from "@/constant/value";
+import { TABLE, TYPE_ROOM } from "@/constant/value";
 import useDebounce from "@/hooks/useDebounce";
 import useQuery from "@/hooks/useQuery";
 import Status from "../../components/Status";
@@ -212,6 +211,7 @@ const Room = () => {
                                         <th className="p-2 text-center rounded-tl-lg">#</th>
                                         <th className="p-2">Tên phòng</th>
                                         <th className="p-2">Khoa</th>
+                                        {filter.typeRoom === TYPE_ROOM.CLINIC && <th className="p-2">Chuyên khoa</th>}
                                         <th className="p-2">Loại phòng</th>
                                         <th className="p-2 text-center">Giường trống</th>
                                         <th className="p-2 text-center">Trạng thái</th>
@@ -238,6 +238,11 @@ const Room = () => {
                                                                     <td className="p-2">
                                                                         <div className="font-normal">{item?.roomDepartmentData?.name || "_"}</div>
                                                                     </td>
+                                                                    {filter.typeRoom === TYPE_ROOM.CLINIC &&
+                                                                        <td className="p-2">
+                                                                            <div className="font-normal">{item?.specialtyData?.name || "_"}</div>
+                                                                        </td>
+                                                                    }
                                                                     <td className="p-2">
                                                                         <div className="font-normal">{item?.typeRoom?.label || "_"}</div>
                                                                     </td>

@@ -26,22 +26,33 @@ const RoomFilter = ({
                 </div>
                 <div className="w-full md:w-48">
                     <Select
-                        placeholder="Lọc theo khoa"
+                        placeholder="Chọn khoa"
                         className="w-full"
                         value={filter.departmentId}
                         onChange={handleChangeDepartment}
                         allowClear
                         options={departments}
+                        showSearch
+                        optionFilterProp="label" // quan trọng khi dùng options dạng object
+                        filterSort={(optionA, optionB) =>
+                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
                     />
                 </div>
                 <div className="w-full md:w-48">
                     <Select
-                        placeholder="Lọc theo loại phòng"
+                        placeholder="Chọn loại phòng"
                         className="w-full"
                         value={filter.typeRoom}
                         onChange={handleChangeTypeRoom}
                         allowClear
+                        showSearch
+                        optionFilterProp="label"
+                        filterSort={(optionA, optionB) =>
+                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
                         options={typeRoom}
+
                     />
                 </div>
                 <div className="w-full md:w-32">

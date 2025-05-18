@@ -59,6 +59,11 @@ const RoomDetail = ({ visible, onClose, roomData }) => {
             setMockExaminations(_mockExaminations)
             setMockStaffs(_mockStaffs)
             setMockParaclinicalServices(_mockParaclinicalServices)
+            if (roomData?.typeRoom?.value === TYPE_ROOM.CLINIC || roomData?.typeRoom?.value === TYPE_ROOM.LABORATORY || roomData?.typeRoom?.value === TYPE_ROOM.DUTY) {
+                setActiveTab("2")
+            } else if (roomData?.typeRoom?.value === TYPE_ROOM.INPATIENT_NORMAL || roomData?.typeRoom?.value === TYPE_ROOM.INPATIENT_VIP || roomData?.typeRoom?.value === TYPE_ROOM.EMERGENCY) {
+                setActiveTab("1")
+            }
         }
     }, [roomData])
 
@@ -173,6 +178,7 @@ const RoomDetail = ({ visible, onClose, roomData }) => {
 
     // Chuẩn bị tabs cho modal
     const items = [];
+
     let paraclinicalServices = {
         key: '3',
         label: (

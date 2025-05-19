@@ -23,6 +23,7 @@ const RevenueManage = () => {
         queryKey: ["payment", dateRange],
         queryFn: () => getPaymentAdmin(dateRange ? { startDate: dateRange[0].format("YYYY-MM-DD 00:00:00"), endDate: dateRange[1].format("YYYY-MM-DD 23:59:59") } : null)
     })
+
     useEffect(() => {
         if (paymentData?.EC === 0 && paymentData?.DT) {
             const payments = paymentData?.DT;
@@ -33,7 +34,7 @@ const RevenueManage = () => {
             let _chartRevenue = [];
             payments.forEach(payment => {
                 if (payment.status === PAYMENT_STATUS.REFUNDED) {
-                    totalBank += payment.amount
+                    totalRevenue += payment.amount;
                     payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += payment.amount : totalBank += payment.amount;
                 }
                 else if (payment.status === PAYMENT_STATUS.PAID) {
@@ -43,33 +44,41 @@ const RevenueManage = () => {
                         const type = (medicalTreatmentTier === MEDICAL_TREATMENT_TIER.INPATIENT || medicalTreatmentTier === MEDICAL_TREATMENT_TIER.EMERGENCY) ? 1 : 2;
                         if (type === 1) {
                             totalRevenue += examination.price;
-                            payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += payment.amount : totalBank += payment.amount;
-                            totalInsurance += examination.insuranceCovered
-                            examination.examinationResultParaclincalData.forEach(paraclinical => {
-                                totalInsurance += paraclinical.insuranceCovered;
+                            let coveredPrice = examination?.coveredPrice || examination.price;
+                            payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPrice : totalBank += coveredPrice;
+                            totalInsurance += examination?.insuranceCovered || 0;
+                            examination?.examinationResultParaclincalData?.forEach(paraclinical => {
+                                let coveredPriceParaclinical = paraclinical?.coveredPrice || paraclinical.price;
+                                totalInsurance += paraclinical?.insuranceCovered || 0;
                                 totalRevenue += paraclinical.price;
+                                payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPriceParaclinical : totalBank += coveredPriceParaclinical;
                             })
                             examination.prescriptionExamData.forEach(prescription => {
-                                totalInsurance += prescription.insuranceCovered;
+                                let coveredPricePrescription = prescription?.coveredPrice || prescription.totalMoney;
+                                totalInsurance += prescription?.insuranceCovered || 0;
                                 totalRevenue += prescription.totalMoney;
+                                payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPricePrescription : totalBank += coveredPricePrescription;
                             })
                         } else if (type === 2) {
                             totalRevenue += examination.price;
-                            payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += payment.amount : totalBank += payment.amount;
-                            totalInsurance += examination.insuranceCovered;
+                            let coveredPriceOutpatient = examination?.coveredPrice || examination.price;
+                            payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPriceOutpatient : totalBank += coveredPriceOutpatient;
+                            totalInsurance += examination?.insuranceCovered || 0;
                         }
                     } else if (payment?.paraclinicalData?.length > 0) {
                         const paraclinical = payment?.paraclinicalData;
                         paraclinical.forEach(item => {
+                            let coveredPriceParaclinicalOutpatient = item?.coveredPrice || item.price;
                             totalRevenue += item.price;
-                            payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += payment.amount : totalBank += payment.amount;
-                            totalInsurance += item.insuranceCovered;
+                            payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPriceParaclinicalOutpatient : totalBank += coveredPriceParaclinicalOutpatient;
+                            totalInsurance += item?.insuranceCovered || 0;
                         })
                     } else if (payment?.prescriptionData) {
                         const prescription = payment?.prescriptionData;
+                        let coveredPricePrescriptionOutpatient = prescription?.coveredPrice || prescription.totalMoney;
                         totalRevenue += prescription.totalMoney;
-                        payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += payment.amount : totalBank += payment.amount;
-                        totalInsurance += prescription.insuranceCovered;
+                        payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPricePrescriptionOutpatient : totalBank += coveredPricePrescriptionOutpatient;
+                        totalInsurance += prescription?.insuranceCovered || 0;
                     }
                 }
             })
@@ -117,8 +126,9 @@ const RevenueManage = () => {
             setChartRevenue(_chartRevenue)
         }
     }, [paymentData])
+
     useEffect(() => {
-        refetchPayment();        
+        refetchPayment();
     }, [dateRange])
 
     const handleDateRangeChange = (dates) => {

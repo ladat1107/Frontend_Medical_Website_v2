@@ -307,7 +307,7 @@ function Header() {
           <div className="flex items-center" onClick={() => navigate(PATHS.HOME.HOMEPAGE)}>
             <img
               src="https://res.cloudinary.com/utejobhub/image/upload/v1733740053/KHOA_500_x_200_px_dp7on2.png"
-              alt="MedPro Logo"
+              alt="Hoa Sen Logo"
               className="h-10"
             />
           </div>
@@ -351,7 +351,7 @@ function Header() {
             <div className="flex items-center cursor-pointer" onClick={() => navigate(PATHS.HOME.HOMEPAGE)}>
               <img
                 src="https://res.cloudinary.com/utejobhub/image/upload/v1733740053/KHOA_500_x_200_px_dp7on2.png"
-                alt="MedPro Logo"
+                alt="Hoa Sen Logo"
                 className="h-12"
               />
             </div>

@@ -16,11 +16,11 @@ import { useMobile } from "@/hooks/useMobile";
 
 const ChatBubbleUser = () => {
   const dispatch = useDispatch();
-  const { user, isLogin } = useSelector(state => state.authen)
+  const { user, isLoggedIn } = useSelector(state => state.authen)
   const [typeMessage, setTypeMessage] = useState(2);
   const [visible, setVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const { data: numberMessageUnread } = useGetNumberMessageUnread(isLogin ? true : false);
+  const { data: numberMessageUnread } = useGetNumberMessageUnread(isLoggedIn);
   const count = numberMessageUnread?.DT || 0;
   const isMobile = useMobile();
 

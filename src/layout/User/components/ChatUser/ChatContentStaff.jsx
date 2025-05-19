@@ -19,14 +19,15 @@ import EmojiPicker from 'emoji-picker-react';
 
 const { TextArea } = Input;
 const ChatContentStaff = () => {
-    const { user, isLogin } = useSelector(state => state.authen);
-    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData } = useConversation({ enabled: isLogin ? true : false })
+    const { user, isLoggedIn } = useSelector(state => state.authen);
+    const { data: conversationData, isLoading: conversationLoading, refetch: refetchConversationData } = useConversation({ enabled: isLoggedIn })
     const { mutate: createMessage, isPending: isCreatingMessage } = useCreateMessage();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
 
     const [messages, setMessages] = useState([]);
     const [receiver, setReceiver] = useState(null);
+    const [emptyStaff, setEmptyStaff] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showScrollDown, setShowScrollDown] = useState(false);
     const [form] = Form.useForm();
@@ -43,6 +44,7 @@ const ChatContentStaff = () => {
         if (conversationData?.EC === 0) {
             setMessages(conversationData?.DT?.messageData || []);
             setReceiver(conversationData?.DT?.staffData || null);
+            setEmptyStaff(conversationData?.DT?.staffData ? false : true);
         }
     }, [conversationData])
 
@@ -129,11 +131,15 @@ const ChatContentStaff = () => {
             status: STATUS_MESSAGE.SENDING
         }
         setMessages(pre => [...pre, message]);
+        setEmptyStaff(false);
         form.resetFields();
         setShowEmojiPicker(false);
         createMessage(message, {
             onSuccess: () => {
                 refetchConversationData();
+                if (!conversationData?.DT?.staffId) {
+                    setEmptyStaff(true);
+                }
             },
         });
     }
@@ -210,10 +216,15 @@ const ChatContentStaff = () => {
                                             )}
                                         </div>
                                     </div>
-
                                 </div >
                             )
                         })}
+
+                    {emptyStaff && (
+                        <div className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1 transition-all duration-300">
+                            <span className="flex items-center gap-1">Hiện tại chưa có nhân viên hỗ trợ, vui lòng chờ...</span>
+                        </div>
+                    )}
                     {isUploading && (
                         <div className="flex flex-row-reverse">
                             <div className="flex flex-col items-end w-[70%]">

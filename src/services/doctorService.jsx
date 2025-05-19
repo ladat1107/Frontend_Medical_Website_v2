@@ -213,6 +213,14 @@ export const getConversationsForStaff = async () => {
     return axios.get(`/api/getConversationForStaff`);
 }
 
+export const searchConversation = async (search) => {
+    return axios.get(`/api/searchConversation?search=${search}`);
+}
+
+export const getConversationFromSearch = async (conversationId) => {
+    return axios.put(`/api/getConversationFromSearch`, { conversationId });
+}
+
 export const deleteAssistantForCustomer = async () => {
     return axios.delete(`/api/deleteAssistantForCustomer`);
 }
@@ -225,7 +233,7 @@ export const getAvailableRooms = async (medicalTreatmentTier) => {
     return axios.get(`/api/getAvailableRooms?medicalTreatmentTier=${medicalTreatmentTier || ''}`);
 }
 
-export const getListAdvanceMoney = async (page = 1, limit = 20, search ='', statusPay = 4) => {
+export const getListAdvanceMoney = async (page = 1, limit = 20, search = '', statusPay = 4) => {
     return axios.get(`/api/getListAdvanceMoney?page=${page}&limit=${limit}&search=${search}&statusPay=${statusPay}`);
 }
 

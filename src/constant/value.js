@@ -362,3 +362,10 @@ export const DEPARTMENT = {
 }
 
 
+export const BOOKING_CONTENT = {
+    SPECIALTY: "specialty",
+    DOCTOR: "doctor",
+    SCHEDULE: "schedule",
+    INFORMATION: "information",
+    CONFIRM: "confirm",
+}

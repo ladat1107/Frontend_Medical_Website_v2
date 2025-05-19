@@ -15,7 +15,7 @@ const Footer = () => {
             <div className="mb-6">
               <img
                 src="https://res.cloudinary.com/utejobhub/image/upload/v1733740053/KHOA_500_x_200_px_dp7on2.png"
-                alt="Medpro Logo"
+                alt="Hoa Sen Logo"
                 className="h-16 object-contain"
               />
             </div>
@@ -28,15 +28,15 @@ const Footer = () => {
 
               <div className="flex items-center gap-2">
                 <Globe className="w-5 h-5 text-primary-tw flex-shrink-0" />
-                <a href="https://medpro.vn" className="text-sm hover:text-primary-tw transition-colors">
-                  https://medpro.vn
+                <a href="https://hoasen.vn" className="text-sm hover:text-primary-tw transition-colors">
+                  https://hoasen.vn
                 </a>
               </div>
 
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-primary-tw flex-shrink-0" />
-                <a href="mailto:cskh@medpro.vn" className="text-sm hover:text-primary-tw transition-colors">
-                  cskh@medpro.vn
+                <a href="mailto:cskh@hoasen.vn" className="text-sm hover:text-primary-tw transition-colors">
+                  cskh@hoasen.vn
                 </a>
               </div>
 
@@ -121,7 +121,7 @@ const Footer = () => {
               {/* Cooperation Section */}
               <FooterSectionCollapse
                 title="Liên hệ hợp tác"
-                items={["Tham gia Medpro", "Khám sức khỏe doanh nghiệp", "Quảng cáo", "Tuyển Dụng",]}
+                items={["Tham gia Hoa Sen", "Khám sức khỏe doanh nghiệp", "Quảng cáo", "Tuyển Dụng",]}
               />
 
               {/* News Section */}
@@ -132,8 +132,8 @@ const Footer = () => {
 
               {/* About Section */}
               <FooterSectionCollapse
-                title="Về Medpro"
-                items={["Về Medpro", "Giới thiệu", "Điều khoản dịch vụ", "Chính sách bảo mật", "Quy định sử dụng",]}
+                title="Về Hoa Sen"
+                items={["Về Hoa Sen", "Giới thiệu", "Điều khoản dịch vụ", "Chính sách bảo mật", "Quy định sử dụng",]}
               />
             </div>
           </div>

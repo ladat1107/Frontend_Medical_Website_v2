@@ -67,6 +67,10 @@ const AppointmentList = () => {
     }, [])
 
     useEffect(() => {
+        setCurrentPage(1)
+    }, [activeTab])
+
+    useEffect(() => {
         getAppoinment()
     }, [location])
 
@@ -79,6 +83,8 @@ const AppointmentList = () => {
 
     const refresh = () => {
         setObAppoinment(null)
+        setShowOldParaclinicalModal(false)
+        setShow(false)
         getAppoinment()
     }
 
@@ -447,7 +453,7 @@ const AppointmentList = () => {
                                                                                 {profile?.examinationStaffData?.positon || "Bác sĩ"}
                                                                             </p>
                                                                             <p className="font-medium text-gray-800">
-                                                                                { profile?.examinationStaffData?.staffUserData?.lastName +
+                                                                                {profile?.examinationStaffData?.staffUserData?.lastName +
                                                                                     " " +
                                                                                     profile?.examinationStaffData?.staffUserData?.firstName}
                                                                             </p>
@@ -506,20 +512,22 @@ const AppointmentList = () => {
                                                     {/* Actions Section */}
                                                     {profile?.status === STATUS_BE.PENDING && (
                                                         <div className="px-6 pb-6 flex flex-wrap justify-end gap-3">
-                                                            <button
-                                                                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-xl font-medium transition-all hover:from-purple-600 hover:to-purple-700 hover:shadow-md flex items-center group text-sm"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    setObAppoinment(profile)
-                                                                    setShowOldParaclinicalModal(true)
-                                                                }}
-                                                            >
-                                                                <FontAwesomeIcon
-                                                                    icon={faFileCirclePlus}
-                                                                    className="mr-2 transform group-hover:scale-110 transition-transform"
-                                                                />
-                                                                Thêm phiếu xét nghiệm
-                                                            </button>
+                                                            {!dayjs(profile?.admissionDate).isBefore(dayjs().add(1, "day").endOf("day")) &&
+                                                                <button
+                                                                    className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-xl font-medium transition-all hover:from-purple-600 hover:to-purple-700 hover:shadow-md flex items-center group text-sm"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        setObAppoinment(profile)
+                                                                        setShowOldParaclinicalModal(true)
+                                                                    }}
+                                                                >
+                                                                    <FontAwesomeIcon
+                                                                        icon={faFileCirclePlus}
+                                                                        className="mr-2 transform group-hover:scale-110 transition-transform"
+                                                                    />
+                                                                    Thêm phiếu xét nghiệm
+                                                                </button>
+                                                            }
 
                                                             {!dayjs(profile?.admissionDate).isBefore(dayjs().add(1, "day").startOf("day")) && (
                                                                 <button

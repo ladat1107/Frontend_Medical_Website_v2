@@ -20,6 +20,8 @@ const BookingConfirm = (props) => {
     let schedule = props?.schedule;
     let [isLoading, setIsLoading] = useState(false);
 
+    const [secondsLeft, setSecondsLeft] = useState(300);
+
     useEffect(() => {
         if (isLoading) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -51,6 +53,26 @@ const BookingConfirm = (props) => {
         window.location.href = "https://mail.google.com/mail/u/0/#inbox"
     }
 
+    useEffect(() => {
+        if (secondsLeft === 0) return;
+
+        const timer = setInterval(() => {
+            setSecondsLeft(prev => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(timer); // Clear interval on unmount
+    }, [secondsLeft]);
+
+    // Format mm:ss
+    const formatTime = (secs) => {
+        const minutes = Math.floor(secs / 60);
+        const seconds = secs % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const isDanger = secondsLeft <= 60;
+    const textColor = isDanger ? "#FF0000" : "#FFA500";
+
     return (
         <>
             <div className="relative bg-gradient-primary text-white text-center text-lg font-bold py-2 px-4 rounded-t-lg mb-2">
@@ -59,9 +81,12 @@ const BookingConfirm = (props) => {
             </div>
             {isConfirm ?
                 <div className="p-5 min-h-[300px]">
-                    <div className="flex flex-col items-center text-green-500 mt-8">
-                        <FontAwesomeIcon icon={faCircleCheck} className="text-6xl" />
-                        <span className="text-lg font-semibold my-4"> Đặt lịch thành công. Vui lòng kiểm tra email để xác nhận lịch khám !</span>
+                    <div className="flex flex-col items-center mt-8" style={{color: "#FFA500"}}>
+                        <i className="fa-regular fa-envelope text-6xl"></i>
+                        <span className="text-lg font-semibold my-4">Vui lòng kiểm tra email và xác nhận để hoàn tất đặt lịch khám!</span>
+                        <div className="text-md font-medium mt-2" style={{color: 'black'}}>
+                            Thời gian còn lại: <span className="font-bold" style={{ color: textColor }}>{formatTime(secondsLeft)}</span>
+                        </div>
                     </div>
                     <div className="mt-5 flex justify-center">
                         <div

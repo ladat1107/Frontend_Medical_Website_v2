@@ -695,6 +695,12 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                     <div className="p-2 bg-blue-50 rounded-t-lg border-b border-gray-200 mt-4">
                         <h3 className="font-bold text-lg text-blue-800">Thông tin thanh toán</h3>
                     </div>
+
+                    <div className="flex justify-between items-center">
+                        <span className="font-medium text-gray-700">Tổng tạm ứng:</span>
+                        <span className="font-semibold text-gray-900">{formatCurrency(totalAdvance)}</span>
+                    </div>
+                    
                     <div className="mt-1 flex justify-between items-center">
                         <span className="font-medium text-gray-700">Tổng chi phí KCB:</span>
                         <span className="font-semibold text-gray-900">{formatCurrency(totalCost)}</span>
@@ -708,11 +714,6 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                     <div className="flex justify-between items-center">
                         <span className="font-medium text-gray-700">Người bệnh chi trả:</span>
                         <span className="font-semibold text-indigo-600">{formatCurrency(patientPaid)}</span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                        <span className="font-medium text-gray-700">Tổng tạm ứng:</span>
-                        <span className="font-semibold text-gray-900">{formatCurrency(totalAdvance)}</span>
                     </div>
                 </div>
                 <div className="bg-white shadow-md">

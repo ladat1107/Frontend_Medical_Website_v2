@@ -207,10 +207,18 @@ const RecordModal = ({ isOpen, onClose, record, onSusscess }) => {
                         <div className="patient-info">
                             <div className='row'>
                                 <div className='col-4'>
-                                    <p className='info-label'>Địa chỉ:</p>
+                                    <p className='info-label'>SĐT:</p>
                                 </div>
                                 <div className='col-8'>
-                                    <p className='info-value'>{record?.userExaminationData?.address || ''}</p>
+                                    <p className='info-value'>{record?.userExaminationData?.phoneNumber || ''}</p>
+                                </div>
+                            </div>
+                            <div className='row'>
+                                <div className='col-4'>
+                                    <p className='info-label'>CCCD:</p>
+                                </div>
+                                <div className='col-8'>
+                                    <p className='info-value'>{record?.userExaminationData?.cid || ''}</p>
                                 </div>
                             </div>
                             <div className='row'>
@@ -233,18 +241,10 @@ const RecordModal = ({ isOpen, onClose, record, onSusscess }) => {
                             </div>
                             <div className='row'>
                                 <div className='col-4'>
-                                    <p className='info-label'>SĐT:</p>
+                                    <p className='info-label'>Địa chỉ:</p>
                                 </div>
                                 <div className='col-8'>
-                                    <p className='info-value'>{record?.userExaminationData?.phoneNumber || ''}</p>
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='col-4'>
-                                    <p className='info-label'>CCCD:</p>
-                                </div>
-                                <div className='col-8'>
-                                    <p className='info-value'>{record?.userExaminationData?.cid || ''}</p>
+                                    <p className='info-value'>{record?.userExaminationData?.address || ''}</p>
                                 </div>
                             </div>
                         </div>

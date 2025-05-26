@@ -478,7 +478,7 @@ const AppointmentList = () => {
                                                                     </div>
                                                                     <div className="flex flex-wrap gap-2 items-center justify-center">
                                                                         <p className="text-sm text-gray-500">Giá khám</p>
-                                                                        <p className="font-medium text-gray-800">{profile?.coveredPrice ? formatCurrency(profile?.coveredPrice || 0) : formatCurrency(profile?.price || 0)}</p>
+                                                                        <p className="font-medium text-gray-800">{profile?.coveredPrice !== null ? formatCurrency(profile?.coveredPrice || 0) : formatCurrency(profile?.price || 0)}</p>
                                                                     </div>
                                                                 </div>
                                                             </div>

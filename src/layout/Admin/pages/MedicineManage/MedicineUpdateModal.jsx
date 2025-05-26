@@ -35,6 +35,7 @@ const MedicineUpdateModal = ({ open, onClose, data, onSubmit }) => {
                 ...values,
                 id: data?.id,
                 inventory: newInventory,
+                insuranceCovered: values.insuranceCovered / 100,
             }
             updateMedicine(updatedData, {
                 onSuccess: (data) => {
@@ -251,6 +252,7 @@ const MedicineUpdateModal = ({ open, onClose, data, onSubmit }) => {
                     exp: data?.exp ? dayjs(dayjs(data?.exp).format('DD/MM/YYYY'), "DD/MM/YYYY") : null,
                     mfg: data?.mfg ? dayjs(dayjs(data?.mfg).format('DD/MM/YYYY'), "DD/MM/YYYY") : null,
                     approvalDate: data?.approvalDate ? dayjs(dayjs(data?.approvalDate).format('DD/MM/YYYY'), "DD/MM/YYYY") : null,
+                    insuranceCovered: data?.insuranceCovered * 100,
                 }} className="p-3">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <Card title={
@@ -428,7 +430,7 @@ const MedicineUpdateModal = ({ open, onClose, data, onSubmit }) => {
                             >
                                 <InputNumber
                                     min={0}
-                                    max={1}
+                                    max={100}
                                     step={0.1}
                                     style={{ width: "100%" }}
                                     placeholder="0"

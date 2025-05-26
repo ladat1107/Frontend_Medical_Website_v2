@@ -9,28 +9,17 @@ import userService from "@/services/userService";
 import Loading from "@/components/Loading/Loading";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constant/path";
-import { getUserByCid } from "@/services/doctorService";
-import useQuery from "@/hooks/useQuery";
 import { insuranceCovered } from "@/utils/coveredPrice";
 import { getThirdDigitFromLeft } from "@/utils/numberSeries";
 
 const BookingConfirm = (props) => {
     let navigate = useNavigate();
     let [isConfirm, setIsConfirm] = useState(false);
-    const [price, setPrice] = useState(0);
     let profile = props?.profile;
     let doctor = props?.doctor;
     let schedule = props?.schedule;
     let [isLoading, setIsLoading] = useState(false);
-    const insuranceCode = profile?.insuranceCode || null;
 
-    useEffect(() => {
-        if (insuranceCode) {
-            setPrice(Number(doctor?.price) - insuranceCovered(doctor?.price || 0, getThirdDigitFromLeft(insuranceCode || '')))
-        } else {
-            setPrice(doctor?.price || 0)
-        }
-    }, [insuranceCode])
     useEffect(() => {
         if (isLoading) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -40,21 +29,14 @@ const BookingConfirm = (props) => {
     const confirm = async () => {
         setIsLoading(true);
         try {
-            let obj = {}
-            if (insuranceCode) {
-                obj.insuranceCoverage = insuranceCovered(doctor?.price || 0, getThirdDigitFromLeft(insuranceCode || ''))
-                obj.coveredPrice = price
-            }
             let data = {
                 doctor: doctor,
                 schedule: schedule,
                 profile: {
                     ...profile,
                     price: doctor?.price || 0,
-                    ...(insuranceCode ? obj : {})
                 },
             }
-
             let respone = await userService.confirmBooking(data);
             if (respone.EC === 0) {
                 setIsConfirm(true)
@@ -120,7 +102,7 @@ const BookingConfirm = (props) => {
                                     <div className="flex items-center mb-2">
                                         <FontAwesomeIcon icon={faHandHoldingMedical} className="text-primary-tw min-w-[40px]" />
                                         <span className="flex-none w-[100px] font-normal text-gray-600">Mã số BHYT</span>
-                                        <strong className="text-secondaryText-tw font-medium py-1 px-2">{insuranceCode || "Chưa cập nhật"}</strong>
+                                        <strong className="text-secondaryText-tw font-medium py-1 px-2">Cập nhật khi gặp tiếp nhận</strong>
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2">
@@ -169,8 +151,7 @@ const BookingConfirm = (props) => {
                                 </div>
                                 <div className="flex mb-2">
                                     <div className="w-[150px] pl-2 font-normal">Giá</div>
-                                    <div>{formatCurrency(price)}
-                                        {insuranceCode && <span className=" ms-2 text-sm text-green-500"> (Đã trừ bảo hiểm)</span>} </div>
+                                    <div>{formatCurrency(doctor?.price || 0)}</div>
                                 </div>
                                 <div className="flex mb-2">
                                     <div className="w-[150px] pl-2 font-normal">Triệu chứng</div>

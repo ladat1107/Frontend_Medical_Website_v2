@@ -250,7 +250,7 @@ const Room = () => {
                                                                         {item.capacity > 0 ?
                                                                             <div className="font-normal"><b className="text-primary-tw">{Number(item?.capacity) - Number(item?.examinationRoomData?.length) || 0}</b> / {item?.capacity || 0}</div>
                                                                             :
-                                                                            <div>-</div>
+                                                                            <div></div>
                                                                         }
                                                                     </td>
                                                                     <td className="p-2 text-center">

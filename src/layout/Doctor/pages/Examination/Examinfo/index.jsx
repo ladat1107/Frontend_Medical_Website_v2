@@ -18,7 +18,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSafe, setIsLoadingSafe] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedRoom, setSelectedRoom] = useState(examData.selectedRoom || null);    
+    const [selectedRoom, setSelectedRoom] = useState(examData.selectedRoom || null);
 
     const formatSafeDate = (dateString) => {
         if (!dateString) return new Date();
@@ -51,7 +51,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
         { value: '1', label: 'Điều trị nội trú' },
         { value: '3', label: 'Cấp cứu' }
     ];
-    
+
     const dischargeOptions = [
         { value: 1, label: 'Ra viện' },
         { value: 2, label: 'Trốn viện' },
@@ -166,12 +166,12 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             return;
         }
 
-        if(formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+        if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
             message.error('Vui lòng chọn ngày tái khám!');
             return;
         }
 
-        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate <= new Date()) {
+        if (formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate <= new Date()) {
             message.error('Ngày tái khám phải sau ngày hôm nay!');
             return;
         }
@@ -195,9 +195,14 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             status: 6,
             dischargeStatus: formData.dischargeStatus,
             reExaminationDate: formData.reExaminationDate ? convertDateTime(formData.reExaminationDate) : null,
-            roomId: selectedRoom ? selectedRoom.id : null,
-            roomName: selectedRoom ? selectedRoom.name : null,
+            // roomId: selectedRoom ? selectedRoom.id : null,
+            // roomName: selectedRoom ? selectedRoom.name : null,
         };
+
+        if (selectedRoom) {
+            data.roomId = selectedRoom.id;
+            data.roomName = selectedRoom.name;
+        }
 
         setIsLoading(true);
 
@@ -224,17 +229,17 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             return;
         }
 
-        if(formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+        if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
             message.error('Vui lòng chọn ngày tái khám!');
             return;
         }
 
-        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate < new Date()) {
+        if (formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate < new Date()) {
             message.error('Ngày tái khám phải sau ngày hôm nay!');
             return;
         }
 
-        if(formData.dischargeStatus === 4 && !formData.time) {
+        if (formData.dischargeStatus === 4 && !formData.time) {
             message.error('Vui lòng chọn khung giờ!');
             return;
         }
@@ -292,30 +297,30 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             return;
         }
 
-        if(formData.dischargeStatus === 4 && !formData.reExaminationDate) {
+        if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
             message.error('Vui lòng chọn ngày tái khám!');
             return;
         }
 
-        if(formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate <= new Date()) {
+        if (formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate <= new Date()) {
             message.error('Ngày tái khám phải sau ngày hôm nay!');
             return;
         }
         setIsModalVisible(true);
     };
-    
+
     const handleModalClose = () => {
         setIsModalVisible(false);
     };
-    
+
     const handleRoomSelect = (room) => {
         // Lưu giá trị room vào biến
         const selectedRoomData = room;
-        
+
         // Cập nhật state
         setSelectedRoom(selectedRoomData);
         setIsModalVisible(false);
-        
+
         // Gọi handleSaveButton với dữ liệu room đã chọn
         // thay vì dựa vào state selectedRoom mới được cập nhật
         const data = {
@@ -340,10 +345,10 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             roomId: selectedRoomData ? selectedRoomData.id : null,
             roomName: selectedRoomData ? selectedRoomData.name : null,
         };
-        
+
         // Gọi API trực tiếp tại đây thay vì qua handleSaveButton
         setIsLoading(true);
-        
+
         updateExamination(data)
             .then(response => {
                 if (response && response.DT.includes(1)) {
@@ -372,7 +377,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     </div>
                     <div className="col-8 mt-3 col-lg-4">
                         <input type="text" className="input"
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             value={formData.reason}
                             onChange={handleInputChange('reason')}
                             placeholder="Mô tả lý do vào viện" />
@@ -383,7 +388,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                     <div className="col-8 mt-3 col-lg-4">
                         <input type="text" className="input"
                             value={formData.symptom}
-                            readOnly={!isEditMode} 
+                            readOnly={!isEditMode}
                             onChange={handleInputChange('symptom')}
                             placeholder="Mô tả chi tiết triệu chứng" />
                     </div>
@@ -437,7 +442,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             className="date-picker"
                             selectedDate={formData.admissionDate}
                             onDateChange={handleDateChange('admissionDate')}
-                            disabled={!isEditMode}  
+                            disabled={!isEditMode}
                             isClearable={false}
                             placeholder="Chọn ngày..." />
                     </div>
@@ -458,7 +463,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                                     disabled={!(isEditMode)}
                                 />
                             </div>
-                            <div className="col-4 mt-3 col-lg-2">   
+                            <div className="col-4 mt-3 col-lg-2">
                                 <p>Ngày ra viện:</p>
                             </div>
                             <div className="col-8 mt-3 col-lg-4">
@@ -475,7 +480,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                             <div className="col-8 mt-3 col-lg-4">
                                 <input type="text" className="input"
                                     value={formData.treatmentResult}
-                                    readOnly={!isEditMode} 
+                                    readOnly={!isEditMode}
                                     onChange={handleInputChange('treatmentResult')}
                                     placeholder="Kết quả điều trị" />
                             </div>
@@ -513,17 +518,17 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                                 <CustomDatePickerWithHighlights
                                     className="date-picker"
                                     selectedDate={
-                                        formData.reExaminationDate 
-                                            ? new Date(formData.reExaminationDate) 
+                                        formData.reExaminationDate
+                                            ? new Date(formData.reExaminationDate)
                                             : null
-                                        }
+                                    }
                                     onDateChange={handleDateChange('reExaminationDate')}
                                     disabled={!(isEditMode && formData.dischargeStatus === 4 ? true : false)}
                                     placeholder="Chọn ngày..."
                                     highlightDates={schedule}
                                 />
                             </div>
-                            <div className="col-4 mt-3 col-lg-6"/>
+                            <div className="col-4 mt-3 col-lg-6" />
                             <div className="col-4 mt-3 col-lg-2">
                                 <p>Khung giờ:</p>
                             </div>
@@ -543,7 +548,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                 <div className="row">
                     {selectedRoom && (
                         <div className="selected-room">
-                            <h3 style={{fontSize: '16px'}}><strong>Phòng đã chọn</strong></h3>
+                            <h3 style={{ fontSize: '16px' }}><strong>Phòng đã chọn</strong></h3>
                             <p className="mt-1"><strong>Tên phòng:</strong> {selectedRoom.name} - <strong>Khoa:</strong> {selectedRoom.roomDepartmentData?.name}</p>
                             <p></p>
                             <p><strong>Giá:</strong> {selectedRoom.serviceData[0]?.price.toLocaleString('vi-VN')} VNĐ</p>
@@ -583,7 +588,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
                                         Đang xử lý...
                                     </>
                                 ) : 'Lưu cùng lịch hẹn'}
-                            </button> 
+                            </button>
                         )}
                     </div>
                 </div>

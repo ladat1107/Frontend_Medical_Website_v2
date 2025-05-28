@@ -153,6 +153,7 @@ const MedicineTable = ({ medicines, refetch, isRefetchingMedicineData, isLoading
 
     const handleCloseInsertModal = () => {
         setOpenInsertModal(false);
+        refetch();
         setImportedRows([]);
     }
 

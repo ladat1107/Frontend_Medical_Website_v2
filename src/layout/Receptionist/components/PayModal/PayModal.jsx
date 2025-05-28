@@ -257,7 +257,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         </>
                     ) : (
                         <>
-                            {data?.paraclinicalItems.length > 0 && data.paraclinicalItems.map((item, index) => (
+                            {data?.paraclinicalItems?.length > 0 && data?.paraclinicalItems?.map((item, index) => (
                                 <div className='col-12 d-flex flex-column mt-2 pres-item' key={index}>
                                     <div className='col-12 d-flex align-items-center'>
                                         <p style={{ fontWeight: "500", color: "#007BFF" }}>Cận lâm sàng: {item?.paracName}</p>

@@ -1,6 +1,6 @@
 .get-number-bg2 {
     height: 100vh;
-    width: 100vw;
+    width: 99vw;
     background-image: url("https://medpro.vn/_next/static/media/BannerDefaul.4f7c4739.png");
     background-size: cover;
     background-repeat: no-repeat;
@@ -24,7 +24,7 @@
 
     .content {
         transition: 0.3s;
-        width: 100%;
+        width: 99%;
     }
 
     .disabled {
@@ -39,16 +39,16 @@
         margin-bottom: 20px;
     }
 
-    .big-num{
+    .big-num {
         font-size: 200px;
         font-weight: bold;
-        line-height: 1;   
-    }   
+        line-height: 1;
+    }
 
     .small-num {
         font-size: 50px;
         font-weight: bold;
-        line-height: 1;   
+        line-height: 1;
     }
 
     .btn-group {
@@ -58,7 +58,7 @@
         text-align: center;
         width: 100%;
 
-        .group{
+        .group {
             width: 100%;
             display: flex;
         }

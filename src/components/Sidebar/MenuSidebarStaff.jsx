@@ -127,11 +127,13 @@ const MenuSidebar = () => {
                 icon: <i className="fa-solid fa-pills"></i>,
                 roles: [ROLE.PHARMACIST]
             },
-            {
-                key: 'sub5',
-                label: (<NavLink to={PATHS.STAFF.HANDBOOK}>Cẩm nang</NavLink>),
-                icon: <i className="fa-solid fa-book"></i>,
-            },
+            ...((user.role === ROLE.DOCTOR || user.role === ROLE.NURSE) ? [
+                {
+                    key: 'sub5',
+                    label: (<NavLink to={PATHS.STAFF.HANDBOOK}>Cẩm nang</NavLink>),
+                    icon: <i className="fa-solid fa-book"></i>,
+                },
+            ] : []),
             {
                 key: 'sub6',
                 label: (<NavLink to={PATHS.STAFF.SCHEDULE}>Lịch trực</NavLink>),

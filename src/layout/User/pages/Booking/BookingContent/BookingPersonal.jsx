@@ -9,9 +9,6 @@ import useQuery from "@/hooks/useQuery"
 import userService from "@/services/userService"
 import { OldParaclinicalModal } from "@/components/Modals"
 import "../Booking.css"
-import BHYTModal from "@/layout/User/components/ConfirmModal/InsuaranceModel"
-import { ClipboardPenLine } from "lucide-react"
-import InsuaranceModel from "@/layout/User/components/ConfirmModal/InsuaranceModel"
 
 const BookingPersonal = (props) => {
     let [form] = Form.useForm();
@@ -30,7 +27,6 @@ const BookingPersonal = (props) => {
     let [currentListWard, setCurrentListWard] = useState([]);
     let { data: provinceData } = useQuery(() => apiService.getAllProvince())
     let { data: folkData } = useQuery(() => userService.getFolk());
-    let [insuarance, setInsuarance] = useState(null);
 
     useEffect(() => {
         if (provinceData?.data?.length > 0) {
@@ -86,7 +82,6 @@ const BookingPersonal = (props) => {
     useEffect(() => {
         if (profileData) {
             let profile = profileData;
-            let _insuarance = profile?.userInsuranceData?.insuranceCode || profile?.insuranceCode || null;
             form.setFieldsValue({
                 dob: profile?.dob ? dayjs(dayjs(profile?.dob).format('DD/MM/YYYY'), "DD/MM/YYYY") : null,
                 lastName: profile?.lastName || "",
@@ -102,31 +97,13 @@ const BookingPersonal = (props) => {
                 ward: +currentResidentData[1] || null,
                 address: currentResidentData[0] || "",
                 special: profile?.special || listSpecialExamination[0].value,
-                insuranceCode: _insuarance,
             })
-            setInsuarance(_insuarance);
             setOldParaclinical(profile?.oldParaclinical || null);
             setCurrentProvinceId(+currentResidentData[3] || null);
             setCurrentDistrictId(+currentResidentData[2] || null);
         }
     }, [profileData])
-    const handleCheckInsuarance = async (values) => {
-        try {
-            let response = await userService.createInsuarance(values);
-            if (response.EC === 0) {
-                message.success("Bảo hiểm hợp lệ");
-                form.setFieldsValue({
-                    insuranceCode: response.DT.insuranceCode
-                })
-                setInsuarance(response.DT.insuranceCode);
-                setShowInsuaranceModal(false);
-            } else {
-                message.error("Bảo hiểm không hợp lệ");
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
+
     const onFinish = async (values) => {
         const obFolk = listFolk.find((item) => item.value === values.folk);
         const obProvince = province.find((item) => item.value === values.province);
@@ -150,12 +127,12 @@ const BookingPersonal = (props) => {
             obDistrict,
             obWard,
             address: values.address,
-            oldParaclinical: oldParaclinical,
-            insuranceCode: values.insuranceCode,
+            oldParaclinical: oldParaclinical
         }
         props.next(data);
         form.resetFields();
     };
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
@@ -222,14 +199,6 @@ const BookingPersonal = (props) => {
                                     message: 'Số điện thoại không hợp lệ!'
                                 }]}>
                                     <Input className="inputStyle-booking-personnal" placeholder='Số điện thoại' maxLength={10} />
-                                </Form.Item>
-                            </Col>
-                            <Col xs={24} md={12}>
-                                <Form.Item label="Bảo hiểm y tế" name="insuranceCode">
-                                    <div className="flex items-center gap-2">
-                                        <Input disabled className="inputStyle-booking-personnal" placeholder='Bảo hiểm y tế' value={insuarance} />
-                                        {!insuarance && <ClipboardPenLine className="cursor-pointer text-secondaryText-tw" onClick={() => setShowInsuaranceModal(true)} />}
-                                    </div>
                                 </Form.Item>
                             </Col>
                             <Col xs={24} md={12}>
@@ -358,7 +327,6 @@ const BookingPersonal = (props) => {
                     </Form>
                 </div>
             </div>
-            <InsuaranceModel open={showInsuaranceModal} setOpen={setShowInsuaranceModal} handleCheckInsuarance={handleCheckInsuarance} insuaranceUpdate={undefined} />
             <OldParaclinicalModal
                 visible={showOldParaclinicalModal}
                 onCancel={() => setShowOldParaclinicalModal(false)}

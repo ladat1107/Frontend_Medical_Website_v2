@@ -2,7 +2,7 @@ import { MEDICAL_TREATMENT_TIER, PAYMENT_METHOD, PAYMENT_STATUS } from "@/consta
 import DropdownPaginate from "@/layout/Admin/components/Dropdown/DropdownPaginate";
 import PaginateCustom from "@/layout/Admin/components/Paginate/PaginateCustom";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { Card, Input, Select, Tag } from "antd";
+import { Card, Input, Select, Tag, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -41,7 +41,7 @@ const TableRevenue = ({ tableRevenue, isLoading }) => {
     useEffect(() => {
         let paymentFilter = tableRevenue?.length > 0 ? tableRevenue.map(item => ({ ...item })) : [];
         paymentFilter.map(item => {
-            let details = JSON.parse(item?.details || "{}");
+            let details = JSON.parse(item?.detail || "{}");
             let type = { id: 0, name: "Không xác định" }
             if (item?.examinationData?.medicalTreatmentTier === MEDICAL_TREATMENT_TIER.OUTPATIENT) type = { ...type, id: TYPE_PAYMENT.EXAMINATION, name: "Phí khám bệnh" }
             else if (item?.prescriptionData) type = { ...type, id: TYPE_PAYMENT.PRESCRIPTION, name: "Phí đơn thuốc" }
@@ -49,10 +49,11 @@ const TableRevenue = ({ tableRevenue, isLoading }) => {
             else if (item?.paraclinicalData?.length > 0) type = { ...type, id: TYPE_PAYMENT.PARACLINICAL, name: "Phí xét nghiệm" }
 
             item.orderId = item.orderId?.split("Z")[1] || item.orderId
-            item.time = dayjs(details.responseTime).format("DD/MM/YYYY HH:mm:ss")
+            item.time = dayjs(details?.responseTime || item?.createdAt).format("DD/MM/YYYY HH:mm:ss")
             item.amount = item.amount
             item.paymentMethod = item.paymentMethod
             item.receiver = details.receiver ? (details.receiver?.lastName || "") + " " + (details.receiver?.firstName || "") : "Momo"
+            item.details = details
             item.status = item.status
             item.type = type
         })
@@ -182,7 +183,20 @@ const TableRevenue = ({ tableRevenue, isLoading }) => {
                                         </td>
                                         <td className={`text-center py-2 px-2 whitespace-nowrap text-[11px]`}>{payment.amount < 0 && "Trả"} {payment.type.name}</td>
                                         <td className="text-center py-2 px-2 whitespace-nowrap">{getPaymentMethod(payment.paymentMethod)}</td>
-                                        <td className="text-center py-2 px-2 whitespace-nowrap">{payment.receiver}</td>
+                                        <td className="text-center py-2 px-2 whitespace-nowrap">
+                                            {payment?.details?.receiver?.id ?
+                                                <Tooltip title={<div className="max-w-[200px] rounded-md">
+                                                    <p>Mã nhân viên: {payment?.details?.receiver?.id}</p>
+                                                    <p>Tên nhân viên: {payment.receiver}</p>
+                                                    <p>Số điện thoại: {payment?.details?.receiver?.phoneNumber}</p>
+                                                    <p>Email: {payment?.details?.receiver?.email}</p>
+                                                    <p>CCCD: {payment?.details?.receiver?.cid}</p>
+                                                </div>}>
+                                                    <span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">{payment.receiver}</span>
+                                                </Tooltip>
+                                                :
+                                                <span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">{payment.receiver}</span>}
+                                        </td>
                                         <td className="text-center py-2 px-2 whitespace-nowrap">
                                             <span>{getStatus(payment.status)}</span>
                                         </td>

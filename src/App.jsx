@@ -132,8 +132,8 @@ function App() {
             <Route path={`${PATHS.HOME.HANDBOOK_DETAIL}/:id`} element={<BlogDetail />} />
             <Route path={`${PATHS.HOME.DEPARTMENT_DETAIL}/:id`} element={<DepartmentDetail />} />
             <Route path={PATHS.HOME.INSTRUCTION} element={<Instruction />} />
-            <Route path={PATHS.HOME.NUMERICAL} element={<Numerical />} />
             <Route element={<PrivateRoute />}>
+              <Route path={PATHS.HOME.NUMERICAL} element={<Numerical />} />
               <Route path={PATHS.HOME.BOOKING} element={<Booking />} />
               <Route path={PATHS.HOME.PROFILE} element={<ProfileUser />} />
               <Route path={PATHS.HOME.APPOINTMENT_LIST} element={<AppointmentList />} />

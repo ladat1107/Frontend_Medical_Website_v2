@@ -275,7 +275,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
     const paraclinicalGroups = {};
 
     examinationData?.examinationResultParaclincalData?.forEach((item) => {
-        if (!item) return;
+        if (!item || item.paymentId) return;
 
         const paracId = item.paraclinical;
 

@@ -199,7 +199,7 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
             // roomName: selectedRoom ? selectedRoom.name : null,
         };
 
-        if (selectedRoom) {
+        if(selectedRoom){
             data.roomId = selectedRoom.id;
             data.roomName = selectedRoom.name;
         }
@@ -292,20 +292,16 @@ const ExamInfo = ({ examData, refresh, comorbiditiesOptions, isEditMode }) => {
     };
 
     const showModal = () => {
-        if (!formData.reason || !formData.symptom || !formData.medicalTreatmentTier) {
-            message.error('Vui lòng điền đầy đủ tất cả các trường!');
+        if (!formData.medicalTreatmentTier) {
+            message.error('Vui lòng chọn loại KCB để nhập viện!');
             return;
         }
 
-        if (formData.dischargeStatus === 4 && !formData.reExaminationDate) {
-            message.error('Vui lòng chọn ngày tái khám!');
+        if (!formData.admissionDate) {
+            message.error('Vui lòng chọn ngày nhập viện!');
             return;
         }
-
-        if (formData.dischargeStatus === 4 && formData.reExaminationDate && formData.reExaminationDate <= new Date()) {
-            message.error('Ngày tái khám phải sau ngày hôm nay!');
-            return;
-        }
+        
         setIsModalVisible(true);
     };
 

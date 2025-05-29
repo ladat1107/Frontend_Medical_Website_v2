@@ -67,6 +67,10 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
         setInsuranceCoverage(patientData?.insuranceCoverage || null);
         setSpecial(newSpecial);
         setData(newData);
+        setPaymentMethod(
+            patientData?.prescriptionExamData[0]?.paymentData?.paymentMethod === PAYMENT_METHOD.CASH 
+                ? PAYMENT_METHOD.CASH : PAYMENT_METHOD.MOMO
+             || PAYMENT_METHOD.CASH);
 
         // Calculate the correct amount to pay
         calculateAmountToPay(newData.infoPres.prescriptionDetails, patientData?.insuranceCoverage || null);
@@ -365,7 +369,7 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.status === STATUS_BE.PAID ? <div>Đã thanh toán</div> :
+                            {+patientData?.status === STATUS_BE.DONE ? <div>Đã thanh toán</div> :
                                 <>
                                     <label className='me-5'>
                                         <input

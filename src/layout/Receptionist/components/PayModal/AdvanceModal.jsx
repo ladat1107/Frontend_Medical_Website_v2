@@ -62,8 +62,8 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
         try {
             let paymentData = {
                 id: patientData?.id,
-                insuranceCoverage: patientData?.insuranceCoverage || null,
-                insuranceCode: patientData?.insuranceCode || null,
+                //insuranceCoverage: patientData?.insuranceCoverage || null,
+                //insuranceCode: patientData?.insuranceCode || null,
                 status: STATUS_BE.PAID,
                 payment: paymentMethod,
 

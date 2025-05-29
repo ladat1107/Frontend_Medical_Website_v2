@@ -219,7 +219,7 @@ const SendNoti = ({ dataUser }) => {
         if (isSending) {
             return;
         }
-
+        
         setIsSending(true);
 
         try {

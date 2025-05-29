@@ -274,6 +274,14 @@ export const deletePrescription = async (id) => {
     });
 }
 
+export const deleteAdvanceMoney = async (id) => {
+    return axios.delete(`/api/deleteAdvanceMoney`, {
+        params: {
+            id: id
+        }
+    });
+}
+
 export const getMedicalRecords = async (status, medicalTreatmentTier, page, limit, search) => {
     return axios.get(`/api/getMedicalRecords?status=${status}&medicalTreatmentTier=${medicalTreatmentTier}&page=${+page}&limit=${+limit}&search=${search}`);
 }

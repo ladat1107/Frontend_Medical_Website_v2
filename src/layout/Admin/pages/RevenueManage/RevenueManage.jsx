@@ -8,6 +8,7 @@ import { getPaymentAdmin } from "@/services/adminService";
 import { MEDICAL_TREATMENT_TIER, PAYMENT_METHOD, PAYMENT_STATUS } from "@/constant/value";
 import ChartRevenue from "./Section/ChartRevenue";
 import TableRevenue from "./Section/TableRevenue";
+import { diffDate } from "@/utils/formatDate";
 
 const RevenueManage = () => {
     const [dateRange, setDateRange] = useState([dayjs().subtract(1, "month"), dayjs()]);
@@ -43,21 +44,12 @@ const RevenueManage = () => {
                         const medicalTreatmentTier = examination?.medicalTreatmentTier || 0;
                         const type = (medicalTreatmentTier === MEDICAL_TREATMENT_TIER.INPATIENT || medicalTreatmentTier === MEDICAL_TREATMENT_TIER.EMERGENCY) ? 1 : 2;
                         if (type === 1) {
-                            totalRevenue += examination.price;
-                            let coveredPrice = examination?.coveredPrice || examination.price;
-                            payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPrice : totalBank += coveredPrice;
                             totalInsurance += examination?.insuranceCovered || 0;
                             examination?.examinationResultParaclincalData?.forEach(paraclinical => {
-                                let coveredPriceParaclinical = paraclinical?.coveredPrice || paraclinical.price;
                                 totalInsurance += paraclinical?.insuranceCovered || 0;
-                                totalRevenue += paraclinical.price;
-                                payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPriceParaclinical : totalBank += coveredPriceParaclinical;
                             })
                             examination.prescriptionExamData.forEach(prescription => {
-                                let coveredPricePrescription = prescription?.coveredPrice || prescription.totalMoney;
                                 totalInsurance += prescription?.insuranceCovered || 0;
-                                totalRevenue += prescription.totalMoney;
-                                payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPricePrescription : totalBank += coveredPricePrescription;
                             })
                         } else if (type === 2) {
                             totalRevenue += examination.price;
@@ -74,11 +66,15 @@ const RevenueManage = () => {
                             totalInsurance += item?.insuranceCovered || 0;
                         })
                     } else if (payment?.prescriptionData) {
+                        let diffDatePrescription = diffDate(payment?.prescriptionData?.createdAt, payment?.prescriptionData?.endDate || payment?.prescriptionData?.dischargedAt || dayjs()) + 1;
                         const prescription = payment?.prescriptionData;
                         let coveredPricePrescriptionOutpatient = prescription?.coveredPrice || prescription.totalMoney;
-                        totalRevenue += prescription.totalMoney;
-                        payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPricePrescriptionOutpatient : totalBank += coveredPricePrescriptionOutpatient;
-                        totalInsurance += prescription?.insuranceCovered || 0;
+                        totalRevenue += prescription.totalMoney * diffDatePrescription;
+                        payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += coveredPricePrescriptionOutpatient * diffDatePrescription : totalBank += coveredPricePrescriptionOutpatient * diffDatePrescription;
+                        totalInsurance += prescription?.insuranceCovered * diffDatePrescription || 0;
+                    } else if (payment?.advanceMoneyData) {
+                        totalRevenue += payment?.advanceMoneyData?.amount;
+                        payment.paymentMethod === PAYMENT_METHOD.CASH ? totalCash += payment?.advanceMoneyData?.amount : totalBank += payment?.advanceMoneyData?.amount;
                     }
                 }
             })

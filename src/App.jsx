@@ -50,7 +50,6 @@ import NotificationUser from "./layout/User/pages/Notification/notification";
 import { NotificationProvider } from './contexts/NotificationContext.jsx';
 import { useDispatch, useSelector } from "react-redux";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { deleteAssistantForCustomer } from "./services/doctorService";
 import MedicineManage from "./layout/Admin/pages/MedicineManage/MedicineMange";
 import ExaminationManage from "./layout/Admin/pages/ExaminationManage/ExaminationManage";
@@ -180,7 +179,6 @@ function App() {
             </Route>
           </Route>
         </Routes>
-        {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
       </QueryClientProvider>
     </NotificationProvider>
   );

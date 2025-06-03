@@ -947,7 +947,7 @@ const InpatientDetail = () => {
                         <div className='flex mt-2'>
                         {isEditMode && 
                             <div style={{fontWeight: '500', marginLeft: 'auto'}}>
-                                <button className={`restore-button ${!isEditMode ? 'disabled' : ''}`} 
+                                <button className={`restore-button ${!isEditMode ? 'disabled' : ''} me-0`} 
                                             disabled={!isEditMode} 
                                     onClick={handleUpdateInfoExamination}
                                 >

@@ -4,7 +4,6 @@ import { handleConfirmUser, handleLogin } from '@/services/adminService';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, addRememberLogin, removeRememberAccount } from '@/redux/authenSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ROLE } from '@/constant/role';
 import { PATHS } from '@/constant/path';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -53,7 +52,6 @@ const Login = () => {
         }
         setLoading(false);
     }, []);
-    console.log(user)
     useEffect(() => {
         if (user && user?.role) {
             navigate(urlAuthorization(user?.role));
@@ -152,14 +150,13 @@ const Login = () => {
                                         classNames={{ root: "w-[300px]" }}
                                         onOpenChange={(visible) => setShowSavedAccounts(visible)}
                                     >
-
                                         <Form.Item
                                             name="email"
-                                            rules={[{ required: true, message: 'Vui lòng nhập email!' }]}
+                                            rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
                                         >
                                             <Input
                                                 className="border-2 border-primary-tw focus:!border-primary-tw-light hover:!border-primary-tw-light rounded-lg text-base h-10 px-3"
-                                                placeholder="Email"
+                                                placeholder="Email hoặc Căn cước công dân"
                                                 onFocus={() => setShowSavedAccounts(true)}
                                                 onBlur={() => setTimeout(() => setShowSavedAccounts(false), 200)}
                                                 onClick={() => setShowSavedAccounts(true)}
@@ -167,11 +164,11 @@ const Login = () => {
                                         </Form.Item>
                                     </Tooltip> : <Form.Item
                                         name="email"
-                                        rules={[{ required: true, message: 'Vui lòng nhập email!' }]}
+                                        rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
                                     >
                                         <Input
                                             className="border-2 border-primary-tw rounded-lg text-base h-10 px-3"
-                                            placeholder="Email"
+                                            placeholder="Email hoặc Căn cước công dân"
                                         />
                                     </Form.Item>
                                 }

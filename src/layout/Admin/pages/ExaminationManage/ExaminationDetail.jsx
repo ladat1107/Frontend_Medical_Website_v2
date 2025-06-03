@@ -73,6 +73,11 @@ const isSameDay = (date1, date2) => {
   const d1 = dayjs(date1)
   const d2 = dayjs(date2)
   return d1.isSame(d2, "day")
+};
+
+const diffDate = (date1, date2) => {
+  if (!date1 || !date2) return 0
+  return dayjs(date2).startOf('day').diff(dayjs(date1).startOf('day'), 'day')
 }
 
 const getDischargeStatusTag = (status) => {
@@ -130,9 +135,9 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
   const [coveredPriceParaclinical, setCoveredPriceParaclinical] = useState(0)
   useEffect(() => {
     if (examinationData) {
-      setTotalPricePrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.totalMoney || 0), 0) || 0)
-      setInsuranceCoveredPrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.insuranceCovered || 0), 0) || 0)
-      setCoveredPricePrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.coveredPrice || 0), 0) || 0)
+      setTotalPricePrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.totalMoney * (diffDate(p?.createdAt, p?.endDate || p?.dischargedAt || dayjs()) + 1) || 0), 0) || 0)
+      setInsuranceCoveredPrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.insuranceCovered * (diffDate(p?.createdAt, p?.endDate || p?.dischargedAt || dayjs()) + 1) || 0), 0) || 0)
+      setCoveredPricePrescription(examinationData?.prescriptionExamData?.reduce((sum, p) => sum + (p.coveredPrice * (diffDate(p?.createdAt, p?.endDate || p?.dischargedAt || dayjs()) + 1) || 0), 0) || 0)
       setTotalPriceParaclinical(examinationData?.examinationResultParaclincalData?.reduce((sum, p) => sum + (p?.price || 0), 0) || 0)
       setInsuranceCoveredParaclinical(examinationData?.examinationResultParaclincalData?.reduce((sum, p) => sum + (p?.insuranceCovered || 0), 0) || 0)
       setCoveredPriceParaclinical(examinationData?.examinationResultParaclincalData?.reduce((sum, p) => sum + (p?.coveredPrice || 0), 0) || 0)
@@ -443,7 +448,7 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                   <Card title="Chi tiết khám bệnh" className="h-full bg-bgAdmin">
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <Text type="secondary">Ngày khám:</Text>
+                        <Text type="secondary">Thời gian:</Text>
                         <div className="flex items-center">
                           <Calendar size={14} className="mr-1 text-gray-500" />
                           <Text>{isSameDay(examinationData?.admissionDate, examinationData?.dischargeDate) ? formatDate(examinationData?.admissionDate || "") : `${formatDate(examinationData?.admissionDate || "")} - ${formatDate(examinationData?.dischargeDate || "")}`}</Text>
@@ -784,7 +789,7 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                     }
                     bordered={false}
                     className="mb-4 bg-gray-50"
-                    extra={<Tag color="blue">Tổng: {formatCurrency(prescription.totalMoney)}</Tag>}
+                    extra={<Tag color="blue">Tổng: {formatCurrency(prescription.totalMoney * (diffDate(prescription?.createdAt, prescription?.endDate || prescription?.dischargedAt || dayjs()) + 1))}</Tag>}
                   >
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200">

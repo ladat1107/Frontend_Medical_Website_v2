@@ -292,6 +292,7 @@ const ReceptionistDashboard = () => {
     const handleSelectChange = (value) => {
         setStatus(value === 'appointment' ? 2 : 4);
         setIsAppointment(value === 'appointment' ? 1 : 0);
+        setTime(null);
     };
 
     const handleTimeChange = (value) => {
@@ -548,18 +549,20 @@ const ReceptionistDashboard = () => {
                                 </Select>
                             </Form.Item>
                         </div>
-                        <div className="w-fit lg:w-48">
-                            <Form.Item className="m-0">
-                                <Select
-                                    className="w-full"
-                                    allowClear
-                                    placeholder="Chọn khung giờ"
-                                    onChange={handleTimeChange}
-                                    value={time}
-                                    options={TIMESLOTS}
-                                />
-                            </Form.Item>
-                        </div>
+                        {isAppointment === 1 && (
+                            <div className="w-fit lg:w-48">
+                                <Form.Item className="m-0">
+                                    <Select
+                                        className="w-full"
+                                        allowClear
+                                        placeholder="Chọn khung giờ"
+                                        onChange={handleTimeChange}
+                                        value={time}
+                                        options={TIMESLOTS}
+                                    />
+                                </Form.Item>
+                            </div>
+                        )}
                         <div className="w-fit lg:w-64">
                             <Form.Item className="m-0">
                                 <Input

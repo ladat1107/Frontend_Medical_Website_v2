@@ -64,6 +64,7 @@ const ProfileUser = () => {
                 <HistoryModal
                     isModalOpen={isModalOpen}
                     handleCancel={handleCancel}
+                    userId = {user?.id || ''}
                 />
             </div>
         </div>

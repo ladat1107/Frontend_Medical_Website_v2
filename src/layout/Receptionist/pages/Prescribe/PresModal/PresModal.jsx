@@ -369,7 +369,7 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.status === STATUS_BE.DONE ? <div>Đã thanh toán</div> :
+                            {+patientData?.prescriptionExamData[0]?.status === 2 ? <div>Đã thanh toán</div> :
                                 <>
                                     <label className='me-5'>
                                         <input

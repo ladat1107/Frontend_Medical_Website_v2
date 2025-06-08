@@ -65,7 +65,7 @@ function Header() {
 
   // Combine socket and API notifications
   useEffect(() => {
-    if (!apiNotifications.rows) return
+    if (!apiNotifications?.rows) return
 
     const allNotifications = [...socketNotifications, ...(apiNotifications.rows || [])]
 

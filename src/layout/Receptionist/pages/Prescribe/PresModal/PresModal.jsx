@@ -6,8 +6,11 @@ import { message } from 'antd';
 import { checkOutPrescription, updatePrescription } from '@/services/doctorService';
 import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';
 import { medicineCovered } from '@/utils/coveredPrice';
+import { PATHS } from '@/constant/path';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPrint } from '@fortawesome/free-solid-svg-icons';
 
-const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
+const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData, examinationId }) => {
     const [special, setSpecial] = useState('normal');
     const [insurance, setInsurance] = useState('');
     const [insuranceCoverage, setInsuranceCoverage] = useState(null);
@@ -68,9 +71,9 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
         setSpecial(newSpecial);
         setData(newData);
         setPaymentMethod(
-            patientData?.prescriptionExamData[0]?.paymentData?.paymentMethod === PAYMENT_METHOD.CASH 
+            patientData?.prescriptionExamData[0]?.paymentData?.paymentMethod === PAYMENT_METHOD.CASH
                 ? PAYMENT_METHOD.CASH : PAYMENT_METHOD.MOMO
-             || PAYMENT_METHOD.CASH);
+                || PAYMENT_METHOD.CASH);
 
         // Calculate the correct amount to pay
         calculateAmountToPay(newData.infoPres.prescriptionDetails, patientData?.insuranceCoverage || null);
@@ -369,7 +372,7 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                         </div>
                         <div className='col-1' />
                         <div className='col-5 d-flex'>
-                            {+patientData?.prescriptionExamData[0]?.status === 2 ? <div>Đã thanh toán</div> :
+                            {+patientData?.prescriptionExamData[0]?.status === 2 ? <div> Đã thanh toán</div> :
                                 <>
                                     <label className='me-5'>
                                         <input
@@ -397,6 +400,9 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData }) => {
                 </div>
                 <div className='payment-footer mt-3'>
                     <button className="close-user-btn" onClick={onClose} disabled={isLoading}>Đóng</button>
+                    <button className='print-button' onClick={() => window.open(PATHS.SYSTEM.PRECRIPTION_PDF + "/" + examinationId)}>
+                        <FontAwesomeIcon icon={faPrint} className='me-2' />
+                        Xuất </button>
                     {patientData?.prescriptionExamData[0]?.status === 1 &&
                         <button
                             className='payment-btn'

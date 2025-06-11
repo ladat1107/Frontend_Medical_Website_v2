@@ -371,7 +371,7 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                       </div>
                     </div>
                   </Col>
-                  {examinationData.examinationVitalSignData[0].fetalWeight && (
+                  {/* {examinationData.examinationVitalSignData[0].fetalWeight && (
                     <Col xs={12} sm={8} md={6} lg={4}>
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
                         <Weight className="text-primary-tw mx-auto mb-1" size={20} />
@@ -381,7 +381,7 @@ const ExaminationDrawer = ({ open, onClose, examinationId }) => {
                         </div>
                       </div>
                     </Col>
-                  )}
+                  )} */}
                 </Row>
               ) : (
                 <Empty description="Không có dữ liệu sinh hiệu" image={Empty.PRESENTED_IMAGE_SIMPLE} />

@@ -21,7 +21,7 @@ const DoctorLayout = () => {
         if (!user || user.role === ROLE.ADMIN || user.role === ROLE.PATIENT) {
             dispatch(handleLogout());
         }
-    }, [location]);
+    }, [location, user.role]);
 
     // Cập nhật kích thước màn hình khi thay đổi
     useEffect(() => {

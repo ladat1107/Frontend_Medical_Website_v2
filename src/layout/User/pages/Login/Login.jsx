@@ -52,6 +52,7 @@ const Login = () => {
         }
         setLoading(false);
     }, []);
+    
     useEffect(() => {
         if (user && user?.role) {
             navigate(urlAuthorization(user?.role));

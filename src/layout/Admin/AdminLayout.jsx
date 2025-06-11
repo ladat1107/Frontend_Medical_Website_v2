@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout } from 'antd';
 import AdminHeader from './components/AdminHeader/AdminHeader';
 import './Admin.scss';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { ROLE } from '@/constant/role';
 import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from '@/components/Sidebar/SidebarAdmin';
@@ -13,7 +13,6 @@ const { Content } = Layout;
 const AdminLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-    let navigate = useNavigate();
     let { user } = useSelector((state) => state.authen);
     let dispatch = useDispatch();
     const location = useLocation();
@@ -21,7 +20,7 @@ const AdminLayout = () => {
         if (user.role !== ROLE.ADMIN) {  // Clears the localStorage (optional)
             dispatch(handleLogout());
         }
-    }, [location, user.role, dispatch, navigate]);
+    }, [location, user.role]);
     // Cập nhật kích thước màn hình khi thay đổi
     useEffect(() => {
         const handleResize = () => {

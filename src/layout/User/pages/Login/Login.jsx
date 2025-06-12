@@ -32,6 +32,7 @@ const Login = () => {
     const [rememberMe, setRememberMe] = useState(rememberLogins.length > 0 ? true : false);
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useSelector((state) => state.authen);
+
     useEffect(() => {
         let confirmToken = queryParams.get('confirm');
         if (confirmToken !== null) {
@@ -45,14 +46,33 @@ const Login = () => {
             };
             fetchConfirmAsync();
         }
+
         let loginGoogle = queryParams.get('google');
         if (loginGoogle !== null) {
-            let dataLogin = JSON.parse(loginGoogle);
-            dispatch(login(dataLogin));
+            try {
+                let dataLogin = JSON.parse(loginGoogle);
+                if (dataLogin && dataLogin.user && dataLogin.accessToken) {
+                    dispatch(login(dataLogin));
+                } else {
+                    message.error('Đăng nhập Google thất bại - Dữ liệu không hợp lệ');
+                }
+            } catch (error) {
+                console.error('Error parsing Google login data:', error);
+                message.error('Đăng nhập Google thất bại - Lỗi xử lý dữ liệu');
+            }
         }
+
+        // Xử lý các error từ Google login
+        let errorParam = queryParams.get('error');
+        if (errorParam === 'google_login_failed') {
+            message.error('Đăng nhập Google thất bại. Vui lòng thử lại!');
+        } else if (errorParam === 'server_error') {
+            message.error('Có lỗi xảy ra từ server. Vui lòng thử lại sau!');
+        }
+
         setLoading(false);
     }, []);
-    
+
     useEffect(() => {
         if (user && user?.role) {
             navigate(urlAuthorization(user?.role));

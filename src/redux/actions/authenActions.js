@@ -10,7 +10,7 @@ export const handleLogout = () => async (dispatch) => {
         if (response?.EC === 0) {
             dispatch(logout())
             window.location.href = PATHS.HOME.LOGIN;
-        }        
+        }
     } catch (error) {
         console.error('Error during logout:', error);
     }

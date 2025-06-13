@@ -15,9 +15,6 @@ export const handleLogoutService = () => {
 export const handleForgotPassword = (data) => {
     return axios.post(`/api/forgotPassword`, data)
 }
-export const logoutUser = () => {
-    return axios.post(`/api/handleLogout`)
-}
 // USER MANAGEMENT
 export const createUser = (data) => {
     return axios.post(`/api/createUser`, data)

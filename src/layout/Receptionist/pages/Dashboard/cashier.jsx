@@ -6,6 +6,7 @@ import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientIte
 import PayModal from "../../components/PayModal/PayModal";
 import AdvanceModal from "../../components/PayModal/AdvanceModal";
 import SummaryModal from "@/layout/Doctor/pages/Inpatients/InpatientModals/InpatientSumary";
+import socket from '@/Socket/socket'
 
 const Cashier = () => {
     const today = new Date().toISOString();
@@ -124,6 +125,19 @@ const Cashier = () => {
         if (dataExaminations) {
             setTotal(dataExaminations.DT.pagination.totalItems);
             setListExam(dataExaminations.DT.list);
+        }
+    }, [dataExaminations]);
+
+    useEffect(() => {
+        const handleStaffLoad = () => {
+            fetchExaminations();
+            fetchAdvanceMoney();
+            fetchInpatients();
+        }
+
+        socket.on("staffLoad", handleStaffLoad)
+        return () => {
+            socket.off("staffLoad", handleStaffLoad)
         }
     }, [dataExaminations]);
 

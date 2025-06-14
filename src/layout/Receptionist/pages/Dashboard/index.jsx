@@ -7,10 +7,10 @@ import PatientItem from "../../components/PatientItem/PatientItem";
 import { TIMESLOTS, TYPE_NUMBER } from "@/constant/value";
 import { convertDateTime } from "@/utils/formatDate";
 import userService from "@/services/userService";
-import Loading from "@/components/Loading/Loading";
 import dayjs from "dayjs";
 import StepModal from "../../components/StepModal/StepModal";
 import { useGetUserByQRCode } from "@/hooks";
+import useAutoTimeSlot from "@/hooks/useAutoTimeSlot";
 
 const ReceptionistDashboard = () => {
     // Form
@@ -33,7 +33,7 @@ const ReceptionistDashboard = () => {
     const [pageSize, setPageSize] = useState(50);
     const [total, setTotal] = useState(0);
     const [isAppointment, setIsAppointment] = useState(1);
-    const [time, setTime] = useState(null);
+    const { time, setTime } = useAutoTimeSlot();
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState(2);
     const [listExam, setListExam] = useState([]);

@@ -5,6 +5,7 @@ import { getPrescriptions } from "@/services/doctorService";
 import { useMutation } from "@/hooks/useMutation";
 import PresModal from "./PresModal/PresModal";
 import dayjs from "dayjs";
+import socket from '@/Socket/socket'
 
 
 const Prescribe = () => {
@@ -75,6 +76,18 @@ const Prescribe = () => {
 
         }
     }, [dataExaminations]);
+
+    useEffect(() => {
+        const handleStaffLoad = () => {
+            fetchExaminations();
+        }
+
+        socket.on("staffLoad", handleStaffLoad)
+        return () => {
+            socket.off("staffLoad", handleStaffLoad)
+        }
+    }, [dataExaminations]);
+
     // #endregion
     return (
         <>

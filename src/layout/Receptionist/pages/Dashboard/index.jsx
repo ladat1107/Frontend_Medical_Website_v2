@@ -1,4 +1,4 @@
-import { Input, message, Pagination, Select, Spin, Form } from "antd";
+import { Input, message, Pagination, Select, Spin, Form, DatePicker } from "antd";
 import { useEffect, useRef, useState } from "react";
 import AddExamModal from "../../components/AddExamModal/AddExamModal";
 import { useMutation } from "@/hooks/useMutation";
@@ -21,7 +21,7 @@ const ReceptionistDashboard = () => {
     const [currentNumber, setCurrentNumber] = useState({});
     const [loading, setLoading] = useState(false);
     const [loadingSteps, setLoadingSteps] = useState(false);
-    const today = dayjs();
+    const [date, setDate] = useState(dayjs())
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalStepOpen, setIsModalStepOpen] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
@@ -213,7 +213,7 @@ const ReceptionistDashboard = () => {
         data: dataExaminations,
         loading: loadingExaminations,
         execute: fetchExaminations,
-    } = useMutation(() => getExaminations(today, today, status, '', isAppointment, currentPage, pageSize, search, time));
+    } = useMutation(() => getExaminations(date, date, status, '', isAppointment, currentPage, pageSize, search, time));
 
     // Data updates
     useEffect(() => {
@@ -222,6 +222,12 @@ const ReceptionistDashboard = () => {
             setLoading(false);
         }
     }, [ticketData, type]);
+
+    useEffect(() => {
+        if (date.isSame(dayjs(), "day")) {
+
+        }
+    }, [date])
 
     useEffect(() => {
         if (dataComorbidities?.DT) {
@@ -345,6 +351,11 @@ const ReceptionistDashboard = () => {
         setIsModalStepOpen(false);
     };
 
+    const handleDateChange = (value) => {
+        if (!value) setDate(dayjs())
+        else setDate(value)
+    }
+
     const getSpecialClass = (special) => {
         switch (special) {
             case 'old':
@@ -392,7 +403,7 @@ const ReceptionistDashboard = () => {
                             />
                         ))
                     )}
-                    <div className="p-2.5 bg-white rounded-md border-[1.5px] border-dashed border-[#c9cccc] mx-2.5 justify-center mt-2 cursor-pointer hover:shadow-md hover:mx-1.5 transition-all duration-200" 
+                    <div className="p-2.5 bg-white rounded-md border-[1.5px] border-dashed border-[#c9cccc] mx-2.5 justify-center mt-2 cursor-pointer hover:shadow-md hover:mx-1.5 transition-all duration-200"
                         onClick={() => openAddExam(time.value)}>
                         <div className="flex justify-center items-center">
                             <i className="fa-solid mr-2 fa-plus"></i>
@@ -491,21 +502,21 @@ const ReceptionistDashboard = () => {
                         <div className="col-span-5 md:col-span-7 lg:col-span-5">
                             <div className="text-gray-500">
                                 <div className="m-0 ml-1.5 text-sm text-gray-500 flex items-center">
-                                    <p style={{width: '120px'}}>{type === TYPE_NUMBER.NORMAL ? "Số khám thường" : "Số khám ưu tiên"}</p>
-                                    <button 
-                                        className='flex items-center justify-center bg-[#ffffff] text-white transition-all duration-200 hover:shadow-md hover:scale-105' 
+                                    <p style={{ width: '120px' }}>{type === TYPE_NUMBER.NORMAL ? "Số khám thường" : "Số khám ưu tiên"}</p>
+                                    <button
+                                        className='flex items-center justify-center bg-[#ffffff] text-white transition-all duration-200 hover:shadow-md hover:scale-105'
                                         style={{
                                             borderRadius: '50%',
-                                            width: '25px', 
-                                            height: '25px', 
+                                            width: '25px',
+                                            height: '25px',
                                             padding: '0',
-                                            border: '1px solid #e5e7eb' 
+                                            border: '1px solid #e5e7eb'
                                         }}
                                         onClick={() => {
                                             setType(type === TYPE_NUMBER.NORMAL ? TYPE_NUMBER.PRIORITY : TYPE_NUMBER.NORMAL);
                                         }}
                                     >
-                                        <i className="fa-solid fa-arrows-rotate" style={{color: '#FF7A56'}}></i>
+                                        <i className="fa-solid fa-arrows-rotate" style={{ color: '#FF7A56' }}></i>
                                     </button>
                                 </div>
                             </div>
@@ -521,7 +532,7 @@ const ReceptionistDashboard = () => {
                                 className="p-2.5 rounded-full w-[75px] h-[75px] flex justify-center items-center cursor-pointer transition-all duration-200 bg-[#FFE3DD] hover:scale-105"
                                 onClick={() => handleGeneralNumber(type)}
                             >
-                                {loading ? <Spin tip="Loading..." />  :
+                                {loading ? <Spin tip="Loading..." /> :
                                     <i className="text-2xl fa-solid fa-user-plus"></i>
                                 }
                             </div>
@@ -571,6 +582,15 @@ const ReceptionistDashboard = () => {
                                     onChange={handleSearch}
                                 />
                             </Form.Item>
+                        </div>
+                        <div className="w-fit lg:w-64">
+                            <DatePicker
+                                format="DD/MM/YYYY"
+                                placeholder="Chọn ngày"
+                                allowClear
+                                onChange={handleDateChange}
+                                value={date}
+                            />
                         </div>
                     </div>
                     <div className="w-fit">

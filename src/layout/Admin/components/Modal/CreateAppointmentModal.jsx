@@ -261,7 +261,7 @@ const CreateAppointmentModal = ({ visible, onCancel, onSubmit }) => {
                                                 >
                                                     <Avatar src={user?.avatar || LINK.AVATAR_NULL} className="mr-2" />
                                                     <div className="w-[50%]">
-                                                        {user.firstName} {user.lastName}
+                                                        {user?.lastName || ""} {user?.firstName || ""}
                                                     </div>
                                                     <div className="w-[50%] text-gray-400">
                                                         {user?.cid ? <span><IdcardOutlined className="mr-2" /> CCCD: {user.cid}</span> :
@@ -290,7 +290,7 @@ const CreateAppointmentModal = ({ visible, onCancel, onSubmit }) => {
                                     />
                                     <div className="ml-4 w-full">
                                         <h4 className="text-xl font-medium text-gray-800">
-                                            {selectedUser.firstName} {selectedUser.lastName}
+                                            {selectedUser?.lastName || ""} {selectedUser?.firstName || ""}
                                         </h4>
                                         <div className="flex flex-wrap gap-4">
                                             <p className="text-gray-500 w-20">
@@ -380,8 +380,8 @@ const CreateAppointmentModal = ({ visible, onCancel, onSubmit }) => {
                                 {doctors.map((doctor) => (
                                     <Option key={doctor.id} value={doctor.id}>
                                         <div className="flex items-center justify-between gap-2">
-                                            <span>{doctor.staffUserData.firstName} {doctor.staffUserData.lastName}</span>
-                                            <span className="text-gray-500 text-sm">{doctor.staffDepartmentData.name}</span>
+                                            <span>{doctor?.staffUserData?.lastName || ""} {doctor?.staffUserData?.firstName || ""}</span>
+                                            <span className="text-gray-500 text-sm">{doctor?.staffDepartmentData?.name || ""}</span>
                                         </div>
                                     </Option>
                                 ))}
@@ -424,7 +424,7 @@ const CreateAppointmentModal = ({ visible, onCancel, onSubmit }) => {
                 onClose={() => setIsUserModalOpen(false)}
                 handleAddUserSuscess={handleAddUserSuscess}
             />
-            
+
         </>
 
     )

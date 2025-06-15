@@ -257,7 +257,7 @@ const ReceptionistDashboard = () => {
 
     useEffect(() => {
         fetchExaminations();
-    }, [isAppointment, search, time, currentPage, pageSize]);
+    }, [isAppointment, search, time, currentPage, pageSize, date]);
 
     // Event handlers
     const openAddExam = (timeSlot) => {
@@ -461,7 +461,7 @@ const ReceptionistDashboard = () => {
                                 <p className="m-0 ml-2.5 text-3xl">{totalPatient}</p>
                             </div>
                             <div className="text-gray-500">
-                                <p className="m-0 ml-1.5 text-sm text-gray-500">Ngày {convertDateTime(new Date())}</p>
+                                <p className="m-0 ml-1.5 text-sm text-gray-500">Ngày {date.format("DD/MM/YYYY")}</p>
                             </div>
                         </div>
                         <div className="col-span-2 md:col-span-7 lg:col-span-2 text-[#007BFF] flex justify-center">
@@ -481,7 +481,7 @@ const ReceptionistDashboard = () => {
                                 <p className="m-0 ml-2.5 text-3xl">{totalAppointment}</p>
                             </div>
                             <div className="text-gray-500">
-                                <p className="m-0 ml-1.5 text-sm text-gray-500">Ngày {convertDateTime(new Date())}</p>
+                                <p className="m-0 ml-1.5 text-sm text-gray-500">Ngày {date.format("DD/MM/YYYY")}</p>
                             </div>
                         </div>
                         <div className="col-span-2 md:col-span-7 lg:col-span-2 text-[#3AA472] flex justify-center">
@@ -518,13 +518,13 @@ const ReceptionistDashboard = () => {
                                 <p className="m-0 ml-2.5 text-3xl">{type === TYPE_NUMBER.NORMAL ? currentNumber?.normalNumberCurrent : currentNumber?.priorityNumberCurrent}</p>
                             </div>
                             <div className="text-gray-500">
-                                <p className="m-0 ml-1.5 text-sm text-gray-500">Ngày {convertDateTime(new Date())}</p>
+                                <p className="m-0 ml-1.5 text-sm text-gray-500">Ngày {date.format("DD/MM/YYYY")}</p>
                             </div>
                         </div>
                         <div className="col-span-2 md:col-span-7 lg:col-span-2 text-[#FF7A56] flex justify-center">
                             <div
                                 className="p-2.5 rounded-full w-[75px] h-[75px] flex justify-center items-center cursor-pointer transition-all duration-200 bg-[#FFE3DD] hover:scale-105"
-                                onClick={() => handleGeneralNumber(type)}
+                                onClick={() => date.isSame(dayjs(), "day") ? handleGeneralNumber(type) : null}
                             >
                                 {loading ? <Spin tip="Loading..." /> :
                                     <i className="text-2xl fa-solid fa-user-plus"></i>
@@ -587,14 +587,16 @@ const ReceptionistDashboard = () => {
                             />
                         </div>
                     </div>
-                    <div className="w-fit">
-                        <button
-                            className="h-8 border border-gray-300 py-0 px-5 rounded-md bg-[#007BFF] text-white transition-all duration-200 hover:shadow-md hover:scale-105 w-full md:w-auto"
-                            onClick={() => openAddExam(null)}
-                        >
-                            Thêm bệnh nhân trực tiếp
-                        </button>
-                    </div>
+                    {date.isSame(dayjs(), "day") && (
+                        <div className="w-fit">
+                            <button
+                                className="h-8 border border-gray-300 py-0 px-5 rounded-md bg-[#007BFF] text-white transition-all duration-200 hover:shadow-md hover:scale-105 w-full md:w-auto"
+                                onClick={() => openAddExam(null)}
+                            >
+                                Thêm bệnh nhân trực tiếp
+                            </button>
+                        </div>
+                    )}
                 </div>
             </Form>
 

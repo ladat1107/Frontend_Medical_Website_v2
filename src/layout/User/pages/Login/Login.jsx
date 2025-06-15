@@ -130,7 +130,7 @@ const Login = () => {
                             </span>
                             <div
                                 className="w-12 h-12 bg-cover bg-center bg-no-repeat rounded-full cursor-pointer mb-[-10px]"
-                                style={{ backgroundImage: "url('https://res.cloudinary.com/degcwwwii/image/upload/v1733207843/logo/rr7ytbrcco0hgilykrmo.png')" }}
+                                style={{ backgroundImage: "url('https://res.cloudinary.com/degcwwwii/image/upload/v1749983092/logoHoaSen_hrngsh.png')" }}
                                 onClick={() => navigate(PATHS.HOME.HOMEPAGE)}
                             ></div>
                             <h2 className="text-2xl font-bold text-primary-tw text-center my-6 tracking-wider"

@@ -198,3 +198,10 @@ export const getPaymentAdmin = (query = null) => {
     return axios.get(`/api/admin/getPaymentAdmin`, { params: query })
 }
 
+export const deleteExamination = (data) => {
+    return axios.delete(`/api/admin/deleteExamination`, { data: { id: data.id } })
+}
+export const blockExamination = (data) => {
+    return axios.put(`/api/admin/blockExamination`, data)
+}
+

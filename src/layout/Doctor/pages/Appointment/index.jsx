@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PatientItem from "@/layout/Receptionist/components/PatientItem/PatientItem";
 import dayjs from "dayjs";
 import { setSchedule } from "@/redux/scheduleSlice";
+import socket from '@/Socket/socket'
 
 const Appointment = () => {
     const navigate = useNavigate();
@@ -79,6 +80,17 @@ const Appointment = () => {
         if (dataExaminations) {
             setTotal(dataExaminations.DT.totalItems);
             setListExam(dataExaminations.DT.examinations);
+        }
+    }, [dataExaminations]);
+
+    useEffect(() => {
+        const handleStaffLoad = () => {
+            fetchExaminations();
+        }
+
+        socket.on("staffLoad", handleStaffLoad)
+        return () => {
+            socket.off("staffLoad", handleStaffLoad)
         }
     }, [dataExaminations]);
 

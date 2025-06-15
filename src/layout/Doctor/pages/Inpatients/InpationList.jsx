@@ -124,7 +124,7 @@ const InpatientList = () => {
                                 />
                             )):(
                                 <div className="no-patient d-flex justify-content-center mt-2">
-                                    <p>Không tìm thấy bệnh nhân!</p>
+                                    <p>Danh sách bệnh nhân trống!</p>
                                 </div>
                             )
                         )}

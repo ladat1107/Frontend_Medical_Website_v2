@@ -224,12 +224,6 @@ const ReceptionistDashboard = () => {
     }, [ticketData, type]);
 
     useEffect(() => {
-        if (date.isSame(dayjs(), "day")) {
-
-        }
-    }, [date])
-
-    useEffect(() => {
         if (dataComorbidities?.DT) {
             const options = dataComorbidities.DT.map(item => ({
                 id: item.code,
@@ -383,7 +377,7 @@ const ReceptionistDashboard = () => {
                     <p className="text-base font-medium text-gray-500">{selectedTimeSlot.label}</p>
                     {examsInTimeSlot.length === 0 ? (
                         <div className="p-2.5 bg-white rounded-md border-[1.5px] border-dashed border-[#c9cccc] mx-2.5 flex justify-center mt-2">
-                            <p>Không tìm thấy bệnh nhân!</p>
+                            <p>Danh sách bệnh nhân trống!</p>
                         </div>
                     ) : (
                         examsInTimeSlot.map((item, index) => (
@@ -423,7 +417,7 @@ const ReceptionistDashboard = () => {
                     <p className="text-base font-medium text-gray-500">{timeSlot.label}</p>
                     {examsInTimeSlot.length === 0 ? (
                         <div className="p-2.5 bg-white rounded-md border-[1.5px] border-dashed border-[#c9cccc] mx-2.5 flex justify-center mt-2">
-                            <p>Không tìm thấy bệnh nhân!</p>
+                            <p>Danh sách bệnh nhân trống!</p>
                         </div>
                     ) : (
                         examsInTimeSlot.map((item, index) => (
@@ -656,7 +650,7 @@ const ReceptionistDashboard = () => {
                                         />
                                     )) : (
                                         <div className="p-2.5 bg-white rounded-md border-[1.5px] border-dashed border-[#c9cccc] mx-2.5 flex justify-center mt-2">
-                                            <p>Không tìm thấy bệnh nhân!</p>
+                                            <p>Danh sách bệnh nhân trống!</p>
                                         </div>
                                     )
                                 )}

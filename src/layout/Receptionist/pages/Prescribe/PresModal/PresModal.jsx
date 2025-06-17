@@ -66,7 +66,7 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData, examinati
             // paracName: patientData?.paraclinicalData?.name,
         };
 
-        setInsurance(isValidInsuranceCode(patientData?.insuranceCode) ? patientData?.insuranceCode : '');
+        setInsurance(patientData?.insuranceCode || '');
         setInsuranceCoverage(patientData?.insuranceCoverage || null);
         setSpecial(newSpecial);
         setData(newData);
@@ -104,7 +104,7 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData, examinati
     };
 
     const handlePay = async () => {
-        if (!isValidInsuranceCode(insurance)) {
+        if (insurance && !isValidInsuranceCode(insurance)) {
             message.error('Mã bảo hiểm không hợp lệ');
             return;
         }

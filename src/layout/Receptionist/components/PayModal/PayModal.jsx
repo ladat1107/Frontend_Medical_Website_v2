@@ -95,7 +95,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
     }, [isOpen]);
 
     const handlePay = async () => {
-        if (!isValidInsuranceCode(insurance)) {
+        if (insurance && !isValidInsuranceCode(insurance)) {
             message.error('Mã bảo hiểm không hợp lệ');
             return;
         }

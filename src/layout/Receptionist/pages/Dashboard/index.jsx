@@ -212,7 +212,7 @@ const ReceptionistDashboard = () => {
         data: dataExaminations,
         loading: loadingExaminations,
         execute: fetchExaminations,
-    } = useMutation(() => getExaminations(date, date, status, '', isAppointment, currentPage, pageSize, search, time));
+    } = useMutation(() => getExaminations(date.format('YYYY-MM-DD'), date.format('YYYY-MM-DD'), status, '', isAppointment, currentPage, pageSize, search, time));
 
     // Data updates
     useEffect(() => {

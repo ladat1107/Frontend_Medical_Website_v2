@@ -57,7 +57,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
 
             setSelectedComorbidities(comorbidityObjects);
             setSymptom(patientData.symptom || '');
-            setInsurance(isValidInsuranceCode(patientData.insuranceCode) ? patientData.insuranceCode : '');
+            setInsurance(patientData.insuranceCode || '');
             setIsWrongTreatment(patientData.isWrongTreatment || 0);
             setMedicalTreatmentTier(patientData.medicalTreatmentTier || 2);
 
@@ -93,7 +93,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             setCid(dataQRCode.DT.cid);
             setIsSearched(true);
             setUserInfo(dataQRCode.DT);
-            setInsurance(isValidInsuranceCode(dataQRCode.DT.userInsuranceData?.insuranceCode) ? dataQRCode.DT.userInsuranceData?.insuranceCode : '');
+            setInsurance(dataQRCode.DT.userInsuranceData?.insuranceCode || '');
             setIsUserModalOpen(false);
         } else if (dataQRCode?.EC === 1) {
             setIsUserModalOpen(true);
@@ -134,7 +134,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
         setIsSearched(true);
         setUserInfo(data.user);
         setCid(data.user.cid);
-        setInsurance(isValidInsuranceCode(data.insurance?.insuranceCode) ? data.insurance?.insuranceCode : '');
+        setInsurance(data.insurance?.insuranceCode || '');
     }
 
     const handleFindUser = async () => {
@@ -158,7 +158,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             const response = await getUserByCid(cid);
             if (response.DT) {
                 setUserInfo(response.DT);
-                setInsurance(isValidInsuranceCode(response.DT.userInsuranceData?.insuranceCode) ? response.DT.userInsuranceData?.insuranceCode : '');
+                setInsurance(response.DT.userInsuranceData?.insuranceCode || '');
             } else {
                 setUserInfo({});
             }

@@ -127,6 +127,7 @@ const InsertDepartment = (props) => {
                         wrapperCol={{ span: 24, }}
                         initialValues={{}}
                         style={{ maxWidth: "100%", }}
+                        autoComplete="off"
                     >
                         <Row gutter={[16, 8]}>
                             <Col sm={24} lg={col}>

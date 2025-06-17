@@ -131,7 +131,7 @@ const CreateUser = (props) => {
                         wrapperCol={{ span: 24, }}
                         validateTrigger="onBlur"
                         initialValues={{}}
-                        autoComplete="on"
+                        autoComplete="off"
                     >
 
                         <Row key={"normal"} gutter={[16, 8]}>

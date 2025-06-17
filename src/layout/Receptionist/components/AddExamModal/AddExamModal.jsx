@@ -316,7 +316,6 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             price: specialtySelected.staffPrice,
             comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
             status: patientData?.paymentId ? STATUS_BE.PAID : STATUS_BE.WAITING,
-            // is_appointment: 0, -->bỏ nhe. để thống kê
             isWrongTreatment: isWrongTreatment,
             medicalTreatmentTier: medicalTreatmentTier,
         }

@@ -97,15 +97,10 @@ const InsertRoom = (props) => {
                     <Form
                         layout={'horizontal'}
                         form={form}
-                        labelCol={{
-                            span: 24,
-                        }}
-                        wrapperCol={{
-                            span: 24,
-                        }}
-                        style={{
-                            maxWidth: "100%",
-                        }}
+                        labelCol={{ span: 24, }}
+                        wrapperCol={{ span: 24, }}
+                        style={{ maxWidth: "100%", }}
+                        autoComplete="off"
                     >
                         <Row gutter={[16, 8]}>
                             <Col sm={24} lg={col}>

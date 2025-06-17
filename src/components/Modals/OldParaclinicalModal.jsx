@@ -74,7 +74,6 @@ const OldParaclinacalModal = ({ visible, onCancel, oldParaclinical, onSave }) =>
                 title="Thêm phiếu xét nghiệm trước đây"
                 open={visible}
                 onCancel={onCancel}
-                centered
                 width={800}
                 footer={[
                     <Button key="back" onClick={onCancel}>
@@ -82,6 +81,7 @@ const OldParaclinacalModal = ({ visible, onCancel, oldParaclinical, onSave }) =>
                     </Button>,
                     user?.role === ROLE.PATIENT && <Button key="save" type="primary" onClick={handleSave}>Save</Button>
                 ]}
+                styles={{ body: { overflowY: 'visible', maxHeight: '80vh' } }}
             >
                 <Row gutter={[16, 16]} style={{ marginTop: 16, padding: "0 16px" }}>
                     {images?.map((image, index) => (

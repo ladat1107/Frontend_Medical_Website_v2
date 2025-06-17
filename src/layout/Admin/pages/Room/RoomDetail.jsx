@@ -22,7 +22,7 @@ const RoomDetail = ({ visible, onClose, roomData }) => {
             let _mockStaffs = []
             let _mockParaclinicalServices = []
             roomData?.examinationRoomData?.forEach(examination => {
-                let patientData = (examination?.userExaminationData?.firstName || "") + " " + (examination?.userExaminationData?.lastName || "")
+                let patientData = (examination?.userExaminationData?.lastName || "") + " " + (examination?.userExaminationData?.firstName || "")
                 _mockExaminations.push({
                     id: examination.id,
                     patientData: {
@@ -36,7 +36,7 @@ const RoomDetail = ({ visible, onClose, roomData }) => {
 
             roomData?.scheduleRoomData?.forEach(schedule => {
                 let staff = schedule?.staffScheduleData || {}
-                let staffData = (staff?.staffUserData?.firstName || "") + " " + (staff?.staffUserData?.lastName || "")
+                let staffData = (staff?.staffUserData?.lastName || "") + " " + (staff?.staffUserData?.firstName || "")
                 _mockStaffs.push({
                     id: staff.id,
                     fullName: staffData,

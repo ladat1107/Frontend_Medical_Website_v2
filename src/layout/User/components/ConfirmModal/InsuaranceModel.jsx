@@ -65,7 +65,7 @@ const InsuaranceModel = ({ open, setOpen, handleCheckInsuarance, insuaranceUpdat
                             return Promise.resolve();
                         }
                     }]}>
-                        <Input className="!rounded-md tracking-wider" placeholder="Nhập mã thẻ" maxLength={15} onChange={(e) => {
+                        <Input autoComplete="off" className="!rounded-md tracking-wider" placeholder="Nhập mã thẻ" maxLength={15} onChange={(e) => {
                             const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
                             form.setFieldsValue({
                                 insuranceCode: value

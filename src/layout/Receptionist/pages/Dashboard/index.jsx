@@ -5,7 +5,6 @@ import { useMutation } from "@/hooks/useMutation";
 import { getAllDisease, getExaminations, getPatienSteps, getSpecialties } from "@/services/doctorService";
 import PatientItem from "../../components/PatientItem/PatientItem";
 import { TIMESLOTS, TYPE_NUMBER } from "@/constant/value";
-import { convertDateTime } from "@/utils/formatDate";
 import userService from "@/services/userService";
 import dayjs from "dayjs";
 import StepModal from "../../components/StepModal/StepModal";

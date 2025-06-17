@@ -546,16 +546,16 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                                         <div className="row">
                                             <p className="col-6">
                                                 Bảo hiểm y tế:&nbsp;
-                                                {examinationData?.userInsuranceData?.insuranceCode || ""}
+                                                {examinationData?.userExaminationData?.userInsuranceData?.insuranceCode || ""}
                                             </p>
                                             <p className="col-3">
                                                 Giá trị từ:&nbsp;
-                                                {(examinationData?.userInsuranceData?.dateOfIssue && examinationData?.userInsuranceData?.exp)
-                                                    ? `${dayjs(dayjs(examinationData.userInsuranceData.dateOfIssue).format("YYYY-MM-DD")).format("DD/MM/YYYY")} - ${dayjs(dayjs(examinationData.userInsuranceData.exp).format("YYYY-MM-DD")).format("DD/MM/YYYY")}` : ''}
+                                                {(examinationData?.userExaminationData?.userInsuranceData?.dateOfIssue && examinationData?.userExaminationData?.userInsuranceData?.exp)
+                                                    ? `${dayjs(dayjs(examinationData.userExaminationData.userInsuranceData.dateOfIssue).format("YYYY-MM-DD")).format("DD/MM/YYYY")} - ${dayjs(dayjs(examinationData.userExaminationData.userInsuranceData.exp).format("YYYY-MM-DD")).format("DD/MM/YYYY")}` : ''}
                                             </p>
                                             <p className="col-3">
                                                 Nơi ĐKKCB ban đầu:&nbsp;
-                                                {examinationData?.userInsuranceData?.initialHealthcareRegistrationCode || ""}
+                                                {examinationData?.userExaminationData?.userInsuranceData?.initialHealthcareRegistrationCode || ""}
                                             </p>
                                         </div>
                                         <div className="row">
@@ -567,7 +567,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                                     </div>
                                 </div>
                             </div>
-                            <div className="">
+                            <div className="mt-2">
                                 <div style={{ color: "#000" }}>
                                     <p style={{ fontWeight: "600", color: "#0077F9" }}>
                                         Thông tin khám bệnh:

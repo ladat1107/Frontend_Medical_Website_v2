@@ -139,7 +139,7 @@ const AppointmentList = ({ appointmentList, refetchAppointment, loading }) => {
       key: "staffId",
       render: (staffId, record) =>
         <div className="">
-          {record?.examinationStaffData?.position || "BS. "} {record?.examinationStaffData?.staffUserData?.firstName || ""} {record?.examinationStaffData?.staffUserData?.lastName || ""}
+          {record?.examinationStaffData?.position || "BS. "} {record?.examinationStaffData?.staffUserData?.lastName || ""} {record?.examinationStaffData?.staffUserData?.firstName || ""}
         </div>,
     },
     {

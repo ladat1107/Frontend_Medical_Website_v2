@@ -19,7 +19,7 @@ const ScheduleManage = () => {
     let [currentWeek, setCurrentWeek] = useState(dayjs());
     let [schedules, setSchedules] = useState([]);
     let [departments, setDepartments] = useState([]);
-    let daysOfWeek = Array(7).fill(0).map((_, i) => currentWeek.startOf("week").add(i + 1, "day"));
+    let daysOfWeek = Array(7).fill(0).map((_, i) => currentWeek.startOf("week").add(i, "day"));
     let fecthSchedule = async (startDate) => {
         let res = await getSchedule({ startDate });
         if (res.EC === 0) {

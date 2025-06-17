@@ -149,16 +149,15 @@ const CreateAppointmentModal = ({ visible, onCancel, onSubmit }) => {
                 userId: selectedUser.id,
                 staffId: selectedDoctor.id,
                 time: values.timeSlot,
-                priority: values.priority,
-                symptoms: values.symptoms,
-                admissionDate: dayjs(selectedDate).format("YYYY-MM-DD 07:00:00"),
-                dischargeDate: dayjs(selectedDate).format("YYYY-MM-DD 07:00:00"),
+                special: values.priority,
+                symptom: values.symptom,
+                admissionDate: dayjs(selectedDate).format("YYYY-MM-DD"),
                 price: selectedDoctor?.price || 0,
                 medicalTreatmentTier: MEDICAL_TREATMENT_TIER.OUTPATIENT,
                 status: STATUS_BE.PENDING,
                 is_appointment: 1,
                 roomName: selectedDoctor?.staffScheduleData[0]?.scheduleRoomData?.name || "",
-                roomId: selectedDoctor?.staffScheduleData[0]?.roomId || ""
+                roomId: selectedDoctor?.staffScheduleData[0]?.roomId || "",
             }
             setLoading(true)
             let response = await createAppointment(data)
@@ -226,7 +225,7 @@ const CreateAppointmentModal = ({ visible, onCancel, onSubmit }) => {
                     </Button>,
                 ]}
             >
-                <Form form={form} layout="vertical" className="mt-4" validateTrigger={['onSubmit']}>
+                <Form form={form} layout="vertical" className="mt-4" validateTrigger={['onSubmit']} autoComplete="off">
                     {/* Group 1: User Information */}
                     <div className="bg-white px-4 rounded-lg mb-6">
                         <h3 className="text-lg font-medium text-gray-800 mb-2">Thông tin người dùng</h3>
@@ -408,7 +407,7 @@ const CreateAppointmentModal = ({ visible, onCancel, onSubmit }) => {
                             </Form.Item>
                         </div>
                         <Form.Item
-                            name="symptoms"
+                            name="symptom"
                             label="Triệu chứng"
                             rules={[{ required: true, message: "Vui lòng nhập triệu chứng" }]}
                         >

@@ -163,6 +163,7 @@ const Specialty = () => {
                                 wrapperCol={{ span: 24, }}
                                 initialValues={{}}
                                 style={{ maxWidth: "100%", }}
+                                autoComplete="off"
                             >
                                 <Row >
                                     <Col span={24}>

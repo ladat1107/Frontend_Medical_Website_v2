@@ -2,10 +2,11 @@ import { useMobile } from "@/hooks/useMobile"
 import { MapPin, Globe, Mail, Phone, Facebook, Twitter, Instagram, Youtube } from "lucide-react"
 import FooterSectionCollapse from "./FooterSectionCollapse";
 import { PATHS } from "@/constant/path";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const isMobile = useMobile();
-
+  const navigate = useNavigate();
   return (
     <footer className={`"bg-gray-50 pt-12 ${isMobile ? 'pb-[60px]' : ''} border-t border-gray-200 shadow-sm`}>
       {/* Main Footer Content */}
@@ -13,7 +14,7 @@ const Footer = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Logo and Contact */}
           <div className="w-full lg:w-1/4">
-            <div className="mb-6">
+            <div className="mb-6 cursor-pointer" onClick={() => { navigate(PATHS.HOME.HOMEPAGE); window.scrollTo(0, 0) }}>
               <img
                 src="https://res.cloudinary.com/utejobhub/image/upload/v1733740053/KHOA_500_x_200_px_dp7on2.png"
                 alt="Hoa Sen Logo"

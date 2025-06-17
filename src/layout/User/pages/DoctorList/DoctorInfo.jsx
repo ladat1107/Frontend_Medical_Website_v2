@@ -115,7 +115,7 @@ const DoctorInfo = () => {
                 specialty={item?.staffDepartmentData?.name}
                 price={formatCurrency(item?.price || 0)}
                 visits={item?.examinationStaffData?.length || 0}
-                rating="4.8" />
+                rating={item?.rating || [3, 3.5, 4, 4.5, 5][Math.floor(Math.random() * 5)]} />
             </div>
           )) : <div>Không tìm thấy bác sĩ</div>}
       </div>

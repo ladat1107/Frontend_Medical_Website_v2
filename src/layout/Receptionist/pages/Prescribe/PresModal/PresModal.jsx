@@ -1,7 +1,7 @@
 import { PropTypes } from 'prop-types'; import { useEffect, useState } from 'react';
 import '../../../components/PayModal/PayModal.scss';
 import { formatCurrency } from '@/utils/formatCurrency';
-import { getThirdDigitFromLeft } from '@/utils/numberSeries';
+import { getThirdDigitFromLeft, isValidInsuranceCode } from '@/utils/numberSeries';
 import { message } from 'antd';
 import { checkOutPrescription, updatePrescription } from '@/services/doctorService';
 import { PAYMENT_METHOD, STATUS_BE } from '@/constant/value';
@@ -66,7 +66,7 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData, examinati
             // paracName: patientData?.paraclinicalData?.name,
         };
 
-        setInsurance(patientData?.insuranceCode || '');
+        setInsurance(isValidInsuranceCode(patientData?.insuranceCode) ? patientData?.insuranceCode : '');
         setInsuranceCoverage(patientData?.insuranceCoverage || null);
         setSpecial(newSpecial);
         setData(newData);
@@ -104,6 +104,10 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData, examinati
     };
 
     const handlePay = async () => {
+        if (!isValidInsuranceCode(insurance)) {
+            message.error('Mã bảo hiểm không hợp lệ');
+            return;
+        }
         setIsLoading(true);
         try {
             const presDetail = data.infoPres.prescriptionDetails.map((item) => {
@@ -331,7 +335,7 @@ const PresModal = ({ isOpen, onClose, onSusscess, presId, patientData, examinati
                                 placeholder='Nhập số BHYT...' />
                         </div>
                         <div className='col-1' />
-                        {insuranceCoverage in [0, 1, 2, 3, 4] || insurance === null || insurance === '' ? (
+                        {insuranceCoverage in [0, 1, 2, 3, 4, 5] || insurance === null || insurance === '' ? (
                             <>
                                 <div className='col-2 d-flex align-items-center'>
                                     <p style={{ fontWeight: "400" }}>Mức hưởng:</p>

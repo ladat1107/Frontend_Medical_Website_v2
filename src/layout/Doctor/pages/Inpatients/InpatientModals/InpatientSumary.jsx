@@ -8,6 +8,8 @@ import "./PrescriptionChangeModal.scss";
 import { checkOutDischarged, getExaminationById, updateExamination } from "@/services/doctorService";
 import { useMutation } from "@tanstack/react-query";
 import { DISCHARGE_OPTIONS } from "@/constant/options";
+import { apiService } from "@/services/apiService";
+import dayjs from "dayjs";
 
 const columns = [
     {
@@ -72,6 +74,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
     const [examinationData, setExamData] = useState(examData || {});
     const [isLoading, setIsLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
+    const [currentResident, setCurrentResident] = useState('');
 
     const SpecialText = (special) => {
         let specialClass = '';
@@ -129,6 +132,8 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
         }
     });
 
+
+
     useEffect(() => {
         // Nếu có examData từ props, sử dụng nó
         if (examData) {
@@ -139,6 +144,22 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
             fetchExaminationData(examinationId);
         }
     }, [examinationId, examData, open]);
+
+    useEffect(() => {
+        if (examinationData?.userExaminationData?.currentResident) {
+            getCurrentResident(examinationData?.userExaminationData?.currentResident);
+        }
+    }, [examinationData]);
+
+    const getCurrentResident = async (address) => {
+        let _currentResident = address?.split(',') || [];
+        if (_currentResident.length > 1) {
+            let response = await apiService.getFullAddress(_currentResident[1])
+            if (response.error === 0) {
+                setCurrentResident((_currentResident[0] || "") + ", " + (response?.data?.full_name || ""));
+            }
+        }
+    }
 
     function calculateDays(startDateStr, endDateStr) {
         const start = new Date(startDateStr);
@@ -475,9 +496,9 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
             title="Tổng hợp chi phí khám chữa bệnh"
             onCancel={onCancel}
             footer={null}
-            width="93%"
-            style={{ top: 20 }}
-            styles={{ overflow: 'hidden', maxHeight: 'none' }}
+            width="95%"
+            className="inpatient-summary-modal"
+            centered
         >
             <div className="custom-summary-container">
                 <div className="custom-scroll-area">
@@ -503,41 +524,42 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                                             </p>
                                             <p className="col-3">
                                                 Giới tính:&nbsp;
-                                                {examinationData?.userExaminationData?.gender == 0 ? 'Nam'
-                                                    : examinationData?.userExaminationData?.gender == 1 ? 'Nữ'
+                                                {examinationData?.userExaminationData?.gender === 0 ? 'Nam'
+                                                    : examinationData?.userExaminationData?.gender === 1 ? 'Nữ'
                                                         : ''}
                                             </p>
                                         </div>
                                         <div className="row">
-                                            <p className="col-9">
+                                            <p className="col-6">
                                                 Địa chỉ hiện tại:&nbsp;
-                                                {examinationData?.userExaminationData?.currentResident || ""}
+                                                {currentResident || ""}
                                             </p>
                                             <p className="col-3">
-                                                Địa chỉ hiện tại:&nbsp;
-                                                {examinationData?.userExaminationData?.currentResident || ""}
+                                                CCCD:&nbsp;
+                                                {examinationData?.userExaminationData?.cid || ""}
+                                            </p>
+                                            <p className="col-3">
+                                                Số điện thoại:&nbsp;
+                                                {examinationData?.userExaminationData?.phoneNumber || ""}
                                             </p>
                                         </div>
                                         <div className="row">
                                             <p className="col-6">
                                                 Bảo hiểm y tế:&nbsp;
-                                                {examinationData?.insuranceCode || ""}
-                                            </p>
-                                            <p className="col-6">
-                                                Giá trị từ:&nbsp;
-                                                {examinationData?.insuranceCode || ""}
-                                            </p>
-                                            <p className="col-9">
-                                                Nơi ĐKKCB ban đầu:&nbsp;
-                                                {examinationData?.userExaminationData?.cid || ""}
+                                                {examinationData?.userInsuranceData?.insuranceCode || ""}
                                             </p>
                                             <p className="col-3">
-                                                Mã:&nbsp;
-                                                {examinationData?.userExaminationData?.phoneNumber || ""}
+                                                Giá trị từ:&nbsp;
+                                                {(examinationData?.userInsuranceData?.dateOfIssue && examinationData?.userInsuranceData?.exp)
+                                                    ? `${dayjs(dayjs(examinationData.userInsuranceData.dateOfIssue).format("YYYY-MM-DD")).format("DD/MM/YYYY")} - ${dayjs(dayjs(examinationData.userInsuranceData.exp).format("YYYY-MM-DD")).format("DD/MM/YYYY")}` : ''}
+                                            </p>
+                                            <p className="col-3">
+                                                Nơi ĐKKCB ban đầu:&nbsp;
+                                                {examinationData?.userInsuranceData?.initialHealthcareRegistrationCode || ""}
                                             </p>
                                         </div>
                                         <div className="row">
-                                            <p className="me-5">
+                                            <p className="d-flex align-items-center gap-2 col-6">
                                                 Đối tượng ưu tiên:&nbsp;
                                                 {SpecialText(examinationData?.special)}
                                             </p>
@@ -700,7 +722,7 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                         <span className="font-medium text-gray-700">Tổng tạm ứng:</span>
                         <span className="font-semibold text-gray-900">{formatCurrency(totalAdvance)}</span>
                     </div>
-                    
+
                     <div className="mt-1 flex justify-between items-center">
                         <span className="font-medium text-gray-700">Tổng chi phí KCB:</span>
                         <span className="font-semibold text-gray-900">{formatCurrency(totalCost)}</span>
@@ -716,67 +738,69 @@ const SummaryModal = ({ open, onCancel, examData = null, examinationId = null, o
                         <span className="font-semibold text-indigo-600">{formatCurrency(patientPaid)}</span>
                     </div>
                 </div>
-                <div className="bg-white shadow-md">
-                    <div className="p-3 pt-0 pb-2 space-y-2">
-                        <div className="pt-2 border-t border-gray-200">
-                            <div className="flex justify-between items-center">
-                                <span className="font-bold text-gray-800">Thanh toán:</span>
-                                <span className={`font-bold text-lg ${paymentStatus.color}`}>{paymentStatus.text}</span>
+
+                <div className="summary-fixed-total">
+                    <div className="bg-white shadow-md">
+                        <div className="p-3 pt-0 pb-2 space-y-2">
+                            <div className="pt-2 border-t border-gray-200">
+                                <div className="flex justify-between items-center">
+                                    <span className="font-bold text-gray-800">Thanh toán:</span>
+                                    <span className={`font-bold text-lg ${paymentStatus.color}`}>{paymentStatus.text}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    {examinationId && examinationData.status === STATUS_BE.DONE && (
-                        <div className="p-2 bg-gray-50 rounded-b-lg">
-                            <div className="flex items-center justify-between">
-                                <div className="space-x-4">
-                                    <div className="radio-button-container ms-2">
-                                        <div className="radio-button">
-                                            <input type="radio" className="radio-button__input" id="radio1" name="radio-group"
-                                                value={PAYMENT_METHOD.CASH}
-                                                checked={paymentMethod === PAYMENT_METHOD.CASH}
-                                                onChange={() => setPaymentMethod(PAYMENT_METHOD.CASH)}
-                                            />
-                                            <label className="radio-button__label" htmlFor="radio1">
-                                                <span className="radio-button__custom"></span>
-                                                Tiền mặt
-                                            </label>
-                                        </div>
-                                        {difference <= 0 && (
+                        {examinationId && examinationData.status === STATUS_BE.DONE && (
+                            <div className="p-2 bg-gray-50 rounded-b-lg">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-x-4">
+                                        <div className="radio-button-container ms-2">
                                             <div className="radio-button">
-                                                <input type="radio" className="radio-button__input" id="radio2" name="radio-group"
-                                                    value={PAYMENT_METHOD.MOMO}
-                                                    checked={paymentMethod === PAYMENT_METHOD.MOMO}
-                                                    onChange={() => setPaymentMethod(PAYMENT_METHOD.MOMO)}
+                                                <input type="radio" className="radio-button__input" id="radio1" name="radio-group"
+                                                    value={PAYMENT_METHOD.CASH}
+                                                    checked={paymentMethod === PAYMENT_METHOD.CASH}
+                                                    onChange={() => setPaymentMethod(PAYMENT_METHOD.CASH)}
                                                 />
-                                                <label className="radio-button__label" htmlFor="radio2">
+                                                <label className="radio-button__label" htmlFor="radio1">
                                                     <span className="radio-button__custom"></span>
-                                                    Chuyển khoản
+                                                    Tiền mặt
                                                 </label>
                                             </div>
-                                        )}
+                                            {difference <= 0 && (
+                                                <div className="radio-button">
+                                                    <input type="radio" className="radio-button__input" id="radio2" name="radio-group"
+                                                        value={PAYMENT_METHOD.MOMO}
+                                                        checked={paymentMethod === PAYMENT_METHOD.MOMO}
+                                                        onChange={() => setPaymentMethod(PAYMENT_METHOD.MOMO)}
+                                                    />
+                                                    <label className="radio-button__label" htmlFor="radio2">
+                                                        <span className="radio-button__custom"></span>
+                                                        Chuyển khoản
+                                                    </label>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <button
-                                    onClick={handlePayment}
-                                    className="save-button"
-                                >
-                                    {isPayLoading ? (
-                                        <span className="flex items-center">
-                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            Đang xử lý...
-                                        </span>
-                                    ) : (
-                                        'Hoàn tất viện phí'
-                                    )}
-                                </button>
+                                    <button
+                                        onClick={handlePayment}
+                                        className="save-button"
+                                    >
+                                        {isPayLoading ? (
+                                            <span className="flex items-center">
+                                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Đang xử lý...
+                                            </span>
+                                        ) : (
+                                            'Hoàn tất viện phí'
+                                        )}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
         </Modal>

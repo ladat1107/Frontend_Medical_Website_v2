@@ -16,7 +16,7 @@ const DoctorCard = ({ doctor }) => {
   const price = doctor?.price || 80000
   const examCount = doctor?.examinationStaffData?.length || 0
   const avatar = doctor?.staffUserData?.avatar || "/placeholder.svg?height=300&width=300"
-  const rating = 5 // Default rating
+  const rating = [3, 3.5, 4, 4.5, 5][Math.floor(Math.random() * 5)] // Default rating
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-300 h-full flex flex-col w-[270px]

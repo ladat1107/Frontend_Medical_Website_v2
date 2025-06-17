@@ -5,7 +5,7 @@ import { PATHS } from '@/constant/path';
 import { primaryColorHome } from '@/styles/variables';
 
 const DoctorCard = ({ id, avatar, name, specialty, price, visits, rating }) => {
-  let navigate = useNavigate();
+  let navigate = useNavigate(); 
   const avtTest = avatar || 'https://medpro.vn/_next/image?url=https%3A%2F%2Fcdn.medpro.vn%2Fmedpro-production%2Fdigimed%2Fdoctors%2F1712976261086-BS_THUY_VAN.png&w=1920&q=75'
   return (
     <div className="flex bg-white flex-col items-center justify-center h-[450px] w-[270px] rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">

@@ -6,12 +6,10 @@ import Specialty from "./Specialty";
 import OurTeam from "./OurTeam";
 import Collaboration from "./Collaboration";
 import Department from "./Department";
-import Statistical from "./Statistical";
 import Download from "./Dowload";
 import Media from "./Media";
 import VideoComponent from "@/components/Video";
 import Blog from "./Blog";
-import DoctorCard from "@/layout/User/pages/DoctorList/Component";
 import AdvertisementSwiper from "@/components/Swiper/AdvertisementSwiper";
 
 const HomePage = () => {
@@ -58,11 +56,6 @@ const HomePage = () => {
       <div className="bg-gradient-to-b from-white via-bgHomePage to-white py-6 mt-0 md:mt-10">
         <Container>
           <Blog />
-        </Container>
-      </div>
-      <div className="bg-bgHomePage py-6 md:py-16">
-        <Container>
-          <Statistical />
         </Container>
       </div>
     </>

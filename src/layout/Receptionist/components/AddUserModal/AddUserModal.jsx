@@ -7,6 +7,8 @@ import { createUser } from '@/services/adminService';
 import dayjs from 'dayjs';
 import { apiService } from '@/services/apiService';
 import useQuery from '@/hooks/useQuery';
+import { isValidInsuranceCode } from '@/utils/numberSeries';
+import { ROLE } from '@/constant/role';
 
 const AddUserModal = ({ isOpen, onClose, handleAddUserSuscess, dataQRCode }) => {
 
@@ -34,6 +36,10 @@ const AddUserModal = ({ isOpen, onClose, handleAddUserSuscess, dataQRCode }) => 
         }
         const address = (formData?.address || " ") + "%" + (formData?.ward || " ") + "%" + (formData?.district || " ") + "%" + (formData?.province || " ")
 
+        if (formData.insuranceCode && !isValidInsuranceCode(formData.insuranceCode)) {
+            message.error('Mã bảo hiểm không hợp lệ!')
+            return
+        }
         const data = {
             lastName: formData.lastName,
             firstName: formData.firstName,
@@ -47,8 +53,9 @@ const AddUserModal = ({ isOpen, onClose, handleAddUserSuscess, dataQRCode }) => 
             exp: formData.exp,
             residentialCode: formData.residentialCode,
             continuousFiveYearPeriod: formData.continuousFiveYearPeriod,
-            roleId: 2
+            roleId: ROLE.PATIENT
         }
+
         setLoading(true);
 
         try {
@@ -100,7 +107,7 @@ const AddUserModal = ({ isOpen, onClose, handleAddUserSuscess, dataQRCode }) => 
                     address: userInfo?.address.split(",").slice(0, -3).join(",") || "",
                 })
 
-            } else if (dataQRCode?.DT?.type === "insuranceCode") {                
+            } else if (dataQRCode?.DT?.type === "insuranceCode") {
                 form.setFieldsValue({
                     insuranceCode: userInfo?.insuranceCode || "",
                     dateOfIssue: userInfo?.dateOfIssue ? dayjs(dayjs(userInfo.dateOfIssue).format('DD/MM/YYYY'), "DD/MM/YYYY") : null,
@@ -348,11 +355,11 @@ const AddUserModal = ({ isOpen, onClose, handleAddUserSuscess, dataQRCode }) => 
                                         name={"insuranceCode"}
                                         label="Bảo hiểm y tế"
                                         rules={[{
-                                            pattern: /^[0-9]*$/g,
-                                            message: 'Vui lòng nhập số!',
+                                            pattern: /^[A-Z]{2}[1-5]\d{2}\d{10}$/,
+                                            message: 'Mã bảo hiểm không hợp lệ!',
                                         }]}
                                     >
-                                        <Input placeholder="Nhập số BHYT" maxLength={10} className='input-add-user' />
+                                        <Input placeholder="Nhập số BHYT" maxLength={15} className='input-add-user' />
                                     </Form.Item>
                                 </Col>
                             </Row>

@@ -34,7 +34,7 @@ const Cashier = () => {
 
 
     const handlePay = (index) => {
-        if(medicalTreatmentTier === 2) {
+        if (medicalTreatmentTier === 2) {
             const selectedPatient = listExam[index];
 
             if (selectedPatient) {
@@ -46,7 +46,7 @@ const Cashier = () => {
                 // Xử lý trường hợp không tìm thấy bệnh nhân
                 message.error('Không tìm thấy thông tin bệnh nhân');
             }
-        } else if(medicalTreatmentTier === 1) {
+        } else if (medicalTreatmentTier === 1) {
             const selectedPatient = listAdvance[index];
 
             if (selectedPatient) {
@@ -59,7 +59,7 @@ const Cashier = () => {
         } else {
             const selectedPatient = listInpatient[index];
 
-            if(selectedPatient){
+            if (selectedPatient) {
                 setExamData(selectedPatient);
                 handleOpenSummaryModal();
             }
@@ -103,7 +103,7 @@ const Cashier = () => {
         loading: loadingAdvanceMoney,
         error: errorAdvanceMoney,
         execute: fetchAdvanceMoney,
-    } = useMutation(() => getListAdvanceMoney(currentPage, pageSize, search, statusPay == 4 ? 1 : 2 ))
+    } = useMutation(() => getListAdvanceMoney(currentPage, pageSize, search, statusPay == 4 ? 1 : 2))
 
     const {
         data: dataInpatients,
@@ -113,11 +113,11 @@ const Cashier = () => {
     } = useMutation(() => getListInpatients('', '', statusPay == 4 ? 7 : 8, currentPage, pageSize, search))
 
     useEffect(() => {
-        if(+medicalTreatmentTier === 2) 
+        if (+medicalTreatmentTier === 2)
             fetchExaminations();
-        else if(+medicalTreatmentTier === 1)
+        else if (+medicalTreatmentTier === 1)
             fetchAdvanceMoney();
-        else 
+        else
             fetchInpatients();
     }, [statusPay, search, currentPage, pageSize, medicalTreatmentTier]);
 
@@ -210,119 +210,119 @@ const Cashier = () => {
                         <p className="title">Danh sách đơn khám</p>
                     </div>
                     <div className="schedule-content text-center">
-                    {+medicalTreatmentTier === 2 ? (
-                        <>
-                            {loadingExaminations ? (
-                                <div className="loading">
-                                    <Spin />
-                                </div>
-                            ) : (listExam && listExam.length > 0 ? listExam.map((item, index) => (
-                                <div key={index}>
-                                    {item.type === 'examination' ? (
+                        {+medicalTreatmentTier === 2 ? (
+                            <>
+                                {loadingExaminations ? (
+                                    <div className="loading">
+                                        <Spin />
+                                    </div>
+                                ) : (listExam && listExam.length > 0 ? listExam.map((item, index) => (
+                                    <div key={index}>
+                                        {item.type === 'examination' ? (
+                                            <PatientItem
+                                                key={item.data.id + index}
+                                                index={index + 1}
+                                                id={item.data.id}
+                                                name={`${item.data?.userExaminationData.lastName} ${item.data?.userExaminationData.firstName}`}
+                                                symptom={item.type}
+                                                special={item.data.special}
+                                                room={item.data.roomName}
+                                                doctor={`${item.data?.examinationStaffData?.staffUserData.lastName} ${item.data?.examinationStaffData?.staffUserData.firstName}`}
+                                                downItem={downItem}
+                                                visit_status={item.data.visit_status}
+                                                onClickItem={() => handlePay(index)}
+                                                sort={false}
+                                            />
+                                        ) : item.type === 'paraclinical' ? (
+                                            <PatientItem
+                                                key={item.data.id + index}
+                                                index={index + 1}
+                                                id={item.data.id}
+                                                name={`${item.data?.userExaminationData.lastName} ${item.data?.userExaminationData.firstName}`}
+                                                symptom={item.type}
+                                                special={item.data.special}
+                                                room={""}
+                                                doctor={""}
+                                                downItem={downItem}
+                                                visit_status={item.data.visit_status}
+                                                onClickItem={() => handlePay(index)}
+                                                sort={false}
+                                                doctorHeader=""
+                                            />
+                                        ) : null}
+                                    </div>
+                                )) : (
+                                    <div className="no-patient d-flex justify-content-center mt-2">
+                                        <p>Danh sách bệnh nhân trống!</p>
+                                    </div>
+                                )
+                                )}
+                            </>
+                        ) : +medicalTreatmentTier === 1 ? (
+                            <>
+                                {loadingAdvanceMoney ? (
+                                    <div className="loading">
+                                        <Spin />
+                                    </div>
+                                ) : (listAdvance && listAdvance.length > 0 ? listAdvance.map((item, index) => (
+                                    <div key={index}>
                                         <PatientItem
-                                            key={item.data.id + index}
+                                            key={item.id + index}
                                             index={index + 1}
-                                            id={item.data.id}
-                                            name={`${item.data?.userExaminationData.lastName} ${item.data?.userExaminationData.firstName}`}
-                                            symptom={item.type}
-                                            special={item.data.special}
-                                            room={item.data.roomName}
-                                            doctor={`${item.data?.examinationStaffData?.staffUserData.lastName} ${item.data?.examinationStaffData?.staffUserData.firstName}`}
+                                            id={item.id}
+                                            name={`${item?.userExaminationData.lastName} ${item?.userExaminationData.firstName}`}
+                                            symptom={item?.symptom}
+                                            special={item?.special}
+                                            room={item?.roomName}
+                                            doctor={`${item?.userExaminationData?.phoneNumber}`}
                                             downItem={downItem}
-                                            visit_status={item.data.visit_status}
+                                            visit_status={item?.visit_status}
                                             onClickItem={() => handlePay(index)}
                                             sort={false}
+                                            doctorHeader="Số điện thoại"
+                                            isEmergency={item?.medicalTreatmentTier === 3 ? true : false}
                                         />
-                                    ) : item.type === 'paraclinical' ? (
+                                    </div>
+                                )) : (
+                                    <div className="no-patient d-flex justify-content-center mt-2">
+                                        <p>Danh sách bệnh nhân trống!</p>
+                                    </div>
+                                )
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                {loadingInpatients ? (
+                                    <div className="loading">
+                                        <Spin />
+                                    </div>
+                                ) : (listInpatient && listInpatient.length > 0 ? listInpatient.map((item, index) => (
+                                    <div key={index}>
                                         <PatientItem
-                                            key={item.data.id + index}
+                                            key={item.id + index}
                                             index={index + 1}
-                                            id={item.data.id}
-                                            name={`${item.data?.userExaminationData.lastName} ${item.data?.userExaminationData.firstName}`}
-                                            symptom={item.type}
-                                            special={item.data.special}
-                                            room={""}
-                                            doctor={""}
+                                            id={item.id}
+                                            name={`${item?.userExaminationData.lastName} ${item?.userExaminationData.firstName}`}
+                                            symptom={item?.userExaminationData?.cid}
+                                            special={item?.special}
+                                            room={item?.roomName}
+                                            doctor={`${item?.treatmentResult}`}
                                             downItem={downItem}
-                                            visit_status={item.data.visit_status}
+                                            visit_status={item?.visit_status}
                                             onClickItem={() => handlePay(index)}
                                             sort={false}
-                                            doctorHeader=""
+                                            doctorHeader="Kết quả điều trị"
                                         />
-                                    ) : null}
-                                </div>
-                            )) : (
-                                <div className="no-patient d-flex justify-content-center mt-2">
-                                    <p>Danh sách bệnh nhân trống!</p>
-                                </div>
-                            )
-                            )}
-                        </>
-                    ) : +medicalTreatmentTier === 1 ? (
-                        <>
-                            {loadingAdvanceMoney ? (
-                                <div className="loading">
-                                    <Spin />
-                                </div>
-                            ) : (listAdvance && listAdvance.length > 0 ? listAdvance.map((item, index) => (
-                                <div key={index}>
-                                    <PatientItem
-                                        key={item.id + index}
-                                        index={index + 1}
-                                        id={item.id}
-                                        name={`${item?.userExaminationData.lastName} ${item?.userExaminationData.firstName}`}
-                                        symptom={item?.symptom}
-                                        special={item?.special}
-                                        room={item?.roomName}
-                                        doctor={`${item?.userExaminationData?.phoneNumber}`}
-                                        downItem={downItem}
-                                        visit_status={item?.visit_status}
-                                        onClickItem={() => handlePay(index)}
-                                        sort={false}
-                                        doctorHeader="Số điện thoại"
-                                        isEmergency={item?.medicalTreatmentTier === 3 ? true : false}
-                                    />
-                                </div>
-                            )) : (
-                                <div className="no-patient d-flex justify-content-center mt-2">
-                                    <p>Danh sách bệnh nhân trống!</p>
-                                </div>
-                            )
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            {loadingInpatients ? (
-                                <div className="loading">
-                                    <Spin />
-                                </div>
-                            ) : (listInpatient && listInpatient.length > 0 ? listInpatient.map((item, index) => (
-                                <div key={index}>
-                                    <PatientItem
-                                        key={item.id + index}
-                                        index={index + 1}
-                                        id={item.id}
-                                        name={`${item?.userExaminationData.lastName} ${item?.userExaminationData.firstName}`}
-                                        symptom={item?.userExaminationData?.cid}
-                                        special={item?.special}
-                                        room={item?.roomName}
-                                        doctor={`${item?.treatmentResult}`}
-                                        downItem={downItem}
-                                        visit_status={item?.visit_status}
-                                        onClickItem={() => handlePay(index)}
-                                        sort={false}
-                                        doctorHeader="Kết quả điều trị"
-                                    />
-                                </div>
-                            )) : (
-                                <div className="no-patient d-flex justify-content-center mt-2">
-                                    <p>Danh sách bệnh nhân trống!</p>
-                                </div>
-                            )
-                            )}
-                        </>
-                    )}
-                        
+                                    </div>
+                                )) : (
+                                    <div className="no-patient d-flex justify-content-center mt-2">
+                                        <p>Danh sách bệnh nhân trống!</p>
+                                    </div>
+                                )
+                                )}
+                            </>
+                        )}
+
                     </div>
                     <div className='row mt-3'>
                         {!loadingExaminations && isAppointment !== 1 && listExam.length > 0 && (

@@ -7,14 +7,23 @@ import { PATHS } from "@/constant/path";
 import GoogleMap from "./MapComponent";
 import ParseHtml from "@/components/ParseHtml";
 import BannerSwiper from "./BannerSwiper";
-
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearBooking } from "@/redux/bookingSlice";
 const DepartmentDetailHeader = (props) => {
     let { departmentDetail, departmentLoading } = props;
+    const randomRating = [3, 4, 5][Math.floor(Math.random() * 3)];
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const breadcrumbItems = [
         { title: <Link className="!text-secondaryText-tw no-underline hover:!bg-transparent" to={PATHS.HOME.HOMEPAGE}>Trang chủ</Link>, },
         { title: <Link className="!text-secondaryText-tw no-underline hover:!bg-transparent" to={PATHS.HOME.DEPARTMENT_LIST} >Khoa</Link>, },
         { title: (<div className="text-primary-tw ">Khoa {departmentDetail.name}</div>) },
     ];
+    const handleBooking = () => {
+        dispatch(clearBooking());
+        navigate(PATHS.HOME.BOOKING);
+    }
     return (
         <>
             <Breadcrumb items={breadcrumbItems} className="font-bold" />
@@ -33,8 +42,8 @@ const DepartmentDetailHeader = (props) => {
                                     className="w-[150px] md:w-[70%] rounded-full mb-4"
                                 />
                                 <div>
-                                    <span className="text-[#FADB14] font-bold">(4) </span>
-                                    <Rate disabled allowHalf defaultValue={4} />
+                                    <span className="text-[#FADB14] font-bold">({randomRating}) </span>
+                                    <Rate disabled allowHalf value={randomRating} />
                                 </div>
                             </div>
                         )}
@@ -53,7 +62,7 @@ const DepartmentDetailHeader = (props) => {
                                     <Phone className="text-[#f0bd46] mr-2 flex-shrink-0" />
                                     <span className="text-gray-700">0353366459</span>
                                 </div>
-                                <button className="w-full text-center text-white bg-primary-tw rounded-full py-2 text-base font-bold cursor-pointer mt-2">
+                                <button onClick={handleBooking} className="w-full text-center text-white bg-primary-tw rounded-full py-2 text-base font-bold cursor-pointer mt-2 hover:bg-primary-tw/80 transition-all duration-300">
                                     Đặt khám ngay
                                 </button>
                             </div>

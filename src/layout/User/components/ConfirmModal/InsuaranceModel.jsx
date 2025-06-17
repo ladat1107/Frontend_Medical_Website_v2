@@ -2,21 +2,20 @@ import React, { useEffect } from "react";
 import { Modal, Form, Input, DatePicker, Button, Typography, message } from "antd";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
-import { getThirdDigitFromLeft } from "@/utils/numberSeries";
-import { COVERED } from "@/constant/value";
+import { getThirdDigitFromLeft, isValidInsuranceCode } from "@/utils/numberSeries";
 const { Link, Text } = Typography;
-const arrCover = Object.keys(COVERED).map(Number);
 const InsuaranceModel = ({ open, setOpen, handleCheckInsuarance, insuaranceUpdate }) => {
     const [form] = Form.useForm();
     const { user } = useSelector(state => state.authen);
     useEffect(() => {
         if (insuaranceUpdate) {
+            // hiển thị theo múi giờ việt nam
             form.setFieldsValue({
                 ...insuaranceUpdate,
                 id: insuaranceUpdate.id,
-                dateOfIssue: insuaranceUpdate.dateOfIssue ? dayjs(insuaranceUpdate.dateOfIssue, "YYYY-MM-DD") : null,
-                exp: insuaranceUpdate.exp ? dayjs(insuaranceUpdate.exp, "YYYY-MM-DD") : null,
-                continuousFiveYearPeriod: insuaranceUpdate.continuousFiveYearPeriod ? dayjs(insuaranceUpdate.continuousFiveYearPeriod, "YYYY-MM-DD") : null,
+                dateOfIssue: insuaranceUpdate.dateOfIssue ? dayjs(dayjs(insuaranceUpdate.dateOfIssue).format("YYYY-MM-DD"), "YYYY-MM-DD") : null,
+                exp: insuaranceUpdate.exp ? dayjs(dayjs(insuaranceUpdate.exp).format("YYYY-MM-DD"), "YYYY-MM-DD") : null,
+                continuousFiveYearPeriod: insuaranceUpdate.continuousFiveYearPeriod ? dayjs(dayjs(insuaranceUpdate.continuousFiveYearPeriod).format("YYYY-MM-DD"), "YYYY-MM-DD") : null,
             });
         }
     }, [insuaranceUpdate]);
@@ -24,17 +23,17 @@ const InsuaranceModel = ({ open, setOpen, handleCheckInsuarance, insuaranceUpdat
     const handleCancel = () => setOpen(false);
 
     const onFinish = async (values) => {
-        let _insuranceCode = values.insuranceCode.trim().slice(-10);
-        if (_insuranceCode.length !== 10 || !arrCover.includes(+getThirdDigitFromLeft(_insuranceCode))) {
+        let _insuranceCode = values.insuranceCode;
+        if (!isValidInsuranceCode(_insuranceCode)) {
             message.error("Mã thẻ bảo hiểm không hợp lệ");
             return;
         }
         const formatted = {
             ...values,
             insuranceCode: _insuranceCode,
-            dateOfIssue: values.dateOfIssue?.format("YYYY-MM-DD 00:00:00"),
-            exp: values.exp?.format("YYYY-MM-DD 00:00:00"),
-            continuousFiveYearPeriod: values.continuousFiveYearPeriod?.format("YYYY-MM-DD 00:00:00"),
+            dateOfIssue: values.dateOfIssue?.format("YYYY-MM-DD"),
+            exp: values.exp?.format("YYYY-MM-DD"),
+            continuousFiveYearPeriod: values.continuousFiveYearPeriod?.format("YYYY-MM-DD"),
             benefitLevel: getThirdDigitFromLeft(_insuranceCode),
             userId: user?.id,
         };
@@ -58,8 +57,20 @@ const InsuaranceModel = ({ open, setOpen, handleCheckInsuarance, insuaranceUpdat
                     onFinish={onFinish}
                     className="space-y-3 p-3"
                 >
-                    <Form.Item name="insuranceCode" label="Mã thẻ bảo hiểm" rules={[{ required: true, message: "Mã thẻ bảo hiểm không được để trống" }]}>
-                        <Input className="!rounded-md" placeholder="Nhập mã thẻ" />
+                    <Form.Item name="insuranceCode" label="Mã thẻ bảo hiểm" validateTrigger rules={[{
+                        validator: (_, value) => {
+                            if (!isValidInsuranceCode(value)) {
+                                return Promise.reject(new Error("Mã thẻ bảo hiểm không hợp lệ"));
+                            }
+                            return Promise.resolve();
+                        }
+                    }]}>
+                        <Input className="!rounded-md tracking-wider" placeholder="Nhập mã thẻ" maxLength={15} onChange={(e) => {
+                            const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                            form.setFieldsValue({
+                                insuranceCode: value
+                            });
+                        }} />
                     </Form.Item>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

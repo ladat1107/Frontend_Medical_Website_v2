@@ -9,7 +9,7 @@ import MoneyInput from '@/components/Input/MoneyInput';
 import RoomSelectionModal from '@/layout/Doctor/components/RoomOptionModal/RoomSelectionModal';
 
 const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
-    
+
     const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHOD.CASH);
     const [isLoading, setIsLoading] = useState(false);
     const [amount, setAmount] = useState(
@@ -62,8 +62,6 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
         try {
             let paymentData = {
                 id: patientData?.id,
-                //insuranceCoverage: patientData?.insuranceCoverage || null,
-                //insuranceCode: patientData?.insuranceCode || null,
                 status: STATUS_BE.PAID,
                 payment: paymentMethod,
 
@@ -240,7 +238,7 @@ const AdvanceModal = ({ isOpen, onClose, onPaySusscess, patientData }) => {
                         </div>
                         <div className='col-1' />
 
-                        {patientData?.insuranceCoverage in [0, 1, 2, 3, 4] || patientData?.insuranceCode === null || patientData?.insuranceCode === '' ? (
+                        {patientData?.insuranceCoverage in [0, 1, 2, 3, 4, 5] || patientData?.insuranceCode === null || patientData?.insuranceCode === '' ? (
                             <>
                                 <div className='col-2 d-flex align-items-center'>
                                     <p style={{ fontWeight: "400" }}>Mức hưởng:</p>

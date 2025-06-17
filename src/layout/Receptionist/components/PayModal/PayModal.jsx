@@ -9,6 +9,7 @@ import { insuranceCovered } from '@/utils/coveredPrice';
 import { PATHS } from '@/constant/path';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPrintCheckout } from '@/redux/printCheckoutSlice';
+import { isValidInsuranceCode } from '@/utils/numberSeries';
 
 const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData }) => {
     const { user } = useSelector(state => state.authen);
@@ -94,10 +95,13 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
     }, [isOpen]);
 
     const handlePay = async () => {
+        if (!isValidInsuranceCode(insurance)) {
+            message.error('Mã bảo hiểm không hợp lệ');
+            return;
+        }
         setIsLoading(true);
         try {
             let paymentData = {};
-
             if (type === 'examination') {
                 paymentData = {
                     id: examId,
@@ -131,7 +135,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                 try {
                     const ids = patientData.paraclinicalItems.map(item => item.id);
                     if (paymentMethod === PAYMENT_METHOD.CASH) {
-                        const response = await updateListPayParaclinicals({ ids, insurance });
+                        const response = await updateListPayParaclinicals({ ids, insurance: insurance });
 
                         if (response.EC === 0) {
                             message.success('Cập nhật bệnh nhân thành công');
@@ -142,7 +146,7 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                             message.error('Cập nhật bệnh nhân thất bại');
                         }
                     } else {
-                        const response = await checkOutParaclinical({ ids, insurance });
+                        const response = await checkOutParaclinical({ ids, insurance: insurance });
 
                         if (response.EC === 0) {
                             window.location.href = response?.DT?.payUrl;
@@ -154,7 +158,6 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                     message.error('Cập nhật bệnh nhân thất bại!');
                 }
             }
-
         } catch (error) {
             console.log(error);
             message.error('Cập nhật bệnh nhân thất bại!');
@@ -327,14 +330,19 @@ const PayModal = ({ isOpen, onClose, onPaySusscess, examId, type, patientData })
                         <div className='col-3'>
                             <input
                                 className='input-add-exam'
-                                style={{ width: "93%" }} maxLength={10}
+                                style={{ width: "93%" }} maxLength={15}
                                 type='text' value={insurance}
                                 readOnly
-                                placeholder='Nhập số BHYT...' />
+                                placeholder='Nhập số BHYT...'
+                                onChange={(e) => {
+                                    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                                    setInsurance(value);
+                                }}
+                            />
                         </div>
                         <div className='col-1' />
 
-                        {insuranceCoverage in [0, 1, 2, 3, 4] || insurance === null || insurance === '' ? (
+                        {insuranceCoverage in [0, 1, 2, 3, 4, 5] || insurance === null || insurance === '' ? (
                             <>
                                 <div className='col-2 d-flex align-items-center'>
                                     <p style={{ fontWeight: "400" }}>Mức hưởng:</p>

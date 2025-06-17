@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import RadioButtonList from '../RadioButton/RadioButton';
 import { createExamination, getUserInsuarance, getUserByCid, updateExamination } from '@/services/doctorService';
 import { message, Select, Spin } from 'antd';
-import { getThirdDigitFromLeft, isNumericString } from '@/utils/numberSeries';
+import { getThirdDigitFromLeft, isNumericString, isValidInsuranceCode } from '@/utils/numberSeries';
 import './AddExamModal.scss';
 import AddUserModal from '../AddUserModal/AddUserModal';
 import { STATUS_BE } from '@/constant/value';
@@ -35,7 +35,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [loadingAddExam, setLoadingAddExam] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedRoom, setSelectedRoom] = useState(patientData?.examinationRoomData || null);    
+    const [selectedRoom, setSelectedRoom] = useState(patientData?.examinationRoomData || null);
 
     const insuarance = async () => {
         try {
@@ -57,7 +57,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
 
             setSelectedComorbidities(comorbidityObjects);
             setSymptom(patientData.symptom || '');
-            setInsurance(patientData.insuranceCode || '');
+            setInsurance(isValidInsuranceCode(patientData.insuranceCode) ? patientData.insuranceCode : '');
             setIsWrongTreatment(patientData.isWrongTreatment || 0);
             setMedicalTreatmentTier(patientData.medicalTreatmentTier || 2);
 
@@ -93,7 +93,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             setCid(dataQRCode.DT.cid);
             setIsSearched(true);
             setUserInfo(dataQRCode.DT);
-            setInsurance(dataQRCode.DT.userInsuranceData?.insuranceCode || '');
+            setInsurance(isValidInsuranceCode(dataQRCode.DT.userInsuranceData?.insuranceCode) ? dataQRCode.DT.userInsuranceData?.insuranceCode : '');
             setIsUserModalOpen(false);
         } else if (dataQRCode?.EC === 1) {
             setIsUserModalOpen(true);
@@ -134,7 +134,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
         setIsSearched(true);
         setUserInfo(data.user);
         setCid(data.user.cid);
-        setInsurance(data.insurance?.insuranceCode || '');
+        setInsurance(isValidInsuranceCode(data.insurance?.insuranceCode) ? data.insurance?.insuranceCode : '');
     }
 
     const handleFindUser = async () => {
@@ -158,7 +158,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             const response = await getUserByCid(cid);
             if (response.DT) {
                 setUserInfo(response.DT);
-                setInsurance(response.DT.userInsuranceData?.insuranceCode || '');
+                setInsurance(isValidInsuranceCode(response.DT.userInsuranceData?.insuranceCode) ? response.DT.userInsuranceData?.insuranceCode : '');
             } else {
                 setUserInfo({});
             }
@@ -245,7 +245,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             return;
         }
 
-        if(insurance !== '' && (insurance.length < 10 || insurance.length > 10)) {
+        if (insurance && !isValidInsuranceCode(insurance)) {
             message.error('Số BHYT không hợp lệ!');
             return;
         }
@@ -297,7 +297,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
             return;
         }
 
-        if(insurance !== '' && (insurance.length < 10 || insurance.length > 10)) {
+        if (insurance && !isValidInsuranceCode(insurance)) {
             message.error('Số BHYT không hợp lệ!');
             return;
         }
@@ -343,10 +343,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
     }
 
     const deleteExam = async () => {
-        const data = {
-            id: examId,
-            status: 0
-        }
+        const data = { id: examId, status: STATUS_BE.INACTIVE }
 
         try {
             const response = await updateExamination(data);
@@ -366,12 +363,12 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
     }
 
     const showModal = () => {
-        if (!userInfo?.id ) {
+        if (!userInfo?.id) {
             message.error('Thông tin không hợp lệ!');
             return;
         }
 
-        if(insurance !== '' && (insurance.length < 10 || insurance.length > 10)) {
+        if (insurance && !isValidInsuranceCode(insurance)) {
             message.error('Số BHYT không hợp lệ!');
             return;
         }
@@ -386,16 +383,19 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
     const handleRoomSelect = async (room) => {
         // Lưu giá trị room vào biến
         const selectedRoomData = room;
-        
+
         // Cập nhật state
         setSelectedRoom(selectedRoomData);
         setIsModalVisible(false);
-
+        if (insurance && !isValidInsuranceCode(insurance)) {
+            message.error('Số BHYT không hợp lệ!');
+            return;
+        }
         let insuranceCoverage = getThirdDigitFromLeft(insurance);
-        
+
         setLoadingAddExam(true);
         try {
-            if(isEditMode) {
+            if (isEditMode) {
                 const data = {
                     id: examId,
                     userId: userInfo.id,
@@ -404,12 +404,12 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     special: prioritize ? prioritize : "normal",
                     insuranceCoverage: insuranceCoverage || null,
                     insuranceCode: insurance,
-                    
+
                     comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
-                    status: patientData?.paymentId ? STATUS_BE.PAID : 
-                            +medicalTreatmentTier === 3 ? STATUS_BE.PAID : 
+                    status: patientData?.paymentId ? STATUS_BE.PAID :
+                        +medicalTreatmentTier === 3 ? STATUS_BE.PAID :
                             STATUS_BE.WAITING,
-       
+
                     isWrongTreatment: isWrongTreatment,
                     medicalTreatmentTier: medicalTreatmentTier,
                     roomId: selectedRoomData ? selectedRoomData.id : null,
@@ -434,12 +434,12 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     special: prioritize ? prioritize : "normal",
                     insuranceCoverage: insuranceCoverage || null,
                     insuranceCode: insurance,
-                    
+
                     comorbidities: selectedComorbidities ? selectedComorbidities.map(item => item.id).join(',') : null,
                     time: timeSlot ? timeSlot : null,
                     is_appointment: timeSlot ? 1 : 0,
-                    status: timeSlot ? STATUS_BE.PENDING : 
-                            +medicalTreatmentTier === 3 ? STATUS_BE.PAID : 
+                    status: timeSlot ? STATUS_BE.PENDING :
+                        +medicalTreatmentTier === 3 ? STATUS_BE.PAID :
                             STATUS_BE.WAITING,
                     isWrongTreatment: isWrongTreatment,
                     medicalTreatmentTier: medicalTreatmentTier,
@@ -503,13 +503,13 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                                     <p style={{ fontWeight: "400" }}>Số BHYT:</p>
                                                 </div>
                                                 <div className='col-5'>
-                                                    <input className='input-add-exam' style={{ width: "96%" }} maxLength={10}
+                                                    <input className='input-add-exam' style={{ width: "96%" }} maxLength={15}
                                                         type='text' value={insurance}
                                                         onChange={(e) => {
-                                                            const onlyNums = e.target.value.replace(/\D/g, ""); // chỉ lấy số
-                                                            setInsurance(onlyNums);
+                                                            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                                                            setInsurance(value);
                                                         }}
-                                                        placeholder='Nhập số BHYT...' />
+                                                        placeholder='Nhập mã thẻ...' />
                                                 </div>
                                             </div>
                                         </div>
@@ -560,12 +560,12 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                                         <input
                                                             className='input-add-exam me-0'
                                                             style={{ width: "86%" }}
-                                                            maxLength={10}
+                                                            maxLength={15}
                                                             type='text'
                                                             value={insurance}
                                                             onChange={(e) => {
-                                                                //const onlyNums = e.target.value.replace(/\D/g, ""); // chỉ lấy số
-                                                                setInsurance(e.target.value);
+                                                                let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                                                                setInsurance(value);
                                                             }}
                                                             placeholder='Nhập số BHYT...'
                                                         />
@@ -577,7 +577,7 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                 </div>
                             </>
                         )}
-                    </div> 
+                    </div>
                     <div className='pation-info row mb-3'>
                         <div className='col-12 flex'>
                             <p className='col-2 flex items-center'>Loại KCB:</p>
@@ -625,44 +625,44 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                     <AnimatePresence>
                         {+medicalTreatmentTier === 2 && (
                             <motion.div
-                            className='pation-info row mb-3'
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
+                                className='pation-info row mb-3'
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
                             >
-                            <div className='col-7'>
-                                <p>Phòng khám:</p>
-                                <div className='info-action'>
-                                <Select
-                                    showSearch
-                                    placeholder="Chọn phòng khám"
-                                    optionFilterProp="label"
-                                    options={specialtyOptions}
-                                    style={{ width: '100%' }}
-                                    value={specialtySelected}
-                                    className='select-add-exam'
-                                    onChange={handleSpecialtyChange}
-                                />
+                                <div className='col-7'>
+                                    <p>Phòng khám:</p>
+                                    <div className='info-action'>
+                                        <Select
+                                            showSearch
+                                            placeholder="Chọn phòng khám"
+                                            optionFilterProp="label"
+                                            options={specialtyOptions}
+                                            style={{ width: '100%' }}
+                                            value={specialtySelected}
+                                            className='select-add-exam'
+                                            onChange={handleSpecialtyChange}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='col-5'>
-                                <p>Bác sĩ:</p>
-                                <div className='info-action'>
-                                <input
-                                    className='input-add-exam'
-                                    maxLength={12}
-                                    readOnly
-                                    style={{ marginRight: 0 }}
-                                    type='text'
-                                    value={specialtySelected ? specialtySelected.staffName : 'Chưa chọn phòng khám'}
-                                    placeholder='Chọn phòng khám trước'
-                                />
+                                <div className='col-5'>
+                                    <p>Bác sĩ:</p>
+                                    <div className='info-action'>
+                                        <input
+                                            className='input-add-exam'
+                                            maxLength={12}
+                                            readOnly
+                                            style={{ marginRight: 0 }}
+                                            type='text'
+                                            value={specialtySelected ? specialtySelected.staffName : 'Chưa chọn phòng khám'}
+                                            placeholder='Chọn phòng khám trước'
+                                        />
+                                    </div>
                                 </div>
-                            </div>
                             </motion.div>
                         )}
-                        </AnimatePresence>
+                    </AnimatePresence>
                     <div className='exam-info'>
                         <p>Ưu tiên:</p>
                         <RadioButtonList
@@ -725,14 +725,14 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                                 </div>
                             )}
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 <div className='add-exam-footer'>
                     <button className="close-exam-btn" onClick={onClose}>Đóng</button>
                     {isEditMode ? (
                         <>
                             <button style={{ background: "#F44343" }} className='add-exam-btn me-2' onClick={() => deleteExam()}>Hủy lịch</button>
-                            <button className='add-exam-btn' 
+                            <button className='add-exam-btn'
                                 onClick={
                                     +medicalTreatmentTier === 2 ? updateExam : showModal
                                 }>
@@ -747,9 +747,9 @@ const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditM
                             </button>
                         </>
                     ) : (
-                        <button className='add-exam-btn' 
+                        <button className='add-exam-btn'
                             onClick={
-                                +medicalTreatmentTier === 2 ? addExam : showModal 
+                                +medicalTreatmentTier === 2 ? addExam : showModal
                             }>
                             {loadingAddExam ? (
                                 <>

@@ -8,12 +8,13 @@ import { getMedicalHistories } from '@/services/doctorService';
 import { convertDateTime } from '@/utils/formatDate';
 import { convertGender } from '@/utils/convertGender';
 import dayjs from 'dayjs';
+import { apiService } from '@/services/apiService';
 
 const HistoryModal = ({ isModalOpen, handleCancel, userId = '', onCopyPrescription }) => {
 
     const [historyData, setHistoryData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-
+    const [address, setAddress] = useState("");
     useEffect(() => {
         fetchExaminationData();
     }, [userId]);
@@ -29,11 +30,26 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '', onCopyPrescripti
 
     useEffect(() => {
         if (dataHistory && dataHistory.DT) {
-            console.log('dataHistory', dataHistory);
             setHistoryData(dataHistory.DT[0]);
             setIsLoading(false);
         }
     }, [dataHistory, loadingHistory, errorHistory]);
+
+    useEffect(() => {
+        if (historyData?.address) {
+            getAddress(historyData?.address);
+        }
+    }, [historyData]);
+
+    const getAddress = async (address) => {
+        let _addressArray = address?.split('%') || [];
+        if (_addressArray.length > 1) {
+            let response = await apiService.getFullAddress(_addressArray[1]);
+            if (response.error === 0) {
+                setAddress((_addressArray[0] || "") + ", " + (response?.data?.full_name || ""));
+            }
+        }
+    }
 
     const handleCopyPrescription = (prescriptionData) => {
         if (onCopyPrescription) {
@@ -42,9 +58,7 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '', onCopyPrescripti
             handleCancel(); // Close the modal after copying
         }
     };
-
     if (!isModalOpen) return null;
-
     return (
         <div className='history-container'>
             <div className="history-content">
@@ -119,7 +133,7 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '', onCopyPrescripti
                                     Địa chỉ:
                                 </div>
                                 <div className="col-6">
-                                    {historyData?.address}
+                                    {address ? address : historyData?.address}
                                 </div>
                             </div>
                         </div>
@@ -130,7 +144,7 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '', onCopyPrescripti
                                     Mã bảo hiểm y tế:
                                 </div>
                                 <div className="col-2">
-                                    {historyData?.userInsuranceData?.insuranceCode}
+                                    <b>{historyData?.userInsuranceData?.insuranceCode}</b>
                                 </div>
                                 <div className="col-2">
                                     Nơi đăng ký KCB ban đầu:
@@ -144,14 +158,14 @@ const HistoryModal = ({ isModalOpen, handleCancel, userId = '', onCopyPrescripti
                                     Giá trị sử dụng:
                                 </div>
                                 <div className="col-2">
-                                    {historyData?.userInsuranceData?.dateOfIssue && historyData?.userInsuranceData?.exp
-                                        ? dayjs(historyData.userInsuranceData.dateOfIssue).format("DD/MM/YYYY") - dayjs(historyData.userInsuranceData.exp).format("DD/MM/YYYY") : ''}
+                                    {(historyData?.userInsuranceData?.dateOfIssue && historyData?.userInsuranceData?.exp)
+                                        ? `${dayjs(dayjs(historyData.userInsuranceData.dateOfIssue).format("YYYY-MM-DD")).format("DD/MM/YYYY")} - ${dayjs(dayjs(historyData.userInsuranceData.exp).format("YYYY-MM-DD")).format("DD/MM/YYYY")}` : ''}
                                 </div>
                                 <div className="col-2">
                                     Thời hạn đủ 5 năm liên tục:
                                 </div>
                                 <div className="col-6">
-                                    {historyData?.userInsuranceData?.continuousFiveYearPeriod ? dayjs(historyData?.userInsuranceData?.continuousFiveYearPeriod).format("DD/MM/YYYY") : ""}
+                                    {historyData?.userInsuranceData?.continuousFiveYearPeriod ? dayjs(dayjs(historyData?.userInsuranceData?.continuousFiveYearPeriod).format("YYYY-MM-DD")).format("DD/MM/YYYY") : ""}
                                 </div>
                             </div>
                         </div>

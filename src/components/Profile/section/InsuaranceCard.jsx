@@ -78,7 +78,7 @@ const InsuranceCard = ({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="flex items-center">
                                 <CreditCard size={16} className="text-primary-tw mr-2" />
-                                <span className="text-gray-600 mr-2">Mã bảo hiểm:</span>
+                                <span className="text-gray-600 mr-2">Số thẻ:</span>
                                 <span className="font-semibold">{insuranceCode}</span>
                             </div>
 

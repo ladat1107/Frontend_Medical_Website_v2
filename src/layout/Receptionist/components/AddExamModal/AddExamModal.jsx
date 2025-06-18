@@ -11,6 +11,9 @@ import RoomSelectionModal from '@/layout/Doctor/components/RoomOptionModal/RoomS
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddExamModal = ({ isOpen, onClose, timeSlot, handleAddExamSuscess, isEditMode, examId, patientData, comorbiditiesOptions, specialtyOptions, dataQRCode }) => {
+    
+    console.log("AddExamModal time:", timeSlot);
+    
     const [selectedComorbidities, setSelectedComorbidities] = useState([]);
     const [inputComorbidity, setInputComorbidity] = useState('');
     const [shakeId, setShakeId] = useState(null);

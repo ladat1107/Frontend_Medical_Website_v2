@@ -1,19 +1,48 @@
-import React from 'react';
-import { Menu } from 'antd';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Badge, Menu } from 'antd';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/constant/path';
-import { logout } from '@/redux/authenSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { EMIT } from '@/constant/value';
-import { faAddressCard } from '@fortawesome/free-regular-svg-icons';
+import { faAddressCard, faCommentDots } from '@fortawesome/free-regular-svg-icons';
 import emitter from '@/utils/eventEmitter';
 import { ROLE } from '@/constant/role';
+import { useNotification } from '@/contexts/NotificationContext';
+import { handleLogout } from '@/redux/actions/authenActions';
 
 const MenuSidebar = () => {
     let { user } = useSelector(state => state.authen);
     let dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { totalUnreadCount } = useNotification();
+
+    // Force re-render on notification changes
+    const [, setForceUpdate] = useState(0);
+
+    // Trong MenuSidebar.js
+    useEffect(() => {
+
+        // Subscribe to events
+        const handleMarkAllRead = () => {
+            console.log('All notifications marked as read, updating menu');
+            setForceUpdate(prev => prev + 1);
+        };
+
+        const handleCountUpdated = (event) => {
+            console.log('Notification count updated:', event.detail.count);
+            setForceUpdate(prev => prev + 1);
+        };
+
+        document.addEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+        document.addEventListener('notificationCountUpdated', handleCountUpdated);
+
+        return () => {
+            document.removeEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+            document.removeEventListener('notificationCountUpdated', handleCountUpdated);
+        };
+    }, [totalUnreadCount]);
 
     const getMenuItem = () => {
         const items = [
@@ -22,23 +51,30 @@ const MenuSidebar = () => {
             },
             {
                 key: 'personalAdmin',
-                label: (<NavLink to={PATHS.STAFF.PROFILE}>Cá nhân</NavLink>), //style={{ color: selectedKeys === "sub2" ? "red" : "" }}
-                icon: <FontAwesomeIcon icon={faAddressCard} />,  // style={{ color: selectedKeys === "sub2" ? "red" : "" }}
+                label: (<NavLink to={PATHS.STAFF.PROFILE}>Cá nhân</NavLink>),
+                icon: <FontAwesomeIcon icon={faAddressCard} />,
                 children: [
                     {
                         key: 'personalAdmin1',
                         label: 'Thông tin cá nhân',
-                        onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info); }
+                        onClick: () => {
+                            navigate(PATHS.STAFF.PROFILE)
+                            emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info);
+                        }
                     },
                     {
                         key: 'personalAdmin2',
                         label: 'Đổi mật khẩu',
-                        onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword); }
+                        onClick: () => {
+                            navigate(PATHS.STAFF.PROFILE)
+                            emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword);
+                        }
                     },
                     {
                         key: 'personal3',
                         label: "Hồ sơ",
                         onClick: () => {
+                            navigate(PATHS.STAFF.PROFILE)
                             emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.staff);
                         }
                     }
@@ -60,12 +96,17 @@ const MenuSidebar = () => {
                 key: 'sub4',
                 label: 'Danh sách khám bệnh',
                 icon: <i className="fa-solid fa-list"></i>,
-                roles: [ROLE.DOCTOR],
+                roles: [ROLE.DOCTOR, ROLE.NURSE],
                 children: [
                     {
                         key: '9',
-                        label: (<NavLink to={PATHS.STAFF.APPOINTMENT}>Khám bệnh</NavLink>),
+                        label: (<NavLink to={PATHS.STAFF.APPOINTMENT}>Khám Ngoại trú</NavLink>),
                         icon: <i className="fa-solid fa-stethoscope"></i>,
+                    },
+                    {
+                        key: '11',
+                        label: (<NavLink to={PATHS.STAFF.INPATIENT}>Khám Nội trú</NavLink>),
+                        icon: <i className="fa-solid fa-bed-pulse"></i>
                     },
                     {
                         key: '10',
@@ -75,20 +116,53 @@ const MenuSidebar = () => {
                 ],
             },
             {
+                key: 'sub22',
+                label: (<NavLink to={PATHS.RECEPTIONIST.MEDICAL_RECORD}>Hồ sơ khám bệnh</NavLink>),
+                icon: <i className="fa-solid fa-file-medical"></i>,
+                roles: [ROLE.RECEPTIONIST, ROLE.DOCTOR, ROLE.NURSE]
+            },
+            {
                 key: 'sub1',
                 label: (<NavLink to={PATHS.RECEPTIONIST.PRESCRIBE}>Lấy thuốc</NavLink>),
                 icon: <i className="fa-solid fa-pills"></i>,
                 roles: [ROLE.PHARMACIST]
             },
-            {
-                key: 'sub5',
-                label: (<NavLink to={PATHS.STAFF.HANDBOOK}>Cẩm nang</NavLink>),
-                icon: <i className="fa-solid fa-book"></i>,
-            },
+            ...((user.role === ROLE.DOCTOR || user.role === ROLE.NURSE) ? [
+                {
+                    key: 'sub5',
+                    label: (<NavLink to={PATHS.STAFF.HANDBOOK}>Cẩm nang</NavLink>),
+                    icon: <i className="fa-solid fa-book"></i>,
+                },
+            ] : []),
             {
                 key: 'sub6',
                 label: (<NavLink to={PATHS.STAFF.SCHEDULE}>Lịch trực</NavLink>),
                 icon: <i className="fa-regular fa-calendar"></i>,
+            },
+            {
+                key: 'sub7',
+                label: (
+                    <NavLink to={PATHS.STAFF.NOTIFICATION}>
+                        Thông báo
+                        {totalUnreadCount > 0 && (
+                            <Badge
+                                count={totalUnreadCount}
+                                offset={[60, 0]}
+                            />
+                        )}
+                    </NavLink>
+                ),
+                icon: (
+                    <Badge dot={totalUnreadCount > 0}>
+                        <i className="fa-solid fa-bell"></i>
+                    </Badge>
+                ),
+            },
+            {
+                key: 'message',
+                label: (<NavLink to={PATHS.STAFF.CONSULTANT}>Tư vấn</NavLink>),
+                icon: <FontAwesomeIcon icon={faCommentDots} />,
+                hidden: user.role !== ROLE.RECEPTIONIST
             },
             {
                 type: 'divider',
@@ -97,7 +171,7 @@ const MenuSidebar = () => {
                 key: 'logout',
                 label: ("Đăng xuất"),
                 icon: <FontAwesomeIcon icon={faArrowRightFromBracket} rotation={180} />,
-                onClick: () => { dispatch(logout()); }
+                onClick: () => { dispatch(handleLogout(navigate)) },
             },
         ];
 
@@ -113,8 +187,9 @@ const MenuSidebar = () => {
     const items = getMenuItem();
 
     const onClick = (e) => {
-        // console.log('click ', e);
+        console.log('Menu item clicked:', e.key);
     };
+
     return (
         <div className='menu-item'>
             <Menu

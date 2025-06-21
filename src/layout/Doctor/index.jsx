@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, message, theme } from 'antd';
+import { Layout } from 'antd';
 import './Doctor.scss';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ROLE } from '@/constant/role';
-import { PATHS } from '@/constant/path';
 import DoctorHeader from './components/DoctorHeader';
 import DoctorFooter from './components/DoctorFooter';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@/redux/authenSlice';
 import Sidebar from '@/components/Sidebar/SidebarAdmin';
+import { handleLogout } from '@/redux/actions/authenActions';
+import 'bootstrap/dist/css/bootstrap.min.css';
 const { Content } = Layout;
 
 const DoctorLayout = () => {
@@ -16,15 +16,14 @@ const DoctorLayout = () => {
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     let { user } = useSelector((state) => state.authen);
     let dispatch = useDispatch();
-    let navigate = useNavigate();
     const location = useLocation();
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (!user || user.role === ROLE.ADMIN || user.role === ROLE.PATIENT) {
-            dispatch(logout());
-            message.success("Đăng xuất thành công");
-            navigate(PATHS.HOME.LOGIN);
+            dispatch(handleLogout(navigate));
         }
-    }, [location]);
+    }, [location, user.role]);
 
     // Cập nhật kích thước màn hình khi thay đổi
     useEffect(() => {

@@ -1,22 +1,50 @@
-import React, { useState } from 'react';
-import { HomeOutlined, UserSwitchOutlined, SettingOutlined } from '@ant-design/icons';
-import { Menu } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { HomeOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { Badge, Menu } from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAddressCard, faBuilding, faCalendarDays, faHospital } from '@fortawesome/free-regular-svg-icons';
+import { faAddressCard, faCalendarDays, faHospital } from '@fortawesome/free-regular-svg-icons';
 import { PATHS } from '@/constant/path';
 import emitter from '@/utils/eventEmitter';
 import { EMIT } from '@/constant/value';
 import "./Sidebar.scss";
-import { faArrowRightFromBracket, faBookMedical, faStethoscope } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faBookMedical, faDollarSign, faPills, faStethoscope } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@/redux/authenSlice';
+import { handleLogout } from '@/redux/actions/authenActions';
+import { useNotification } from '@/contexts/NotificationContext';
 const MenuSidebar = () => {
-    let navigate = useNavigate();
-    let { user } = useSelector((state) => state.authen);
     let dispatch = useDispatch();
     const [openKeys, setOpenKeys] = useState([]);
-    const [selectedKeys, setSelectedKeys] = useState("sub2");
+    const navigate = useNavigate();
+    const { totalUnreadCount } = useNotification();
+
+    // Force re-render on notification changes
+    const [, setForceUpdate] = useState(0);
+
+    // Trong MenuSidebar.js
+    useEffect(() => {
+        // Log for debugging
+        console.log('MenuSidebar: totalUnreadCount =', totalUnreadCount);
+
+        // Subscribe to events
+        const handleMarkAllRead = () => {
+            console.log('All notifications marked as read, updating menu');
+            setForceUpdate(prev => prev + 1);
+        };
+
+        const handleCountUpdated = (event) => {
+            console.log('Notification count updated:', event.detail.count);
+            setForceUpdate(prev => prev + 1);
+        };
+
+        document.addEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+        document.addEventListener('notificationCountUpdated', handleCountUpdated);
+
+        return () => {
+            document.removeEventListener('markAllNotificationsAsRead', handleMarkAllRead);
+            document.removeEventListener('notificationCountUpdated', handleCountUpdated);
+        };
+    }, [totalUnreadCount]);
 
     const handleOpenChange = (keys) => {
         const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1);
@@ -43,20 +71,19 @@ const MenuSidebar = () => {
                 {
                     key: 'personalAdmin1',
                     label: 'Thông tin cá nhân',
-                    onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info); }
+                    onClick: () => {
+                        navigate(PATHS.ADMIN.PROFILE)
+                        emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.info);
+                    }
                 },
                 {
                     key: 'personalAdmin2',
                     label: 'Đổi mật khẩu',
-                    onClick: () => { emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword); }
-                },
-                ...(user?.staff ? [{
-                    key: 'personal3',
-                    label: "Hồ sơ",
                     onClick: () => {
-                        emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.staff);
+                        navigate(PATHS.ADMIN.PROFILE)
+                        emitter.emit(EMIT.EVENT_PROFILE.key, EMIT.EVENT_PROFILE.changePassword);
                     }
-                }] : [])
+                },
             ],
         },
         {
@@ -67,7 +94,6 @@ const MenuSidebar = () => {
                 {
                     key: 'userAdmin1',
                     label: (<NavLink to={PATHS.ADMIN.STAFF_MANAGE}>Nhân viên</NavLink>),
-                    onClick: (value) => { console.log(value) }
                 },
                 {
                     key: 'userAdmin2',
@@ -111,13 +137,47 @@ const MenuSidebar = () => {
             icon: <FontAwesomeIcon icon={faCalendarDays} />,
         },
         {
+            key: 'medicineAdmin',
+            label: (<NavLink to={PATHS.ADMIN.MEDICINE_MANAGE}>Quản lý thuốc</NavLink>),
+            icon: <FontAwesomeIcon icon={faPills} />,
+        },
+        {
+            key: 'examinationAdmin',
+            label: (<NavLink to={PATHS.ADMIN.EXAMINATION_MANAGE}>Quản lý hồ sơ khám</NavLink>),
+            icon: <FontAwesomeIcon icon={faStethoscope} />,
+        },
+        {
+            key: 'revenueAdmin',
+            label: (<NavLink to={PATHS.ADMIN.REVENUE_MANAGE}>Doanh thu</NavLink>),
+            icon: <FontAwesomeIcon icon={faDollarSign} />,
+        },
+        {
+            key: 'notiAdmin',
+            label: (
+                <NavLink to={PATHS.ADMIN.NOTIFICATION}>
+                    Thông báo
+                    {totalUnreadCount > 0 && (
+                        <Badge
+                            count={totalUnreadCount}
+                            offset={[60, 0]}
+                        />
+                    )}
+                </NavLink>
+            ),
+            icon: (
+                <Badge dot={totalUnreadCount > 0}>
+                    <i className="fa-solid fa-bell"></i>
+                </Badge>
+            ),
+        },
+        {
             type: 'divider',
         },
         {
             key: 'logout',
             label: ("Đăng xuất"),
             icon: <FontAwesomeIcon icon={faArrowRightFromBracket} rotation={180} />,
-            onClick: () => { dispatch(logout()); navigate(PATHS.HOME.LOGIN); }
+            onClick: () => { dispatch(handleLogout(navigate)) },
         },
     ];
 

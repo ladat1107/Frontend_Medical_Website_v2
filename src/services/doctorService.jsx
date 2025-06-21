@@ -7,9 +7,12 @@ export const getUserByCid = (cid) => {
 export const getUserById = (id) => {
     return axios.get(`/api/getUserById?id=${id}`)
 }
+export const getDoctorBooking = (query) => {
+    return axios.get(`/api/getDoctorBooking`, { params: query })
+}
 // Examination
-export const getExaminations = async (date, status, staffId, is_appointment, page, limit, search, time) => {
-    return axios.get(`/api/getExaminations?date=${date}&status=${status}&staffId=${staffId || ''}&is_appointment=${is_appointment}&page=${+page}&limit=${+limit}&search=${search}&time=${time || ''}`);
+export const getExaminations = async (date, toDate, status, staffId, is_appointment, page, limit, search, time) => {
+    return axios.get(`/api/getExaminations?date=${date}&toDate=${toDate}&status=${status}&staffId=${staffId || ''}&is_appointment=${is_appointment}&page=${+page}&limit=${+limit}&search=${search}&time=${time || ''}`);
 }
 
 export const getListToPay = async (date, statusPay, page, limit, search) => {
@@ -19,21 +22,32 @@ export const getListToPay = async (date, statusPay, page, limit, search) => {
 export const getExaminationById = (id) => {
     return axios.get(`/api/getExaminationById?id=${id}`)
 }
-
+export const createAppointment = async (data) => {
+    return axios.post(`/api/createAppointment`, data);
+}
 export const createExamination = async (data) => {
     return axios.post(`/api/createExamination`, data);
 };
 
+export const getPatienSteps = async (examinationId) => {
+    return axios.get(`/api/getPatienSteps?examId=${examinationId}`);
+}
+
 export const updateExamination = async (data) => {
     return axios.put(`/api/updateExamination`, data);
 };
-
 
 export const checkOutParaclinical = (data) => {
     return axios.post(`/api/paymentParaclinicalMomo`, data);
 }
 export const checkOutExamination = (data) => {
     return axios.post(`/api/paymentExaminationMomo`, data);
+}
+export const checkOutExaminationAdvance = (data) => {
+    return axios.post(`/api/paymentExaminationAdvanceMomo`, data);
+}
+export const checkOutDischarged = (data) => {
+    return axios.post(`/api/paymentDischargedMomo`, data);
 }
 export const checkOutPrescription = (data) => {
     return axios.post(`/api/paymentPrescriptionMomo`, data);
@@ -117,14 +131,7 @@ export const updateListPayParaclinicals = async (data) => {
 }
 
 export const upsertPrescription = async (data) => {
-    try {
-        const response = await axios.post(`/api/upsertPrescription`, data);
-        //console.log("Response:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("Error upserting prescription:", error.response || error.message);
-        throw error;
-    }
+    return axios.post(`/api/upsertPrescription`, data);
 }
 
 //Hand book
@@ -151,6 +158,10 @@ export const getScheduleByStaffId = async (staffId) => {
     return axios.get(`/api/getScheduleByStaffId?staffId=${staffId}`);
 }
 
+export const getScheduleByDateAndDoctor = async (query) => {
+    return axios.get(`/api/getScheduleByDateAndDoctor`, { params: query });
+}
+
 //specialty
 export const getSpecialties = async () => {
     return axios.get(`/api/getSpecialtiesByDepartment`);
@@ -159,4 +170,143 @@ export const getSpecialties = async () => {
 //insuarance
 export const getUserInsuarance = async (userId) => {
     return axios.get(`/api/getUserInsuarance?userId=${userId}`);
+}
+
+export const getAllUserToNotify = async () => {
+    return axios.get(`/api/getAllUserToNotify`);
+}
+
+export const getAllNotification = async (page, limit, search) => {
+    page = page || 1;
+    limit = limit || 10;
+    search = search || '';
+    return axios.get(`/api/getAllNotifications?page=${page}&limit=${limit}&search=${search}`);
+}
+
+export const createNotification = async (data) => {
+    return axios.post(`/api/createNotification`, data);
+}
+
+export const updateNotification = async (data) => {
+    return axios.put(`/api/updateNotification`, data);
+}
+
+export const markAllRead = async (data) => {
+    return axios.put(`/api/markAllRead`, data);
+}
+
+export const getArrayUserId = async () => {
+    return axios.get(`/api/getArrayUserId`);
+}
+
+export const getArrayAdminId = async () => {
+    return axios.get(`/api/getArrayAdminId`);
+}
+
+export const sendNotification = (title, htmlDescription, firstName, lastName, date, attachedFiles, notiCode, receiverIds) => {
+    const response = axios.post('/api/send-notification', {
+        title,
+        htmlDescription,
+        firstName,
+        lastName,
+        date,
+        attachedFiles,
+        notiCode,
+        receiverIds
+    });
+    return response.data;
+};
+
+// messenger
+export const getConversationsForStaff = async () => {
+    return axios.get(`/api/getConversationForStaff`);
+}
+
+export const searchConversation = async (search) => {
+    return axios.get(`/api/searchConversation?search=${search}`);
+}
+
+export const getConversationFromSearch = async (conversationId) => {
+    return axios.put(`/api/getConversationFromSearch`, { conversationId });
+}
+
+export const deleteAssistantForCustomer = async () => {
+    return axios.delete(`/api/deleteAssistantForCustomer`);
+}
+
+export const getScheduleByStaffIdFromToday = async () => {
+    return axios.get(`/api/getScheduleByStaffIdFromToday`);
+}
+
+export const getAvailableRooms = async (medicalTreatmentTier) => {
+    return axios.get(`/api/getAvailableRooms?medicalTreatmentTier=${medicalTreatmentTier || ''}`);
+}
+
+export const getListAdvanceMoney = async (page = 1, limit = 20, search = '', statusPay = 4) => {
+    return axios.get(`/api/getListAdvanceMoney?page=${page}&limit=${limit}&search=${search}&statusPay=${statusPay}`);
+}
+
+export const getListInpatients = async (currentDate = '', toDate = '', status = 5, currentPage = 1, pageSize = 20, search = '') => {
+    return axios.get(`/api/getListInpatients?currentDate=${currentDate}&toDate=${toDate}&status=${status}&page=${+currentPage}&limit=${+pageSize}&search=${search}`);
+}
+
+export const createVitalSign = async (data) => {
+    return axios.post(`/api/createVitalSign`, data);
+}
+
+export const updateVitalSign = async (data) => {
+    return axios.put(`/api/updateVitalSign`, data);
+}
+
+export const deleteVitalSign = async (id) => {
+    return axios.delete(`/api/deleteVitalSign`, {
+        params: {
+            id: id
+        }
+    });
+}
+
+//Chỉ dùng cho nội trú
+export const createPrescription = async (data) => {
+    return axios.post(`/api/createPrescription`, data);
+}
+
+export const createAdvanceMoney = async (data) => {
+    return axios.post(`/api/createAdvanceMoney`, data);
+}
+
+export const deletePrescription = async (id) => {
+    return axios.delete(`/api/deletePrescription`, {
+        params: {
+            id: id
+        }
+    });
+}
+
+export const deleteAdvanceMoney = async (id) => {
+    return axios.delete(`/api/deleteAdvanceMoney`, {
+        params: {
+            id: id
+        }
+    });
+}
+
+export const getMedicalRecords = async (status, medicalTreatmentTier, page, limit, search) => {
+    return axios.get(`/api/getMedicalRecords?status=${status}&medicalTreatmentTier=${medicalTreatmentTier}&page=${+page}&limit=${+limit}&search=${search}`);
+}
+
+export const createRelative = async (data) => {
+    return axios.post(`/api/createRelative`, data);
+}
+
+export const deleteRelative = async (id) => {
+    return axios.delete(`/api/deleteRelative`, {
+        params: {
+            id: id
+        }
+    });
+}
+
+export const updateInpatientRoom = async (data) => {
+    return axios.post(`/api/updateInpatientRoom`, data);
 }

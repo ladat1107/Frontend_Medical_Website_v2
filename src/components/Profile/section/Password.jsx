@@ -1,15 +1,17 @@
+import { logout } from "@/redux/authenSlice";
 import { updateProfilePassword } from "@/services/adminService";
-import { Button, Col, Form, Input, message, Row } from "antd";
-import "../Profile.scss";
-
+import { Button, Form, Input, message } from "antd";
+import { useDispatch } from "react-redux";
 const Password = (props) => {
-    let [form] = Form.useForm();
-    let handleChangePass = () => {
+    const [form] = Form.useForm();
+    const dispatch = useDispatch();
+    const handleChangePass = () => {
         form.validateFields().then(async (values) => {
             let response = await updateProfilePassword({ ...values, id: props.data });
             if (response?.EC === 0) {
-                message.success(response?.EM || "Cập nhật thành công!");
                 form.resetFields();
+                message.success("Đổi mật khẩu thành công. Vui lòng đăng nhập lại!");
+                dispatch(logout())
             } else {
                 message.error(response?.EM || "Cập nhật thất bại!");
             }
@@ -17,12 +19,12 @@ const Password = (props) => {
             console.log(error);
         })
     }
-    let handleCancel = () => {
+    const handleCancel = () => {
         form.resetFields();
     }
     return (
-        <div className='password-content bg-content-profile mb-0'>
-            <div className="text ps-4 mb-3">Đổi mật khẩu</div>
+        <div className='w-full bg-white rounded-lg shadow-md p-6 mb-6'>
+            <div className="text-xl font-semibold mb-4 text-gray-800">Đổi mật khẩu</div>
             <Form
                 layout={'horizontal'}
                 form={form}
@@ -42,8 +44,8 @@ const Password = (props) => {
                     maxWidth: "100%",
                 }}
             >
-                <Row >
-                    <Col xs={12}  >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-1">
                         <Form.Item
                             name={"oldPassword"}
                             rules={[
@@ -55,11 +57,10 @@ const Password = (props) => {
                         >
                             <Input.Password placeholder="Nhập mật khẩu cũ" />
                         </Form.Item>
-                    </Col>
-
-                </Row>
-                <Row >
-                    <Col xs={12}>
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
                         <Form.Item
                             name={"newPassword"}
                             rules={[
@@ -71,8 +72,8 @@ const Password = (props) => {
                         >
                             <Input.Password placeholder="Nhập mật khẩu mới" />
                         </Form.Item>
-                    </Col>
-                    <Col xs={12}>
+                    </div>
+                    <div>
                         <Form.Item
                             name="confirmPassword"
                             dependencies={['newPassword']}
@@ -93,20 +94,28 @@ const Password = (props) => {
                         >
                             <Input.Password placeholder="Xác nhận mật khẩu mới" />
                         </Form.Item>
-                    </Col>
-                </Row>
-                <Col className="mt-3" xs={24} style={{ display: 'flex', justifyContent: 'flex-start' }} >
+                    </div>
+                </div>
+                <div className="flex justify-start mt-4 space-x-2">
                     <Form.Item>
-                        <Button type="primary" htmlType="submit"
+                        <Button
+                            type="primary"
+                            htmlType="submit"
                             style={{ background: "#04a9f3" }}
-                            onClick={() => { handleChangePass() }}>Cập nhật</Button>
+                            onClick={() => { handleChangePass() }}
+                        >
+                            Cập nhật
+                        </Button>
                     </Form.Item>
                     <Form.Item>
-                        <Button key="cancel"
-                            onClick={() => { handleCancel() }}>Hủy</Button>
+                        <Button
+                            key="cancel"
+                            onClick={() => { handleCancel() }}
+                        >
+                            Hủy
+                        </Button>
                     </Form.Item>
-
-                </Col>
+                </div>
             </Form>
         </div>
     )

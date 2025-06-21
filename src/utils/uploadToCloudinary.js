@@ -39,7 +39,7 @@ export const uploadToCloudinary = async (file, folder, onProgress) => {
     }
 };
 // Hàm xóa ảnh từ Cloudinary
-const deleteImageFromCloudinary = async (publicId) => {
+export const deleteImageFromCloudinary = async (publicId) => {
     const timestamp = Math.floor(Date.now() / 1000);
     const signature = generateSignatureDelete(publicId, timestamp);
     try {
@@ -103,5 +103,63 @@ export const uploadAndDeleteToCloudinary = async (file, folder, oldLink, onProgr
     } catch (error) {
         console.error("Lỗi khi upload ảnh lên Cloudinary:", error.response || error.message);
         throw error;  // Ném lỗi để xử lý ở nơi gọi
+    }
+};
+
+export const uploadFileToCloudinary = async (file, folder = "documents", onProgress) => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("folder", folder);
+    formData.append("public_id", file.name);
+    formData.append("resource_type", "raw");
+
+    try {
+        const response = await axios.post(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onProgress?.(percentCompleted);
+                },
+            }
+        );
+
+        return response.data.secure_url;
+    } catch (error) {
+        console.error("Lỗi khi upload file lên Cloudinary:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
+
+
+export const uploadFileToCloudinary2 = async (file, folder = "documents", onProgress) => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("folder", folder);
+    formData.append("resource_type", "auto"); // Cho phép upload mọi loại file
+
+    try {
+        const response = await axios.post(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onProgress?.(percentCompleted);
+                },
+            }
+        );
+        return { url: response.data.secure_url, delete_token: response.data.delete_token };
+    } catch (error) {
+        console.error("Lỗi khi upload file lên Cloudinary:", error.response || error.message);
+        throw error;
     }
 };

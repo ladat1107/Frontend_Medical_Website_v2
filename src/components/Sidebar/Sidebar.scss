@@ -1,11 +1,10 @@
-@import "/src/style/variables.scss";
-
 .sidebar-content {
     position: fixed;
     top: 0;
     left: 0;
     min-height: 100vh;
     background: white;
+    overflow: auto;
 
     @media only screen and (max-width: 768px) {}
 
@@ -52,12 +51,12 @@
 
         &:hover {
             text-decoration: none;
-            color: $primary-color-admin;
+            color: var(--primary-color-admin);
         }
 
         &:focus {
             text-decoration: none;
-            color: $primary-color-admin;
+            color: var(--primary-color-admin);
         }
     }
 }
